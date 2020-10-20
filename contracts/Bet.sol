@@ -20,7 +20,7 @@ contract Bet {
     mapping(address => bool) public isJudge;
     mapping(address => bool) public didVote;
     mapping(bool => address) public betToAddress;
-    
+    mapping(address => bool) addressExists;
     
     constructor(address _creator, address _opponent, address[] memory _judges, uint _minimumBet, uint _endTimeSec, bool _creatorBetsOn){
         creator = _creator;
@@ -49,7 +49,7 @@ contract Bet {
         require(_judges.length == judgesCount, "Number of judges doesn't match your opponent.");
         _;
     }
-    modifier restrictJudges(address[] memory _judges){
+    modifier limitJudges(address[] memory _judges){
         require(opponentJudges.length == 0, "You already added judges.");
         _;
     }
@@ -83,13 +83,20 @@ contract Bet {
         require(!isBetOver, "This bet has already ended.");
         _;
     }
-
-    function addJudges(address[] memory _judges) private restrictJudges(_judges){
-        opponentJudges = _judges;
-        for(uint i=0; i<judgesCount; i++){
-            isJudge[opponentJudges[i]] = true;
+    
+    // Cannot appoint same judge twice, creator cannot be judge
+    modifier restrictJudges(address _manager, address[] memory _judges){
+        for(uint i=0; i<_judges.length; i++){
+            require(_judges[i] != _manager);
+            require(!isJudge[_judges[i]]);
+            isJudge[_judges[i]] = true;
             isJudge[creatorJudges[i]] = true;
         }
+        _;
+    }
+
+    function addJudges(address[] memory _judges) private limitJudges(_judges) restrictJudges(opponent, _judges){
+        opponentJudges = _judges;
     }
     
     function acceptBet(address[] memory _judges) public equalJudgesNumber(_judges) minimumBetLimit betAlreadyAccepted onlyOpponent payable{
