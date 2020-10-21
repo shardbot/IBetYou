@@ -1,14 +1,17 @@
 const BetFactory = artifacts.require('BetFactory');
+const Bet = artifacts.require("Bet");
+const now = new Date()
 
 let opponentAddress
 let judges
-// random time in future
-let endTimeSec = 9603196571 
-let betsOn = true
+let expirationTime = Math.round(now.getTime() / 1000) + 10000;
+let creatorChoice = true
+let minimumDeposit = 100;
 
 
 let betFactory
-let bet
+
+
 
 contract('BetFactory', (accounts) => {
     beforeEach(async () => {
@@ -16,6 +19,8 @@ contract('BetFactory', (accounts) => {
     })
 
     it('Deploys a factory contract.', async () =>{
+        judges = [accounts[2], accounts[3]]
+        opponentAddress = accounts[1]
         assert(betFactory.address !== '')
     }
     )
@@ -23,7 +28,7 @@ contract('BetFactory', (accounts) => {
     it('Deploys a bet contract.', async () => {
         judges = [accounts[2], accounts[3]]
         opponentAddress = accounts[1]
-        await betFactory.createBet(opponentAddress, judges, endTimeSec, betsOn, {value: 20000})
+        await betFactory.createBet(opponentAddress, judges, expirationTime, creatorChoice, {from: accounts[5], value: minimumDeposit})
         const betInstances = await betFactory.getDeployedBets()
         assert(betInstances.length != 0)
     })
@@ -32,7 +37,7 @@ contract('BetFactory', (accounts) => {
         judges = [accounts[2], accounts[2]]
         opponentAddress = accounts[1]
         try{
-            await betFactory.createBet(opponentAddress, judges, endTimeSec, betsOn, {value: 20000})
+            await betFactory.createBet(opponentAddress, judges, expirationTime, creatorChoice, {value: minimumDeposit})
             assert(false)
         }
         catch(err){
@@ -40,28 +45,29 @@ contract('BetFactory', (accounts) => {
         }
     })
 
-    it('Cannot appoint bet creator as a judge', async () => {
-        judges = [accounts[0], accounts[2]]
+    it('Creator cannot appoint himself/herself as a judge.', async () => {
+        judges = [accounts[3], accounts[4]]
         opponentAddress = accounts[1]
         try{
-            await betFactory.createBet(opponentAddress, judges, endTimeSec, betsOn, {value: 20000})
+            await betFactory.createBet(opponentAddress, judges, expirationTime, creatorChoice, {value: minimumDeposit})
+            console.log('success')
             assert(false)
         }
         catch(err){
+            console.log(err.message)
             assert(err)
         }
     })
 
     it('Cannot bet on past event', async () => {
-        const now = new Date()
         const secondsInPast = 10000
-        const endTimeSec = Math.round(now.getTime() / 1000) - secondsInPast
+        const expirationTime = Math.round(now.getTime() / 1000) - secondsInPast
 
         judges = [accounts[2], accounts[3]]
         opponentAddress = accounts[1]
 
         try{
-            await betFactory.createBet(opponentAddress, judges, endTimeSec, betsOn, {value: 20000})
+            await betFactory.createBet(opponentAddress, judges, expirationTime, creatorChoice, {value: minimumDeposit})
             assert(false)
         }
         catch(err){

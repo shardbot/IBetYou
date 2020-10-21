@@ -3,129 +3,108 @@ pragma solidity ^0.7.3;
 
 contract Bet {
     
-    bool isBetOver;
-    bool isBetAccepted;
-    bool creatorBetsOn;
-    uint public startTimeSec;
-    uint public endTimeSec;
+    bool creatorChoice;
+    uint public creationTime;
+    uint public expirationTime;
     uint public judgesCount; 
     uint public votedYes;
     uint public votedNo;
     address[] creatorJudges;
     address[] opponentJudges;
-    address public creator;
+    address public betCreator;
     address public opponent;
-    uint public minimumBet;
+    uint public minimumDeposit;
     
     mapping(address => bool) public isJudge;
     mapping(address => bool) public didVote;
-    mapping(bool => address) public betToAddress;
-    mapping(address => bool) addressExists;
+    mapping(bool => address) public choiceToAddress;
     
-    constructor(address _creator, address _opponent, address[] memory _judges, uint _minimumBet, uint _endTimeSec, bool _creatorBetsOn){
-        creator = _creator;
+    constructor(address _betCreator, address _opponent, address[] memory _creatorJudges, uint _minimumDeposit, uint _expirationTime, bool _creatorChoice) validExpirationTime(block.timestamp, _expirationTime) onlyUniqueJudges(_betCreator, _creatorJudges){
+        betCreator = _betCreator;
         opponent = _opponent;
-        creatorJudges = _judges;
-        minimumBet = _minimumBet;
-        endTimeSec = _endTimeSec;
-        creatorBetsOn = _creatorBetsOn;
-        betToAddress[_creatorBetsOn] = creator;
-        
-        judgesCount = _judges.length;
-        startTimeSec = block.timestamp;
-        isBetAccepted = false;
-        isBetOver = false;
+        creatorJudges = _creatorJudges;
+        minimumDeposit = _minimumDeposit;
+        expirationTime = _expirationTime;
+        creatorChoice = _creatorChoice;
+        choiceToAddress[_creatorChoice] = _betCreator;
+        judgesCount = _creatorJudges.length;
+        creationTime = block.timestamp;
         votedYes = 0;
         votedNo = 0;
     }
     
     receive() external payable{}
-    
-    modifier onlyOpponent(){
-        require(msg.sender == opponent);
-        _;
-    }
-    modifier equalJudgesNumber(address[] memory _judges){
-        require(_judges.length == judgesCount, "Number of judges doesn't match your opponent.");
-        _;
-    }
-    modifier limitJudges(address[] memory _judges){
-        require(opponentJudges.length == 0, "You already added judges.");
-        _;
-    }
 
-    modifier minimumBetLimit{
-        require(msg.value>=minimumBet, "Insufficient ether sent.");
-        _;
-    }
-
-    modifier betAlreadyAccepted{
-        require(!isBetAccepted, "You already accepted bet.");
-        _;
-    }
-
-    modifier betNotAccepted{
-        require(isBetAccepted, "Bet is not accepted.");
-        _;
-    }
-
-    modifier onlyVoteOnce{
-        require(!didVote[msg.sender], "You have already voted.");
-        _;
-    }
-
-    modifier onlyJudge{
-        require(isJudge[msg.sender], "Only judges are allowed.");
-        _;
-    }
-
-    modifier betNotOver{
-        require(!isBetOver, "This bet has already ended.");
-        _;
+    function getBalance() public view returns(uint){
+        return address(this).balance;
     }
     
-    // Cannot appoint same judge twice, creator cannot be judge
-    modifier restrictJudges(address _manager, address[] memory _judges){
-        for(uint i=0; i<_judges.length; i++){
-            require(_judges[i] != _manager);
-            require(!isJudge[_judges[i]]);
-            isJudge[_judges[i]] = true;
-            isJudge[creatorJudges[i]] = true;
-        }
-        _;
-    }
-
-    function addJudges(address[] memory _judges) private limitJudges(_judges) restrictJudges(opponent, _judges){
-        opponentJudges = _judges;
+    function acceptBet(address[] memory _opponentJudges) public equalJudgesNumber(_opponentJudges) limitJudges(_opponentJudges) onlyUniqueJudges(opponent, _opponentJudges) minimumBetLimit(msg.value) onlyOpponent(msg.sender) payable{
+        choiceToAddress[!creatorChoice] = opponent; 
+        opponentJudges = _opponentJudges;
     }
     
-    function acceptBet(address[] memory _judges) public equalJudgesNumber(_judges) minimumBetLimit betAlreadyAccepted onlyOpponent payable{
-        betToAddress[!creatorBetsOn] = opponent; 
-        addJudges(_judges);
-        isBetAccepted=true;
-    }
-    
-    function judgeVote(bool vote) public betNotAccepted onlyVoteOnce onlyJudge betNotOver{ 
+    function judgeVote(bool vote) public onlyVoteOnce(msg.sender) onlyJudge(msg.sender){    
         if(vote){
             votedYes++;
         }
         else{
             votedNo++;
         }
-        
         if(votedYes>judgesCount){
-            payable(betToAddress[true]).transfer(address(this).balance);
-            isBetOver = true;
+            payable(choiceToAddress[true]).transfer(address(this).balance);
         }
         else if(votedNo>judgesCount){
-            payable(betToAddress[false]).transfer(address(this).balance);
-            isBetOver = true;
+            payable(choiceToAddress[false]).transfer(address(this).balance);
         }
         else if(votedNo + votedYes == judgesCount*2){
-            payable(betToAddress[true]).transfer(address(this).balance/2);
-            payable(betToAddress[false]).transfer(address(this).balance);
-            isBetOver = true;
+            payable(choiceToAddress[true]).transfer(address(this).balance/2);
+            payable(choiceToAddress[false]).transfer(address(this).balance);
         }
         didVote[msg.sender] = true;
     } 
+
+    modifier validExpirationTime(uint _blockTime, uint _expirationTime){
+        require(_expirationTime > _blockTime, "Invalid bet expiration time.");
+        _;
+    }
+
+    modifier onlyOpponent(address _opponent){
+        require(_opponent == opponent, "You are not allowed to accept this bet.");
+        _;
+    }
+    modifier equalJudgesNumber(address[] memory _judges){
+        require(_judges.length == judgesCount, "Number of judges doesn't match your opponent.");
+        _;
+    }
+    
+    modifier limitJudges(address[] memory _judges){
+        require(opponentJudges.length == 0, "You have already added judges.");
+        _;
+    }
+
+    modifier minimumBetLimit(uint _value){
+        require(_value >= minimumDeposit, "Insufficient amount of ether sent.");
+        _;
+    }
+
+    modifier onlyVoteOnce(address _judge){
+        require(!didVote[_judge], "You have already voted.");
+        _;
+    }
+
+    modifier onlyJudge(address _judge){
+        require(isJudge[_judge], "Only judges are allowed to vote.");
+        _;
+    }
+    
+    modifier onlyUniqueJudges(address _invoker, address[] memory _judges){
+        for(uint i=0; i<_judges.length; i++){
+            bool judgeCounted = isJudge[_judges[i]];
+            require(!judgeCounted, "You have added same judge more than once.");
+            require(_judges[i] != _invoker, "You cannot be a judge.");
+            isJudge[_judges[i]] = true;
+        }
+        _;
+    }
 }
