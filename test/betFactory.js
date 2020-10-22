@@ -18,6 +18,13 @@ contract('BetFactory', (accounts) => {
         betFactory = await BetFactory.deployed() 
     })
 
+    it('Assigns factory creator as admin', async () => {
+        const adminAddr = await betFactory.getFactoryOwner();
+        console.log(accounts[0])
+        console.log(adminAddr)
+        assert.equal(adminAddr, accounts[0])
+    })
+
     it('Deploys a factory contract.', async () =>{
         judges = [accounts[2], accounts[3]]
         opponentAddress = accounts[1]
@@ -50,12 +57,9 @@ contract('BetFactory', (accounts) => {
         opponentAddress = accounts[1]
         try{
             await betFactory.createBet(opponentAddress, judges, expirationTime, creatorChoice, {value: minimumDeposit})
-            console.log('success')
             assert(false)
         }
         catch(err){
-            console.log(err.message)
-            assert(err)
         }
     })
 

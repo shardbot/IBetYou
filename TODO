@@ -1,0 +1,5 @@
+Bet.sol
+*Check if judges are unique
+*Check if any of judges is bet creator or bet taker
+
+--Fix tests (betFactory.js, bet.js)

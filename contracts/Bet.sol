@@ -1,85 +1,50 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.3;
 
-contract Bet {
-    
-    bool creatorChoice;
-    uint public creationTime;
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+/*
+Check if judges are unique
+Check if any of judges is bet creator or bet taker
+ */
+ 
+contract Bet is AccessControl{
+
+    struct Bettor {
+        string name;
+        uint votes;
+    }
+
+    uint public constant MAX_JUDGES = 2;
+
     uint public expirationTime;
-    uint public judgesCount; 
-    uint public votedYes;
-    uint public votedNo;
-    address[] creatorJudges;
-    address[] opponentJudges;
-    address public betCreator;
-    address public opponent;
     uint public minimumDeposit;
     
-    mapping(address => bool) public isJudge;
+    bytes32 public constant BET_CREATOR_ROLE = keccak256("BET_CREATOR_ROLE");
+    bytes32 public constant BET_TAKER_ROLE = keccak256("BET_TAKER_ROLE");
+    bytes32 public constant JUDGE_ROLE = keccak256("JUDGE_ROLE");
+
     mapping(address => bool) public didVote;
-    mapping(bool => address) public choiceToAddress;
-    
-    constructor(address _betCreator, address _opponent, address[] memory _creatorJudges, uint _minimumDeposit, uint _expirationTime, bool _creatorChoice) validExpirationTime(block.timestamp, _expirationTime) onlyUniqueJudges(_betCreator, _creatorJudges){
-        betCreator = _betCreator;
-        opponent = _opponent;
-        creatorJudges = _creatorJudges;
-        minimumDeposit = _minimumDeposit;
-        expirationTime = _expirationTime;
-        creatorChoice = _creatorChoice;
-        choiceToAddress[_creatorChoice] = _betCreator;
-        judgesCount = _creatorJudges.length;
-        creationTime = block.timestamp;
-        votedYes = 0;
-        votedNo = 0;
-    }
-    
-    receive() external payable{}
+    mapping(address => Bettor) public bettors;
 
-    function getBalance() public view returns(uint){
-        return address(this).balance;
-    }
-    
-    function acceptBet(address[] memory _opponentJudges) public equalJudgesNumber(_opponentJudges) limitJudges(_opponentJudges) onlyUniqueJudges(opponent, _opponentJudges) minimumBetLimit(msg.value) onlyOpponent(msg.sender) payable{
-        choiceToAddress[!creatorChoice] = opponent; 
-        opponentJudges = _opponentJudges;
-    }
-    
-    function judgeVote(bool vote) public onlyVoteOnce(msg.sender) onlyJudge(msg.sender){    
-        if(vote){
-            votedYes++;
-        }
-        else{
-            votedNo++;
-        }
-        if(votedYes>judgesCount){
-            payable(choiceToAddress[true]).transfer(address(this).balance);
-        }
-        else if(votedNo>judgesCount){
-            payable(choiceToAddress[false]).transfer(address(this).balance);
-        }
-        else if(votedNo + votedYes == judgesCount*2){
-            payable(choiceToAddress[true]).transfer(address(this).balance/2);
-            payable(choiceToAddress[false]).transfer(address(this).balance);
-        }
-        didVote[msg.sender] = true;
-    } 
-
-    modifier validExpirationTime(uint _blockTime, uint _expirationTime){
-        require(_expirationTime > _blockTime, "Invalid bet expiration time.");
+    modifier canJudgeVote{
+        require(block.timestamp >= expirationTime);
         _;
     }
 
-    modifier onlyOpponent(address _opponent){
-        require(_opponent == opponent, "You are not allowed to accept this bet.");
-        _;
-    }
-    modifier equalJudgesNumber(address[] memory _judges){
-        require(_judges.length == judgesCount, "Number of judges doesn't match your opponent.");
-        _;
-    }
-    
     modifier limitJudges(address[] memory _judges){
-        require(opponentJudges.length == 0, "You have already added judges.");
+        require(_judges.length == MAX_JUDGES, "You cannot assign more than two judges.");
+        _;
+    }
+
+    modifier onlyBetTaker(address _sender){
+        require(hasRole(BET_TAKER_ROLE, _sender), "Caller is not a bet taker");
+        _;
+    }
+    
+    modifier restrictJudges(address[] memory _judges){
+        uint judgesLength = this.getRoleMemberCount(JUDGE_ROLE);
+        require(judgesLength == _judges.length, "You have already added judges.");
         _;
     }
 
@@ -93,18 +58,59 @@ contract Bet {
         _;
     }
 
-    modifier onlyJudge(address _judge){
-        require(isJudge[_judge], "Only judges are allowed to vote.");
+    modifier onlyJudge(address _sender){
+        require(hasRole(JUDGE_ROLE, _sender), "Caller is not a judge.");
         _;
+    }
+
+    modifier onlyBettors(address _sender){
+        require(hasRole(BET_TAKER_ROLE, _sender) || hasRole(BET_CREATOR_ROLE, _sender), "This address doesn't belong to bettors.");
+        _;
+    }
+
+    constructor(address _admin, address _betCreator, string memory _betCreatorName, address _opponent, address[] memory _creatorJudges, uint _minimumDeposit, uint _expirationTime) limitJudges(_creatorJudges){
+        _setupRole(DEFAULT_ADMIN_ROLE, _admin);
+        _setupRole(BET_CREATOR_ROLE, _betCreator);
+        _setupRole(BET_TAKER_ROLE, _opponent);
+        setupJudgeRole(_creatorJudges);
+        
+        bettors[_betCreator] = Bettor({
+                name: _betCreatorName,
+                votes: 0
+            });
+
+        minimumDeposit = _minimumDeposit;
+        expirationTime = _expirationTime;
     }
     
-    modifier onlyUniqueJudges(address _invoker, address[] memory _judges){
-        for(uint i=0; i<_judges.length; i++){
-            bool judgeCounted = isJudge[_judges[i]];
-            require(!judgeCounted, "You have added same judge more than once.");
-            require(_judges[i] != _invoker, "You cannot be a judge.");
-            isJudge[_judges[i]] = true;
-        }
-        _;
+    receive() external payable{}
+
+    function getBalance() public view returns(uint){
+        return address(this).balance;
     }
+
+    function setupJudgeRole(address[] memory _judges) private{
+        for(uint i=0; i<_judges.length; i++){
+            _setupRole(JUDGE_ROLE, _judges[i]);
+        }
+    }
+    
+    function acceptBet(address[] memory _opponentJudges, string memory _betTakerName) public restrictJudges(_opponentJudges) limitJudges(_opponentJudges) minimumBetLimit(msg.value) onlyBetTaker(msg.sender) payable{
+        address _betTaker = this.getRoleMember(BET_TAKER_ROLE, 0); 
+        bettors[_betTaker] = Bettor({
+                name: _betTakerName,
+                votes: 0
+            });
+        setupJudgeRole(_opponentJudges);
+    }
+    
+    function judgeVote(address _candidate) public canJudgeVote onlyBettors(_candidate) onlyVoteOnce(msg.sender) onlyJudge(msg.sender){    
+        bettors[_candidate].votes++;
+
+        if(bettors[_candidate].votes > MAX_JUDGES){
+            payable(_candidate).transfer(address(this).balance);
+        }
+
+        didVote[msg.sender] = true;
+    } 
 }
