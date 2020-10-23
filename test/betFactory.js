@@ -1,81 +1,51 @@
-const BetFactory = artifacts.require('BetFactory');
-const Bet = artifacts.require("Bet");
-const now = new Date()
+const BetFactory = artifacts.require("BetFactory");
+const now = new Date();
+const betCreatorName = "Satoshi";
 
-let opponentAddress
-let judges
-let expirationTime = Math.round(now.getTime() / 1000) + 10000;
-let creatorChoice = true
-let minimumDeposit = 100;
-
-
-let betFactory
+let betTaker;
+let betCreatorJudges;
+let expirationTime;
+let minimumDeposit;
+let betFactory;
 
 
-
-contract('BetFactory', (accounts) => {
-    beforeEach(async () => {
-        betFactory = await BetFactory.deployed() 
-    })
-
-    it('Assigns factory creator as admin', async () => {
-        const adminAddr = await betFactory.getFactoryOwner();
-        console.log(accounts[0])
-        console.log(adminAddr)
-        assert.equal(adminAddr, accounts[0])
-    })
-
-    it('Deploys a factory contract.', async () =>{
-        judges = [accounts[2], accounts[3]]
-        opponentAddress = accounts[1]
-        assert(betFactory.address !== '')
+contract("BetFactory", (accounts) => {
+  before(() => {
+    expirationTime = Math.round(now.getTime() / 1000) + 10000;
+    betTaker = accounts[1];
+    betCreatorJudges = [accounts[2], accounts[3]];
+    minimumDeposit = 100;
+  });
+  beforeEach(async () => {
+    betFactory = await BetFactory.deployed();
+  });
+  it("Deploys a bet contract.", async () => {
+    await betFactory.createBet(
+      betCreatorName,
+      betTaker,
+      betCreatorJudges,
+      expirationTime,
+      { value: minimumDeposit }
+    );
+    const bets = await betFactory.getDeployedBets();
+    assert.ok(bets[0]);
+  });
+  it("Only allows admin to get deployed bet addresses.", async () => {
+    await betFactory.createBet(
+      betCreatorName,
+      betTaker,
+      betCreatorJudges,
+      expirationTime,
+      { value: minimumDeposit }
+    );
+    try{
+        bets = await betFactory.getDeployedBets({ from: accounts[1] });
+        assert.fail()
     }
-    )
-
-    it('Deploys a bet contract.', async () => {
-        judges = [accounts[2], accounts[3]]
-        opponentAddress = accounts[1]
-        await betFactory.createBet(opponentAddress, judges, expirationTime, creatorChoice, {from: accounts[5], value: minimumDeposit})
-        const betInstances = await betFactory.getDeployedBets()
-        assert(betInstances.length != 0)
-    })
-
-    it('Cannot appoint same judge twice', async () => {
-        judges = [accounts[2], accounts[2]]
-        opponentAddress = accounts[1]
-        try{
-            await betFactory.createBet(opponentAddress, judges, expirationTime, creatorChoice, {value: minimumDeposit})
-            assert(false)
-        }
-        catch(err){
-            assert(err)
-        }
-    })
-
-    it('Creator cannot appoint himself/herself as a judge.', async () => {
-        judges = [accounts[3], accounts[4]]
-        opponentAddress = accounts[1]
-        try{
-            await betFactory.createBet(opponentAddress, judges, expirationTime, creatorChoice, {value: minimumDeposit})
-            assert(false)
-        }
-        catch(err){
-        }
-    })
-
-    it('Cannot bet on past event', async () => {
-        const secondsInPast = 10000
-        const expirationTime = Math.round(now.getTime() / 1000) - secondsInPast
-
-        judges = [accounts[2], accounts[3]]
-        opponentAddress = accounts[1]
-
-        try{
-            await betFactory.createBet(opponentAddress, judges, expirationTime, creatorChoice, {value: minimumDeposit})
-            assert(false)
-        }
-        catch(err){
-            assert(err)
-        }
-    })
-})
+    catch(error){
+        const msgexist = error.message.search('revert') >= 0; 
+        assert.ok(msgexist);
+    } 
+  });
+  
+});

@@ -19,6 +19,8 @@ contract Bet is AccessControl{
 
     uint public expirationTime;
     uint public minimumDeposit;
+
+    bool public betOver = false;
     
     bytes32 public constant BET_CREATOR_ROLE = keccak256("BET_CREATOR_ROLE");
     bytes32 public constant BET_TAKER_ROLE = keccak256("BET_TAKER_ROLE");
@@ -28,12 +30,12 @@ contract Bet is AccessControl{
     mapping(address => Bettor) public bettors;
 
     modifier canJudgeVote{
-        require(block.timestamp >= expirationTime);
+        require(block.timestamp >= expirationTime, "You can't vote because event didn't happen yet.");
         _;
     }
 
     modifier limitJudges(address[] memory _judges){
-        require(_judges.length == MAX_JUDGES, "You cannot assign more than two judges.");
+        require(_judges.length == MAX_JUDGES, "You can't assign more than two judges.");
         _;
     }
 
@@ -109,6 +111,7 @@ contract Bet is AccessControl{
 
         if(bettors[_candidate].votes > MAX_JUDGES){
             payable(_candidate).transfer(address(this).balance);
+            betOver = true;
         }
 
         didVote[msg.sender] = true;
