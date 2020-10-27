@@ -2,6 +2,7 @@
 pragma solidity ^0.7.3;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./BetFactory.sol";
 
 /*
 Check if judges are unique
@@ -15,10 +16,14 @@ contract Bet is AccessControl{
         uint votes;
     }
 
+    BetFactory betFactory;
+
     uint public constant MAX_JUDGES = 2;
+    uint public constant MIN_JUDGES = 1;
 
     uint public expirationTime;
     uint public minimumDeposit;
+    uint public creatorJudgesCount;
 
     bool public betOver = false;
     
@@ -34,8 +39,13 @@ contract Bet is AccessControl{
         _;
     }
 
-    modifier limitJudges(address[] memory _judges){
-        require(_judges.length == MAX_JUDGES, "You can't assign more than two judges.");
+    modifier limitJudgesCreator(address[] memory _judges){
+        require(_judges.length <= MAX_JUDGES && _judges.length >= MIN_JUDGES, "You have to assign at least one judge and two at most.");
+        _;
+    }
+
+    modifier limitJudgesBetTaker(address[] memory _judges){
+        require(_judges.length == creatorJudgesCount, "Number of judges you assigned must match opponent's.");
         _;
     }
 
@@ -70,7 +80,12 @@ contract Bet is AccessControl{
         _;
     }
 
-    constructor(address _admin, address _betCreator, string memory _betCreatorName, address _opponent, address[] memory _creatorJudges, uint _minimumDeposit, uint _expirationTime) limitJudges(_creatorJudges){
+    modifier onlyOfficialJudge(address _judge){
+        require(betFactory.isJudge(_judge), "You can't vote because you are not official judge.");
+        _;
+    } 
+
+    constructor(address _betFactory, address _admin, address _betCreator, string memory _betCreatorName, address _opponent, address[] memory _creatorJudges, uint _minimumDeposit, uint _expirationTime) limitJudgesCreator(_creatorJudges){
         _setupRole(DEFAULT_ADMIN_ROLE, _admin);
         _setupRole(BET_CREATOR_ROLE, _betCreator);
         _setupRole(BET_TAKER_ROLE, _opponent);
@@ -83,6 +98,8 @@ contract Bet is AccessControl{
 
         minimumDeposit = _minimumDeposit;
         expirationTime = _expirationTime;
+        creatorJudgesCount = _creatorJudges.length;
+        betFactory = BetFactory(_betFactory);
     }
     
     receive() external payable{}
@@ -97,7 +114,7 @@ contract Bet is AccessControl{
         }
     }
     
-    function acceptBet(address[] memory _opponentJudges, string memory _betTakerName) public restrictJudges(_opponentJudges) limitJudges(_opponentJudges) minimumBetLimit(msg.value) onlyBetTaker(msg.sender) payable{
+    function acceptBet(address[] memory _opponentJudges, string memory _betTakerName) public restrictJudges(_opponentJudges) limitJudgesBetTaker(_opponentJudges) minimumBetLimit(msg.value) onlyBetTaker(msg.sender) payable{
         address _betTaker = this.getRoleMember(BET_TAKER_ROLE, 0); 
         bettors[_betTaker] = Bettor({
                 name: _betTakerName,
@@ -109,11 +126,15 @@ contract Bet is AccessControl{
     function judgeVote(address _candidate) public canJudgeVote onlyBettors(_candidate) onlyVoteOnce(msg.sender) onlyJudge(msg.sender){    
         bettors[_candidate].votes++;
 
-        if(bettors[_candidate].votes > MAX_JUDGES){
+        if(bettors[_candidate].votes > creatorJudgesCount){
             payable(_candidate).transfer(address(this).balance);
             betOver = true;
         }
-
         didVote[msg.sender] = true;
-    } 
+    }
+
+    function officialJudgeTest(address _address) public onlyOfficialJudge(_address) returns(string memory){
+        return "Judge OK";
+    }
+    
 }

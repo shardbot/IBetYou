@@ -1,5 +1,18 @@
-Bet.sol
-*Check if judges are unique
-*Check if any of judges is bet creator or bet taker
+Bet.sol Y
+*Check if judges are unique Y
+*Check if any of judges is bet creator or bet taker Y
 
---Fix tests (betFactory.js, bet.js)
+--Fix tests (betFactory.js, bet.js) Y
+
+BetFactoy.sol
+*Make createBet return bet's address Y
+*Set upper limit of judges number(based on bet maker's choice), has to be <= 2 Y
+
+BetFactory.sol
+*Activate 5th judge when the score is equal
+
+--->Add role "officialJudges" to betFactory; Y 
+    pass the address of factory to every deployed bet; Y 
+    add modifier "onlyOfficialJudge" to bet. Y
+
+--Add tests for new functionalities Y
