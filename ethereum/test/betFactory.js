@@ -29,12 +29,6 @@ contract("BetFactory", (accounts) => {
 		const bets = await betFactory.getDeployedBets();
 		assert.ok(bets[0]);
 	});
-	it("Successfully adds official judges.", async () => {
-		await betFactory.addJudges(betCreatorJudges);
-		betCreatorJudges.forEach(async (judge) =>
-			assert.ok(await betFactory.isJudge(judge))
-		);
-	});
 	it("Only allows admin to get deployed bet addresses.", async () => {
 		await betFactory.createBet(
 			betCreatorName,

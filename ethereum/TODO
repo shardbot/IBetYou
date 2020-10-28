@@ -11,8 +11,4 @@ BetFactoy.sol
 BetFactory.sol
 *Activate 5th judge when the score is equal
 
---->Add role "officialJudges" to betFactory; Y 
-    pass the address of factory to every deployed bet; Y 
-    add modifier "onlyOfficialJudge" to bet. Y
-
 --Add tests for new functionalities Y

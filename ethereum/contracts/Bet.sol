@@ -2,7 +2,6 @@
 pragma solidity ^0.7.3;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "./BetFactory.sol";
 
 /*
 Check if judges are unique
@@ -15,8 +14,6 @@ contract Bet is AccessControl{
         string name;
         uint votes;
     }
-
-    BetFactory betFactory;
 
     uint public constant MAX_JUDGES = 2;
     uint public constant MIN_JUDGES = 1;
@@ -80,12 +77,7 @@ contract Bet is AccessControl{
         _;
     }
 
-    modifier onlyOfficialJudge(address _judge){
-        require(betFactory.isJudge(_judge), "You can't vote because you are not official judge.");
-        _;
-    } 
-
-    constructor(address _betFactory, address _admin, address _betCreator, string memory _betCreatorName, address _opponent, address[] memory _creatorJudges, uint _minimumDeposit, uint _expirationTime) limitJudgesCreator(_creatorJudges){
+    constructor(address _admin, address _betCreator, string memory _betCreatorName, address _opponent, address[] memory _creatorJudges, uint _minimumDeposit, uint _expirationTime) limitJudgesCreator(_creatorJudges){
         _setupRole(DEFAULT_ADMIN_ROLE, _admin);
         _setupRole(BET_CREATOR_ROLE, _betCreator);
         _setupRole(BET_TAKER_ROLE, _opponent);
@@ -99,7 +91,6 @@ contract Bet is AccessControl{
         minimumDeposit = _minimumDeposit;
         expirationTime = _expirationTime;
         creatorJudgesCount = _creatorJudges.length;
-        betFactory = BetFactory(_betFactory);
     }
     
     receive() external payable{}
@@ -131,10 +122,6 @@ contract Bet is AccessControl{
             betOver = true;
         }
         didVote[msg.sender] = true;
-    }
-
-    function officialJudgeTest(address _address) public onlyOfficialJudge(_address) returns(string memory){
-        return "Judge OK";
     }
     
 }

@@ -1,5 +1,4 @@
 const Bet = artifacts.require("Bet");
-const BetFactory = artifacts.require("BetFactory");
 const now = new Date();
 const betCreatorName = "Satoshi";
 const betTakerName = "Hal";
@@ -15,9 +14,6 @@ let bet;
 let admin;
 
 contract("Bet", (accounts) => {
-	before(async () => {
-		betFactory = await BetFactory.deployed();
-	});
 	beforeEach(async () => {
 		admin = accounts[0];
 		betCreator = accounts[1];
@@ -27,7 +23,6 @@ contract("Bet", (accounts) => {
 		expirationTime = Math.round(now.getTime() / 1000);
 		minimumDeposit = 100;
 		bet = await Bet.new(
-			betFactory.address,
 			admin,
 			betCreator,
 			betCreatorName,
@@ -40,17 +35,10 @@ contract("Bet", (accounts) => {
 	it("Successfully deployed a bet instance.", async () => {
 		assert.ok(bet.address);
 	});
-	it("Filters official judges through factory.", async () => {
-		await betFactory.addJudges(betCreatorJudges);
-		betCreatorJudges.forEach(async (judge) =>
-			assert.ok(await bet.officialJudgeTest(judge))
-		);
-	});
 	it("Can't assign more than two judges.", async () => {
 		betCreatorJudges = [accounts[3], accounts[4], accounts[5]];
 		try {
 			bet = await Bet.new(
-				betFactory.address,
 				betCreator,
 				betCreator,
 				betCreatorName,
@@ -133,7 +121,6 @@ contract("Bet", (accounts) => {
 	it("Judge can't vote if event didn't happen yet.", async () => {
 		expirationTime += 1000;
 		bet = await Bet.new(
-			betFactory.address,
 			admin,
 			betCreator,
 			betCreatorName,
