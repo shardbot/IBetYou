@@ -26,8 +26,7 @@ contract BetFactory is AccessControl{
     }
 
     function createBet(string memory _betCreatorName, address _opponent, address[] memory _judges, uint _expirationTime) public payable returns(address){
-        address _admin = getAdmin();
-        Bet bet = new Bet(_admin, msg.sender, _betCreatorName, _opponent, _judges, msg.value, _expirationTime);
+        Bet bet = new Bet(this.getRoleMember(DEFAULT_ADMIN_ROLE, 0), msg.sender, _betCreatorName, _opponent, _judges, msg.value, _expirationTime);
         payable(address(bet)).transfer(msg.value);
         deployedBets.push(bet);
         emit Deployed(address(bet));
@@ -37,10 +36,4 @@ contract BetFactory is AccessControl{
     function getDeployedBets() public view onlyAdmin(msg.sender) returns(Bet[] memory){
         return deployedBets;
     }
-
-    // Only admin can call this?
-    function getAdmin() public view returns(address){
-        return this.getRoleMember(DEFAULT_ADMIN_ROLE, 0);
-    }
-    
 }
