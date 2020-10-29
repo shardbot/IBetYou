@@ -1,4 +1,4 @@
-client/node_modules
-client/.vscode/
+.idea/
+
 ethereum/node_modules
 ethereum/.vscode/
