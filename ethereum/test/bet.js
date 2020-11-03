@@ -169,4 +169,20 @@ contract("Bet", (accounts) => {
 		const isBetOver = await bet.betOver();
 		assert.ok(isBetOver);
 	});
+	it("Sets 'isDraw' flag when votes for both sides are equal.", async () => {
+		await bet.judgeVote(betCreator, { from: betCreatorJudges[0] });
+	});
+	it("Allows admin to vote when it's draw.", async () => {
+		await bet.acceptBet(betTakerJudges, betTakerName, {
+			from: betTaker,
+			value: minimumDeposit,
+		});
+		await bet.judgeVote(betCreator, { from: betCreatorJudges[0] });
+		await bet.judgeVote(betCreator, { from: betCreatorJudges[1] });
+		await bet.judgeVote(betCreator, { from: betTakerJudges[0] });
+		await bet.adminVote(betCreator, { from: admin });
+		const isBetOver = await bet.betOver();
+		const isDraw = await bet.isDraw();
+		assert(isBetOver && !isDraw);
+	});
 });
