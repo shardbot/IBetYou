@@ -1,10 +1,20 @@
 import '../styles/globals.scss';
 
 import { AppProps } from 'next/app';
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
+
+import { PageWithLayout } from '../types';
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
-  return <Component {...pageProps} />;
+  const Layout = (Component as PageWithLayout).Layout
+    ? (Component as PageWithLayout).Layout
+    : Fragment;
+
+  return (
+    <Layout>
+      <Component {...pageProps} />
+    </Layout>
+  );
 };
 
 export default App;
