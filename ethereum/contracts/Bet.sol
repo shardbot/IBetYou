@@ -23,13 +23,24 @@ contract Bet is AccessControl{
     uint public creatorJudgesCount;
 
     bool public betOver = false;
-    
+    bool public isDraw = false;
+
     bytes32 public constant BET_CREATOR_ROLE = keccak256("BET_CREATOR_ROLE");
     bytes32 public constant BET_TAKER_ROLE = keccak256("BET_TAKER_ROLE");
     bytes32 public constant JUDGE_ROLE = keccak256("JUDGE_ROLE");
 
     mapping(address => bool) public didVote;
     mapping(address => Bettor) public bettors;
+
+    modifier onlyAdmin(address _sender){
+        require(hasRole(DEFAULT_ADMIN_ROLE, _sender));
+        _;
+    }
+
+    modifier requireDraw(){
+        require(isDraw=true);
+        _;
+    }
 
     modifier canJudgeVote{
         require(block.timestamp >= expirationTime, "You can't vote because event didn't happen yet.");
@@ -121,7 +132,16 @@ contract Bet is AccessControl{
             payable(_candidate).transfer(address(this).balance);
             betOver = true;
         }
+        else if(bettors[this.getRoleMember(BET_TAKER_ROLE, 0)].votes == creatorJudgesCount && bettors[this.getRoleMember(BET_CREATOR_ROLE, 0)].votes == creatorJudgesCount){
+            isDraw = true;
+        }
         didVote[msg.sender] = true;
     }
-    
+
+    function adminVote(address _candidate) public onlyAdmin(msg.sender) requireDraw {
+        bettors[_candidate].votes++;
+        payable(_candidate).transfer(address(this).balance);
+        isDraw = false;
+        betOver = true;
+    }
 }
