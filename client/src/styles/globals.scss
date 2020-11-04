@@ -4,8 +4,16 @@
 $font-family: 'Oswald', sans-serif;
 
 // COLORS
-$main-bg-color: #281a29;
-$header-bg-color: #fff;
+$white: #fff;
+$light-yellow: #ffc400;
+$dark-pink-100: #403141;
+$dark-pink-200: #281a29;
+
+$main-bg-color: $dark-pink-200;
+$header-bg-color: $white;
+$primary-text-color: $white;
+$primary: $light-yellow;
+$secondary: $dark-pink-100;
 
 // BREAKPOINTS
 $breakpoints: (
@@ -13,12 +21,21 @@ $breakpoints: (
   xxl: 1920px
 ) !default;
 
+:root {
+  --main-bg-color: #{$main-bg-color};
+  --header-bg-color: #{$header-bg-color};
+  --primary-text-color: #{$primary-text-color};
+  --primary: #{$primary};
+  --secondary: #{$secondary};
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
   font-family: $font-family;
   background: var(--main-bg-color);
+  color: var(--primary-text-color);
 }
 
 a {
@@ -26,14 +43,14 @@ a {
   text-decoration: none;
 }
 
+ul {
+  list-style: none;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
-}
-
-:root {
-  --main-bg-color: #{$main-bg-color};
-  --header-bg-color: #{$header-bg-color};
+  padding: 0;
 }
 
 .main-container {
