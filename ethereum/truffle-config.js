@@ -18,47 +18,50 @@
  *
  */
 
-const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 // const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
 
 module.exports = {
-  /**
-   * Networks define how you connect to your ethereum client and let you set the
-   * defaults web3 uses to send transactions. If you don't specify one truffle
-   * will spin up a development blockchain for you on port 9545 when you
-   * run `develop` or `test`. You can ask a truffle command to use a specific
-   * network from the command line, e.g
-   *
-   * $ truffle test --network <network-name>
-   */
+	/**
+	 * Networks define how you connect to your ethereum client and let you set the
+	 * defaults web3 uses to send transactions. If you don't specify one truffle
+	 * will spin up a development blockchain for you on port 9545 when you
+	 * run `develop` or `test`. You can ask a truffle command to use a specific
+	 * network from the command line, e.g
+	 *
+	 * $ truffle test --network <network-name>
+	 */
 
-  networks: {
-    local: {
-      provider: new HDWalletProvider("bfa227b481f4e9d66895129c667862813a9ed0cac593adc4364777f6f001fbf9", "https://rinkeby.infura.io/v3/30912ca8a07e41e1ad103702a18a04bf"),
-      network_id: 4,
-    },
-  },
+	networks: {
+		local: {
+			provider: new HDWalletProvider(
+				"bfa227b481f4e9d66895129c667862813a9ed0cac593adc4364777f6f001fbf9",
+				"https://goerli.infura.io/v3/b5a3575befc64e37b23f189bb65c0ec7"
+			),
+			network_id: 5,
+		},
+	},
 
-  // Set default mocha options here, use special reporters etc.
-  mocha: {
-    // timeout: 100000
-  }, 
+	// Set default mocha options here, use special reporters etc.
+	mocha: {
+		// timeout: 100000
+	},
 
-  // Configure your compilers
-  compilers: {
-    solc: {
-      version: "0.7.3", // Fetch exact version from solc-bin (default: truffle's version)
-      // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
-      // settings: {          // See the solidity docs for advice about optimization and evmVersion
-      //  optimizer: {
-      //    enabled: false,
-      //    runs: 200
-      //  },
-      //  evmVersion: "byzantium"
-      // }
-    },
-  },
+	// Configure your compilers
+	compilers: {
+		solc: {
+			version: "0.7.3", // Fetch exact version from solc-bin (default: truffle's version)
+			// docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
+			// settings: {          // See the solidity docs for advice about optimization and evmVersion
+			//  optimizer: {
+			//    enabled: false,
+			//    runs: 200
+			//  },
+			//  evmVersion: "byzantium"
+			// }
+		},
+	},
 };
