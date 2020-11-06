@@ -26,7 +26,7 @@ app.post("/api/invitation", (req, res) => {
 		to: data.email,
 		subject: `${data.senderName} invites you to bet him!`,
 		html: `
-        <h3>Hello ${data.recipientName}, I'm addicted to betting.</h3></br></h3>Help me continue my addiction by clicking this link #linkGoesHere and accepting my bet!</h3>
+        <h3>Hello ${data.recipientName}! This is just a test.</h3>
         `,
 	};
 	smtpTransport.sendMail(mailOptions, (error, info) => {
