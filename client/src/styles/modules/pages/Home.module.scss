@@ -24,3 +24,13 @@
 .stepsWrapper {
   margin-bottom: 4rem;
 }
+
+.bottomWrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 4rem;
+
+  & > p {
+    margin-bottom: 4rem;
+  }
+}

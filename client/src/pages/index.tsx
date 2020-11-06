@@ -1,9 +1,11 @@
+import Link from 'next/link';
 import { FC } from 'react';
 
 import { MainLayout } from '../components/layouts';
 import { StepList } from '../components/steps';
 import { ARROWS_IMG_SRC } from '../constants';
 import steps from '../data/steps.json';
+import btnStyles from '../styles/modules/Button.module.scss';
 import styles from '../styles/modules/pages/Home.module.scss';
 import { PageWithLayout } from '../types';
 
@@ -30,14 +32,6 @@ const Home: FC = () => {
         </p>
         {/*  ARROWS */}
         <img className={styles.arrows} src={ARROWS_IMG_SRC} alt="Arrows down" />
-        {/*  VIDEO PLACEHOLDER*/}
-        <div
-          style={{
-            background: '#fff',
-            margin: '0 8rem',
-            height: '550px'
-          }}
-        />
       </div>
       {/* STEPS */}
       <div className={styles.stepsWrapper}>
@@ -45,8 +39,13 @@ const Home: FC = () => {
       </div>
 
       {/*BOTTOM*/}
-      <div>
+      <div className={styles.bottomWrapper}>
         <p className={styles.text}>I BET YOU that you will click on the button below this text!</p>
+        <Link href="/">
+          <button className={[btnStyles.button, btnStyles.buttonPrimary].join(' ')}>
+            MAKE YOUR BET
+          </button>
+        </Link>
       </div>
     </>
   );

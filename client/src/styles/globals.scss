@@ -12,6 +12,7 @@ $dark-pink-200: #281a29;
 $main-bg-color: $dark-pink-200;
 $header-bg-color: $white;
 $primary-text-color: $white;
+$secondary-text-color: $dark-pink-200;
 $primary: $light-yellow;
 $secondary: $dark-pink-100;
 
@@ -25,6 +26,7 @@ $breakpoints: (
   --main-bg-color: #{$main-bg-color};
   --header-bg-color: #{$header-bg-color};
   --primary-text-color: #{$primary-text-color};
+  --secondary-text-color: #{$secondary-text-color};
   --primary: #{$primary};
   --secondary: #{$secondary};
 }
