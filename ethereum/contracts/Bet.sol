@@ -37,58 +37,58 @@ contract Bet is AccessControl{
         _;
     }
 
-    modifier requireDraw(){
-        require(isDraw=true);
+    modifier requireDraw() {
+        require(isDraw == true);
         _;
     }
 
-    modifier canJudgeVote{
+    modifier canJudgeVote {
         require(block.timestamp >= expirationTime, "You can't vote because event didn't happen yet.");
         _;
     }
 
-    modifier limitJudgesCreator(address[] memory _judges){
+    modifier limitJudgesCreator(address[] memory _judges) {
         require(_judges.length <= MAX_JUDGES && _judges.length >= MIN_JUDGES, "You have to assign at least one judge and two at most.");
         _;
     }
 
-    modifier limitJudgesBetTaker(address[] memory _judges){
+    modifier limitJudgesBetTaker(address[] memory _judges) {
         require(_judges.length == creatorJudgesCount, "Number of judges you assigned must match opponent's.");
         _;
     }
 
-    modifier onlyBetTaker(address _sender){
+    modifier onlyBetTaker(address _sender) {
         require(hasRole(BET_TAKER_ROLE, _sender), "Caller is not a bet taker");
         _;
     }
     
-    modifier restrictJudges(address[] memory _judges){
+    modifier restrictJudges(address[] memory _judges) {
         uint judgesLength = this.getRoleMemberCount(JUDGE_ROLE);
         require(judgesLength == _judges.length, "You have already added judges.");
         _;
     }
 
-    modifier minimumBetLimit(uint _value){
+    modifier minimumBetLimit(uint _value {
         require(_value >= minimumDeposit, "Insufficient amount of ether sent.");
         _;
     }
 
-    modifier onlyVoteOnce(address _judge){
+    modifier onlyVoteOnce(address _judge) {
         require(!didVote[_judge], "You have already voted.");
         _;
     }
 
-    modifier onlyJudge(address _sender){
+    modifier onlyJudge(address _sender) {
         require(hasRole(JUDGE_ROLE, _sender), "Caller is not a judge.");
         _;
     }
 
-    modifier onlyBettors(address _sender){
+    modifier onlyBettors(address _sender) {
         require(hasRole(BET_TAKER_ROLE, _sender) || hasRole(BET_CREATOR_ROLE, _sender), "This address doesn't belong to bettors.");
         _;
     }
 
-    constructor(address _admin, address _betCreator, string memory _betCreatorName, address _opponent, address[] memory _creatorJudges, uint _minimumDeposit, uint _expirationTime) limitJudgesCreator(_creatorJudges){
+    constructor(address _admin, address _betCreator, string memory _betCreatorName, address _opponent, address[] memory _creatorJudges, uint _minimumDeposit, uint _expirationTime) limitJudgesCreator(_creatorJudges) {
         _setupRole(DEFAULT_ADMIN_ROLE, _admin);
         _setupRole(BET_CREATOR_ROLE, _betCreator);
         _setupRole(BET_TAKER_ROLE, _opponent);
@@ -111,7 +111,7 @@ contract Bet is AccessControl{
     }
 
     function setupJudgeRole(address[] memory _judges) private{
-        for(uint i=0; i<_judges.length; i++){
+        for(uint i = 0; i < _judges.length; i++) {
             _setupRole(JUDGE_ROLE, _judges[i]);
         }
     }
