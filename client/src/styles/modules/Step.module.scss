@@ -1,0 +1,21 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.number {
+  display: block;
+  min-width: 50px;
+  min-height: 50px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  font-size: 29px;
+  text-align: center;
+  color: var(--primary);
+  align-self: flex-start;
+}
+
+.text {
+  padding-left: 1.5rem;
+  font-size: 1.813em;
+}
