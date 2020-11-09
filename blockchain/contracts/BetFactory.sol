@@ -16,17 +16,12 @@ contract BetFactory is AccessControl{
         _;
     }
 
-    modifier equalArrayLength(address[] memory array1, address[] memory array2){
-        require(array1.length == array2.length);
-        _;
-    }
-
     constructor() {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    function createBet(string memory _betCreatorName, address _opponent, address[] memory _judges, uint _expirationTime) public payable returns(address){
-        Bet bet = new Bet(this.getRoleMember(DEFAULT_ADMIN_ROLE, 0), msg.sender, _betCreatorName, _opponent, _judges, msg.value, _expirationTime);
+    function createBet(string memory _description, uint _expirationTime) public payable returns(address){
+        Bet bet = new Bet(this.getRoleMember(DEFAULT_ADMIN_ROLE, 0), msg.sender, msg.value, _description, _expirationTime);
         payable(address(bet)).transfer(msg.value);
         deployedBets.push(bet);
         emit Deployed(address(bet));
