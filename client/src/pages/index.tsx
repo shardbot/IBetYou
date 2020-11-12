@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { FC } from 'react';
 
+import { LinkButton } from '../components/global';
 import { MainLayout } from '../components/layouts';
 import { StepList } from '../components/steps';
 import { ARROWS_IMG_SRC } from '../constants';
@@ -41,11 +41,11 @@ const Home: FC = () => {
       {/*BOTTOM*/}
       <div className={styles.bottomWrapper}>
         <p className={styles.text}>I BET YOU that you will click on the button below this text!</p>
-        <Link href="/">
-          <button className={[btnStyles.button, btnStyles.buttonPrimary].join(' ')}>
-            MAKE YOUR BET
-          </button>
-        </Link>
+        <LinkButton
+          to="/initiate-bet"
+          text="MAKE YOUR BET"
+          className={[btnStyles.button, btnStyles.buttonPrimary].join(' ')}
+        />
       </div>
     </>
   );

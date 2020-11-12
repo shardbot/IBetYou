@@ -1,0 +1,7 @@
+@import "../../variables";
+
+.container {
+  @media (min-width: map-get($breakpoints, 'xl')) {
+    padding: 0 8rem;
+  }
+}

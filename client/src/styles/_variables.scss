@@ -1,0 +1,19 @@
+// BREAKPOINTS
+$breakpoints: (
+        md: 680px,
+        xl: 1024px,
+        xxl: 1920px
+) !default;
+
+// COLORS
+$white: #fff;
+$light-yellow: #ffc400;
+$dark-pink-100: #403141;
+$dark-pink-200: #281a29;
+
+$main-bg-color: $dark-pink-200;
+$header-bg-color: $white;
+$primary-text-color: $white;
+$secondary-text-color: $dark-pink-200;
+$primary: $light-yellow;
+$secondary: $dark-pink-100;

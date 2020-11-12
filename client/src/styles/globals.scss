@@ -1,26 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap');
 
+// FILES
+@import "variables";
+
 // FONT
 $font-family: 'Oswald', sans-serif;
-
-// COLORS
-$white: #fff;
-$light-yellow: #ffc400;
-$dark-pink-100: #403141;
-$dark-pink-200: #281a29;
-
-$main-bg-color: $dark-pink-200;
-$header-bg-color: $white;
-$primary-text-color: $white;
-$secondary-text-color: $dark-pink-200;
-$primary: $light-yellow;
-$secondary: $dark-pink-100;
-
-// BREAKPOINTS
-$breakpoints: (
-  xl: 1024px,
-  xxl: 1920px
-) !default;
 
 :root {
   --main-bg-color: #{$main-bg-color};
@@ -56,8 +40,8 @@ ul {
 }
 
 .main-container {
-  margin: auto;
   padding: 2rem;
+  margin: 10rem auto 6rem;
 
   @media (min-width: map-get($breakpoints, 'xl')) {
     width: 80%;
@@ -66,4 +50,8 @@ ul {
   @media (min-width: map-get($breakpoints, 'xxl')) {
     width: 60%;
   }
+}
+
+textarea {
+  font-family: inherit;
 }

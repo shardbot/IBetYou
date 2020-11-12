@@ -1,0 +1,45 @@
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 29px;
+  padding-bottom: 0.5rem;
+}
+
+.input {
+  font-size: 29px;
+  line-height: 1.55;
+  padding: 0.5rem 1rem;
+  background: inherit;
+  color: var(--primary-text-color);
+  border: 1px solid #a97f10;
+  box-shadow: none;
+  outline: 0;
+
+  &::placeholder {
+    color: #403141;
+  }
+
+  &[type='date'] {
+    font-family: inherit;
+
+    &:invalid {
+      color: #403141;
+    }
+  }
+
+  &:focus {
+    border: 1px solid var(--primary);
+  }
+
+  // Icon color
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
+
+.validation {
+  padding-top: 0.5rem;
+}

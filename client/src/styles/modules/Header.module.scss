@@ -1,6 +1,13 @@
+@import "../variables";
+
 .header {
   height: 16rem;
   background: var(--header-bg-color);
+
+  &--secondary {
+    @extend .header;
+    height: 8rem;
+  }
 }
 
 .logo {
@@ -10,4 +17,18 @@
   margin-right: auto;
   right: 0;
   left: 0;
+
+  &--secondary {
+    @extend .logo;
+    margin-top: 3rem;
+    height: 10rem;
+
+    @media (min-width: map-get($breakpoints, 'xl')) {
+      margin-left: 10%;
+    }
+
+    @media (min-width: map-get($breakpoints, 'xxl')) {
+      margin-left: 20%;
+    }
+  }
 }
