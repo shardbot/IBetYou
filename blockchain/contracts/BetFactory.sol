@@ -1,34 +1,36 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.3;
+pragma solidity ^0.7.0;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import {Ownable} from '@openzeppelin/contracts/access/Ownable.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 import "./Bet.sol";
 
-contract BetFactory is AccessControl{
-    Bet[] deployedBets;
+contract BetFactory is Ownable, ReentrancyGuard {
+   
+    //----------------------------------------
+    // State variables
+    //----------------------------------------
+    Bet[] public bets;
 
-    event Deployed(
-        address _value
-    );
+    //----------------------------------------
+    // Constructor
+    //----------------------------------------
+    constructor() {}
 
-    modifier onlyAdmin(address _sender){
-        require(hasRole(DEFAULT_ADMIN_ROLE, _sender), "Caller is not an admin");
-        _;
+    //----------------------------------------
+    // External functions
+    //----------------------------------------
+    /**
+     * @notice Creates a new Bet
+     * @param description Description of the bet
+     * @param expirationTime Timestamp when the bet expires/can be judged upon
+     */
+    function createBet(uint deposit, string memory description, uint expirationTime) external nonReentrant returns(Bet) {
+        Bet newBet = new Bet(this.owner(), deposit, description, expirationTime);
+        bets.push(newBet);
+        return newBet;
     }
 
-    constructor() {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
-
-    function createBet(string memory _description, uint _expirationTime) public payable returns(address){
-        Bet bet = new Bet(this.getRoleMember(DEFAULT_ADMIN_ROLE, 0), msg.sender, msg.value, _description, _expirationTime);
-        payable(address(bet)).transfer(msg.value);
-        deployedBets.push(bet);
-        emit Deployed(address(bet));
-        return(address(bet));
-    }
-
-    function getDeployedBets() public view onlyAdmin(msg.sender) returns(Bet[] memory){
-        return deployedBets;
-    }
 }

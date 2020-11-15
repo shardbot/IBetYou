@@ -1,86 +1,165 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.3;
+pragma solidity ^0.7.0;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+// Libraries
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { SafeMath } from '@openzeppelin/contracts/math/SafeMath.sol';
+import {
+  ReentrancyGuard
+} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 
-contract Bet is AccessControl {
+contract Bet is ReentrancyGuard {
 
-    bytes32 public constant BETTOR_ROLE = keccak256("BET_PARTICIPANT_ROLE");
-    bytes32 public constant JUDGE_ROLE = keccak256("JUDGE_ROLE");
+    //----------------------------------------
+    // Type definitions
+    //----------------------------------------
+    using SafeMath for uint256;
 
-    mapping(address => bool) public didVote;
-    mapping(address => uint) public numVotes;
+    //----------------------------------------
+    // Contract roles
+    //----------------------------------------
+    bytes32 internal constant BETTOR_ROLE = keccak256("BETTOR");
+    bytes32 internal constant COUNTER_BETOR_ROLE = keccak256("COUNTER_BETTOR");
+    bytes32 internal constant BETTOR_JUDGE = keccak256("BETTOR_JUDGE");
+    bytes32 internal constant COUNTER_BETTOR_JUDGE = keccak256("COUNTER_BETTOR_JUDGE");
 
-    modifier onlyAdmin(address _sender){
-        require(hasRole(DEFAULT_ADMIN_ROLE, _sender), "Only admin can call this function.");
-        _;
+    enum BetState {
+        CREATED, // When contract is created but nobody deployed a fee
+        BETTER_BETTED, // Better betted
+        JUDGES_APPLIED, //Both judges have applied
+        ACTIVE, // When all have applied and can judges can vote
+        DISPUTE, // When judges voted differently
+        FINISHED // When winner is decided and funds can be paid to him
     }
 
-    modifier canJudgeVote {
-        require(block.timestamp >= expirationTime, "You can't vote because event didn't happen yet.");
-        _;
-    }
-
-    modifier minimumBetLimit(uint _value) {
-        require(_value >= minimumDeposit, "Insufficient amount of ether sent.");
-        _;
-    }
-
-    modifier onlyVoteOnce(address _sender) {
-        require(!didVote[_sender], "You have already voted.");
-        _;
-    }
-
-    modifier onlyJudge(address _sender) {
-        require(hasRole(JUDGE_ROLE, _sender), "Caller is not a judge.");
-        _;
-    }
-
-    modifier onlyBettors(address _sender) {
-        require(hasRole(BETTOR_ROLE, _sender), "This address doesn't belong to bettors.");
-        _;
+    struct Participant {
+        bytes32 role;
     }
     
-    modifier onlyUniqueJudges(address _sender){
-        require(!hasRole(JUDGE_ROLE, _sender) && !hasRole(BETTOR_ROLE, _sender));
+    struct Storage {
+        address admin;
+        uint256 expirationTime;
+        string description;
+        uint256 deposit;
+        BetState betState;
+        mapping(address => bytes32) participantRoles;
+        mapping(bytes32 => address) roleParticipants;
+        mapping(address => bool) didVote;
+        bool[] votes;
+    }
+
+    event BettorBetted();
+    event CounterBettorBetted();
+    event BettorJudgeApplied();
+    event CounterBettorJudgeApplied();
+    event BettorJudgeVoted();
+    event CounterBettorJudgeVoted();
+
+    //----------------------------------------
+    // State variables
+    //----------------------------------------
+    Storage public betStorage;
+
+    //----------------------------------------
+    // Constructor
+    //----------------------------------------
+    constructor(
+        address _admin, 
+        uint256 _deposit, 
+        string memory _description, 
+        uint256 _expirationTime
+        ) nonReentrant {
+            betStorage.admin = _admin;
+            betStorage.description = _description;
+            betStorage.deposit = _deposit;
+            betStorage.expirationTime = _expirationTime;
+            betStorage.betState = BetState.CREATED;
+    }
+
+    //----------------------------------------
+    // Modifiers
+    //----------------------------------------
+
+    modifier checkJudgeLimit() {
         _;
-    }
-
-    constructor(address _admin, address _betCreator, uint _minimumDeposit, string memory _description, uint _expirationTime) {
-        _setupRole(DEFAULT_ADMIN_ROLE, _admin);
-        _setupRole(BETTOR_ROLE, _betCreator);
-        description = _description;
-        minimumDeposit = _minimumDeposit;
-        expirationTime = _expirationTime;
-        numVotes[_betCreator] = 0;
-    }
-    
-    receive() external payable{}
-
-    function getBalance() public view returns(uint){
-        return address(this).balance;
-    }
-
-    function acceptBet() public minimumBetLimit(msg.value) payable{
-        _setupRole(BETTOR_ROLE, msg.sender);
-        numVotes[msg.sender] = 0;
-    }
-    
-    function addJudge() public onlyUniqueJudges(msg.sender){
-        _setupRole(JUDGE_ROLE, msg.sender);
-        judgesCount++;
-    }
-
-    function judgeVote(address _candidate) public canJudgeVote onlyBettors(_candidate) onlyVoteOnce(msg.sender) onlyJudge(msg.sender){    
-        numVotes[_candidate]++;
-
-        if(numVotes[_candidate] > judgesCount/2){
-            payable(_candidate).transfer(address(this).balance);
+        if(betStorage.roleParticipants[BETTOR_JUDGE] != address(0) && betStorage.roleParticipants[COUNTER_BETTOR_JUDGE] != address(0)){ 
+            betStorage.betState = BetState.JUDGES_APPLIED;
         }
-        didVote[msg.sender] = true;
     }
 
-    function adminDecide(address _candidate) public onlyAdmin(msg.sender) {
-        payable(_candidate).transfer(address(this).balance);
+    modifier mustBeJudge(address _sender) {
+        require(betStorage.participantRoles[_sender] == BETTOR_JUDGE || betStorage.participantRoles[_sender] == COUNTER_BETTOR_JUDGE, "Sender is not a judge");
+        _;
     }
+
+    modifier didNotVote(address _sender) {
+        require(betStorage.didVote[_sender] != true, "Judge already voted!");
+        _;
+    }
+
+    //----------------------------------------
+    // External functions
+    //----------------------------------------
+    
+    function bet() public returns (BetState){
+        require(betStorage.roleParticipants[BETTOR_ROLE] == address(0), "Bettor already exists");
+        require(betStorage.participantRoles[msg.sender] == bytes32(0), "Applicant already part of the bet");
+        betStorage.participantRoles[msg.sender] = BETTOR_ROLE;
+        betStorage.roleParticipants[BETTOR_ROLE] = msg.sender;
+        betStorage.betState = BetState.BETTER_BETTED;
+        emit BettorBetted();
+        return betStorage.betState;
+    }
+
+    function counterBet() public returns (BetState) {
+        require(betStorage.betState == BetState.BETTER_BETTED, "First better must bet");
+        require(betStorage.roleParticipants[COUNTER_BETOR_ROLE] == address(0), "Count bettor already exists");
+        require(betStorage.participantRoles[msg.sender] == bytes32(0), "Applicant already part of the bet");
+        betStorage.participantRoles[msg.sender] = COUNTER_BETOR_ROLE;
+        betStorage.roleParticipants[COUNTER_BETOR_ROLE] = msg.sender;
+        betStorage.betState = BetState.ACTIVE;
+        emit CounterBettorBetted();
+        return betStorage.betState;
+    }
+
+    function addBettorJudge() checkJudgeLimit() public returns (BetState)  {
+        require(betStorage.betState == BetState.ACTIVE, "Bet must be active to add judges");
+        require(betStorage.roleParticipants[BETTOR_JUDGE] == address(0), "Count bettor judge already exists");
+        require(betStorage.participantRoles[msg.sender] == bytes32(0), "Applicant already part of the bet");
+        betStorage.participantRoles[msg.sender] = BETTOR_JUDGE;
+        betStorage.roleParticipants[BETTOR_JUDGE] = msg.sender;
+        emit BettorJudgeApplied();
+        return betStorage.betState;
+    }
+
+    function addCounterBettorJudge() checkJudgeLimit() public returns (BetState) {
+        require(betStorage.betState == BetState.ACTIVE, "Bet must be active to add judges");
+        require(betStorage.roleParticipants[COUNTER_BETTOR_JUDGE] == address(0), "Count bettor judge already exists");
+        require(betStorage.participantRoles[msg.sender] == bytes32(0), "Applicant already part of the bet");
+        betStorage.participantRoles[msg.sender] = COUNTER_BETTOR_JUDGE;
+        betStorage.roleParticipants[COUNTER_BETTOR_JUDGE] = msg.sender;
+        emit CounterBettorJudgeApplied();
+        return betStorage.betState;
+    }
+
+    function vote(bool _vote) mustBeJudge(msg.sender) didNotVote(msg.sender) public returns (BetState) {
+        betStorage.didVote[msg.sender] = true;
+        betStorage.votes.push(_vote);
+        if(betStorage.participantRoles[msg.sender] == BETTOR_JUDGE) {
+            emit BettorJudgeVoted();
+            return betStorage.betState;
+        }
+        emit CounterBettorJudgeVoted();
+        return betStorage.betState;
+    }
+
+    function checkResult() public {
+        // TODO:
+    }
+
+    //----------------------------------------
+    // Internal functions
+    //----------------------------------------
+
+
 }
