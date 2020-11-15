@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.0;
+pragma solidity ^0.7.3;
 
 // Libraries
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { SafeMath } from '@openzeppelin/contracts/math/SafeMath.sol';
+import { SafeMath } from 'https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/release-v3.2.0-solc-0.7/contracts/math/SafeMath.sol';
 import {
   ReentrancyGuard
-} from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
+} from 'https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/release-v3.2.0-solc-0.7/contracts/utils/ReentrancyGuard.sol';
 
 contract Bet is ReentrancyGuard {
 
@@ -160,5 +159,6 @@ contract Bet is ReentrancyGuard {
     //----------------------------------------
     // Internal functions
     //----------------------------------------
-    
+
+
 }
