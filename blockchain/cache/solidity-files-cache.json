@@ -1,8 +1,8 @@
 {
   "_format": "hh-sol-cache-1",
   "files": {
-    "/home/user/Programming/SHARDLABS/betting-app/blockchain/contracts/Bet.sol": {
-      "lastModificationDate": 1605474839361,
+    "/home/marko/Documents/projects/betting-app/blockchain/contracts/Bet.sol": {
+      "lastModificationDate": 1606742499203,
       "sourceName": "contracts/Bet.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -38,78 +38,8 @@
         "Bet"
       ]
     },
-    "/home/user/Programming/SHARDLABS/betting-app/blockchain/contracts/BetFactory.sol": {
-      "lastModificationDate": 1605474854513,
-      "sourceName": "contracts/BetFactory.sol",
-      "solcConfig": {
-        "version": "0.7.3",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/access/Ownable.sol",
-        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
-        "./Bet.sol"
-      ],
-      "versionPragmas": [
-        "^0.7.0"
-      ],
-      "artifacts": [
-        "BetFactory"
-      ]
-    },
-    "/home/user/Programming/SHARDLABS/betting-app/blockchain/contracts/Migrations.sol": {
-      "lastModificationDate": 1605278733398,
-      "sourceName": "contracts/Migrations.sol",
-      "solcConfig": {
-        "version": "0.7.3",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.4.22 <0.8.0"
-      ],
-      "artifacts": [
-        "Migrations"
-      ]
-    },
-    "/home/user/Programming/SHARDLABS/betting-app/blockchain/node_modules/@openzeppelin/contracts/access/AccessControl.sol": {
-      "lastModificationDate": 1605475921137,
+    "/home/marko/Documents/projects/betting-app/blockchain/node_modules/@openzeppelin/contracts/access/AccessControl.sol": {
+      "lastModificationDate": 1606742721987,
       "sourceName": "@openzeppelin/contracts/access/AccessControl.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -145,8 +75,8 @@
         "AccessControl"
       ]
     },
-    "/home/user/Programming/SHARDLABS/betting-app/blockchain/node_modules/@openzeppelin/contracts/math/SafeMath.sol": {
-      "lastModificationDate": 1605475921573,
+    "/home/marko/Documents/projects/betting-app/blockchain/node_modules/@openzeppelin/contracts/math/SafeMath.sol": {
+      "lastModificationDate": 1606742722251,
       "sourceName": "@openzeppelin/contracts/math/SafeMath.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -178,8 +108,8 @@
         "SafeMath"
       ]
     },
-    "/home/user/Programming/SHARDLABS/betting-app/blockchain/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": {
-      "lastModificationDate": 1605475921545,
+    "/home/marko/Documents/projects/betting-app/blockchain/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": {
+      "lastModificationDate": 1606742722239,
       "sourceName": "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -211,8 +141,8 @@
         "ReentrancyGuard"
       ]
     },
-    "/home/user/Programming/SHARDLABS/betting-app/blockchain/node_modules/@openzeppelin/contracts/utils/EnumerableSet.sol": {
-      "lastModificationDate": 1605475921197,
+    "/home/marko/Documents/projects/betting-app/blockchain/node_modules/@openzeppelin/contracts/utils/EnumerableSet.sol": {
+      "lastModificationDate": 1606742722035,
       "sourceName": "@openzeppelin/contracts/utils/EnumerableSet.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -244,8 +174,8 @@
         "EnumerableSet"
       ]
     },
-    "/home/user/Programming/SHARDLABS/betting-app/blockchain/node_modules/@openzeppelin/contracts/utils/Address.sol": {
-      "lastModificationDate": 1605475921145,
+    "/home/marko/Documents/projects/betting-app/blockchain/node_modules/@openzeppelin/contracts/utils/Address.sol": {
+      "lastModificationDate": 1606742721995,
       "sourceName": "@openzeppelin/contracts/utils/Address.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -277,8 +207,8 @@
         "Address"
       ]
     },
-    "/home/user/Programming/SHARDLABS/betting-app/blockchain/node_modules/@openzeppelin/contracts/GSN/Context.sol": {
-      "lastModificationDate": 1605475921161,
+    "/home/marko/Documents/projects/betting-app/blockchain/node_modules/@openzeppelin/contracts/GSN/Context.sol": {
+      "lastModificationDate": 1606742722015,
       "sourceName": "@openzeppelin/contracts/GSN/Context.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -310,8 +240,45 @@
         "Context"
       ]
     },
-    "/home/user/Programming/SHARDLABS/betting-app/blockchain/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
-      "lastModificationDate": 1605475921513,
+    "/home/marko/Documents/projects/betting-app/blockchain/contracts/BetFactory.sol": {
+      "lastModificationDate": 1606742499203,
+      "sourceName": "contracts/BetFactory.sol",
+      "solcConfig": {
+        "version": "0.7.3",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "./Bet.sol"
+      ],
+      "versionPragmas": [
+        "^0.7.0"
+      ],
+      "artifacts": [
+        "BetFactory"
+      ]
+    },
+    "/home/marko/Documents/projects/betting-app/blockchain/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
+      "lastModificationDate": 1606742722219,
       "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
         "version": "0.7.3",
@@ -343,6 +310,39 @@
       ],
       "artifacts": [
         "Ownable"
+      ]
+    },
+    "/home/marko/Documents/projects/betting-app/blockchain/contracts/Migrations.sol": {
+      "lastModificationDate": 1606742117048,
+      "sourceName": "contracts/Migrations.sol",
+      "solcConfig": {
+        "version": "0.7.3",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.22 <0.8.0"
+      ],
+      "artifacts": [
+        "Migrations"
       ]
     }
   }
