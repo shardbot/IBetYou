@@ -8,7 +8,7 @@ import {
 import "./Bet.sol";
 
 contract BetFactory is Ownable, ReentrancyGuard {
-   
+    event BetDeployed(address _deployedBet);
     //----------------------------------------
     // State variables
     //----------------------------------------
@@ -30,6 +30,7 @@ contract BetFactory is Ownable, ReentrancyGuard {
     function createBet(uint deposit, string memory description, uint expirationTime) external nonReentrant returns(Bet) {
         Bet newBet = new Bet(this.owner(), deposit, description, expirationTime);
         bets.push(newBet);
+        emit BetDeployed(newBet);
         return newBet;
     }
     
