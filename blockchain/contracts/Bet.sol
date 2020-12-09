@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.0;
+pragma experimental ABIEncoderV2;
 
 // Libraries
-import { SafeMath } from 'blockchain/node_modules/@openzeppelin/contracts/math/SafeMath.sol';
-import { PullPayment } from 'blockchain/node_modules/@openzeppelin/contracts/payment/PullPayment.sol';
-import { ReentrancyGuard } from 'blockchain/node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol';
+import { SafeMath } from '@openzeppelin/contracts/math/SafeMath.sol';
+import { PullPayment } from '@openzeppelin/contracts/payment/PullPayment.sol';
+import { ReentrancyGuard } from '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 
 contract Bet is ReentrancyGuard, PullPayment {
 
@@ -81,14 +82,13 @@ contract Bet is ReentrancyGuard, PullPayment {
         uint256 _deposit, 
         string memory _description, 
         uint256 _expirationTime
-        ) nonReentrant {
+        ) nonReentrant transitionAfter {
             betStorage.admin = _admin;
             betStorage.description = _description;
             betStorage.deposit = _deposit;
             betStorage.expirationTime = _expirationTime;
             betStorage.betState = BetState.BET_CREATED;
             emit CurrentState(betStorage.betState);
-            nextState();
     }
 
     //----------------------------------------
@@ -96,7 +96,7 @@ contract Bet is ReentrancyGuard, PullPayment {
     //----------------------------------------
     
     modifier atState(BetState _state) {
-        require(betStorage.betState == _state, "You can't do that anymore");
+        require(betStorage.betState == _state, "This functionality is not allowed in current bet state");
         _;
     }
     
@@ -133,51 +133,137 @@ contract Bet is ReentrancyGuard, PullPayment {
     
     modifier timedTransition(BetState _state) {
         if(betStorage.betState == _state && block.timestamp >= betStorage.expirationTime) {
-            nextState();
+            _nextState();
         }
         _;
+    }
+    
+    modifier uniqueJudges(address _sender) {
+        require(_sender != betStorage.roleParticipants[BETTOR_JUDGE] && _sender != betStorage.roleParticipants[COUNTER_BETTOR_JUDGE], "You are a judge already");
+        _;
+    }
+    
+    modifier uniqueBettors(address _sender) {
+        require(_sender != betStorage.roleParticipants[BETTOR_ROLE] && _sender != betStorage.roleParticipants[COUNTER_BETTOR_ROLE], "You are a bettor already");
+        _;
+    }
+    
+    modifier transitionAfter() {
+        _;
+        _nextState();
     }
     
     //----------------------------------------
     // External functions
     //----------------------------------------
     
-    /// @param _choice Determines if caller will be assigned as bettor(_choice = true) or counter bettor(_choice = false)
-    /// @dev Assigns caller as bettor or counter bettor. Requires a bet to be in ASSIGNING_BETTORS state and value sent must match deposit value. If both roles are taken, nextState() is called.
-    /// @return bet state
-    function bet(bool _choice) atState(BetState.ASSIGNING_BETTORS) matchDeposit(msg.value) public payable returns (BetState) {
+    /**
+     * @notice Assigns caller as bettor
+     */
+    function addBettor() public payable {
+        _bet(true, msg.value);    
+    }
+    
+    /**
+     * @notice Assigns caller as counter bettor
+     */
+    function addCounterBettor() public payable {
+        _bet(false, msg.value);
+    }
+    
+    /**
+     * @notice Assigns caller as a bettor's judge
+     */
+    function addBettorJudge() public {
+        _addJudge(true);
+    }
+    
+    /**
+     * @notice Assigns caller as a counter bettor's judge
+     */
+    function addCounterBettorJudge() public {
+        _addJudge(false);
+    }
+    
+    /**
+     * @notice Judge or admin can call this function to vote for bettor
+     */
+    function voteForBettor() public {
+        _giveVote(true);
+    }
+    
+    /**
+     * @notice Judge or admin can call this function to vote for counter bettor
+     */
+    function voteForCounterBettor() public {
+        _giveVote(false);
+    }
+    
+    /**
+     * @notice Transfers this contract's balance to caller if he won this bet
+     */
+    function claimReward() atState(BetState.BET_OVER) onlyWinner(msg.sender) public {
+        _asyncTransfer(msg.sender, address(this).balance);
+    }
+    
+    /**
+     * @notice Returns bet description
+     */
+    function getBet() public view returns(
+        string memory description,
+        BetState betState,
+        uint256 expirationTime,
+        uint256 deposit) {
+        return (betStorage.description, betStorage.betState, betStorage.expirationTime, betStorage.deposit);
+    }
+    
+    function getBalance() public view returns(uint256) {
+        return address(this).balance;
+    }
+    //----------------------------------------
+    // Internal functions
+    //----------------------------------------
+    
+    /**
+     * @notice Assigns caller as bettor or counter bettor
+     * @param _choice Determines if caller will be assigned as a bettor(true) or counter bettor(false)
+     * @param _value Value from transaction
+     */
+    function _bet(bool _choice, uint _value) atState(BetState.ASSIGNING_BETTORS) matchDeposit(_value) uniqueBettors(msg.sender) internal returns (BetState) {
         if(_choice) {
-            assignRole(msg.sender, BETTOR_ROLE, "BETTOR");
+            _assignRole(msg.sender, BETTOR_ROLE, "BETTOR");
         }
         else {
-            assignRole(msg.sender, COUNTER_BETTOR_ROLE, "COUNTER BETTOR");
+            _assignRole(msg.sender, COUNTER_BETTOR_ROLE, "COUNTER BETTOR");
         }
         if(betStorage.roleParticipants[BETTOR_ROLE] != address(0) && betStorage.roleParticipants[COUNTER_BETTOR_ROLE] != address(0)) {
-            nextState();
+            _nextState();
         }
         return betStorage.betState;
     }
     
-    /// @param _choice Determines if caller will be assigned as bettor judge(_choice = true) or counter bettor judge(_choice = false)
-    /// @dev Assigns caller as bettor judge or counter bettor judge. Requires a bet to be in ASSIGNING_JUDGES state and judges can't be bettors. If both roles are taken, nextState() is called.
-    /// @return bet state
-    function addJudge(bool _choice) atState(BetState.ASSIGNING_JUDGES) excludeBettors(msg.sender) public returns (BetState) {
+    /**
+     * @notice Assigns caller as bettor's or counter bettor's judge
+     * @param _choice Determines if caller will be assigned as a bettor's judge(true) or counter bettor's judge(false)
+     */
+    function _addJudge(bool _choice) atState(BetState.ASSIGNING_JUDGES) excludeBettors(msg.sender) uniqueJudges(msg.sender) internal returns (BetState) {
         if(_choice) {
-            assignRole(msg.sender, BETTOR_JUDGE, "BETTOR JUDGE");
+            _assignRole(msg.sender, BETTOR_JUDGE, "BETTOR JUDGE");
         }
         else {
-            assignRole(msg.sender, COUNTER_BETTOR_JUDGE, "COUNTER BETTOR JUDGE");
+            _assignRole(msg.sender, COUNTER_BETTOR_JUDGE, "COUNTER BETTOR JUDGE");
         }
         if (betStorage.roleParticipants[BETTOR_JUDGE] != address(0) && betStorage.roleParticipants[COUNTER_BETTOR_JUDGE] != address(0)) {
-            nextState();
+            _nextState();
         }
         return betStorage.betState;
     }
     
-    /// @param _vote If _vote is true, vote goes to bettor, otherwise it goes to counter bettor. 
-    /// @dev Gives a from from judge to one of the bettors. Requires a bet to be in VOTING_STAGE state, current time must be greater than expirationTime, only judges and disputer can vote and they can only vote once.
-    /// @return bet state
-    function vote(bool _vote) timedTransition(BetState.BET_WAITING) atState(BetState.VOTING_STAGE) onlyJudgeOrDisputer(msg.sender) didNotVote(msg.sender) public returns (BetState) {
+    /**
+     * @notice Gives a vote to bettor or counter bettor
+     * @param _vote Determines if vote will be given to bettor(true) or counter bettor(false)
+     */
+    function _giveVote(bool _vote) timedTransition(BetState.BET_WAITING) atState(BetState.VOTING_STAGE) onlyJudgeOrDisputer(msg.sender) didNotVote(msg.sender) internal returns (BetState) {
         betStorage.didVote[msg.sender] = true;
         if(_vote) {
           betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]] = betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]].add(1);
@@ -186,34 +272,31 @@ contract Bet is ReentrancyGuard, PullPayment {
             betStorage.votes[betStorage.roleParticipants[COUNTER_BETTOR_ROLE]] = betStorage.votes[betStorage.roleParticipants[COUNTER_BETTOR_ROLE]].add(1);
         }
         if(betStorage.votes[betStorage.roleParticipants[COUNTER_BETTOR_ROLE]] > JUDGE_PER_SIDE || betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]] > JUDGE_PER_SIDE) {
-            nextState();
+            _nextState();
         }
         else if(betStorage.votes[betStorage.roleParticipants[COUNTER_BETTOR_ROLE]].add(betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]]) == MAX_JUDGES) {
             emit Dispute();
         }
         return betStorage.betState;
     }
-
-    //----------------------------------------
-    // Internal functions
-    //----------------------------------------
     
-    /// @dev Transitions to next state
-    function nextState() internal {
+    /**
+     * @notice Transits bet to a new state
+     */
+    function _nextState() internal {
         betStorage.betState = BetState(uint(betStorage.betState) + 1);
         emit CurrentState(betStorage.betState);
     }
     
-    /// @dev Assigns caller to a certain role, requires that role is not already taken
-    /// @param _sender Address to be assigned, _role Role to be given, _roleName String representation of a role
-    function assignRole(address _sender, bytes32 _role, bytes32 _roleName) roleNotTaken(_role) internal {
+    /**
+     * @notice Gives a certain role to caller
+     * @param _sender Address of a caller
+     * @param _role Hashed role name "keccak256"
+     * @param _roleName Role name as string
+     */
+    function _assignRole(address _sender, bytes32 _role, bytes32 _roleName) roleNotTaken(_role) internal {
         betStorage.participantRoles[_sender] = _role;
         betStorage.roleParticipants[_role] = _sender;
         emit Action(_sender, _roleName, "Role assigned");
-    }
-    
-    /// @dev Transfers currency to caller if he is a winner. Requires a bet to be in BET_OVER state
-    function transferCurrencyToWinner() atState(BetState.BET_OVER) onlyWinner(msg.sender) internal {
-        _asyncTransfer(msg.sender, address(this).balance);
     }
 }

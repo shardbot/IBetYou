@@ -1,24 +1,23 @@
-const dotenv = require('dotenv');
-dotenv.config("../.env")
+const dotenv = require("dotenv");
+dotenv.config(".env");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 module.exports = {
 	networks: {
-		goerli: {
+		rinkeby: {
 			provider: new HDWalletProvider(
 				process.env.PRIVATE_KEY,
-				`https://goerli.infura.io/v3/${process.env.INFURA_ID}`
+				`https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`
 			),
-			network_id: 5,
+			network_id: 4,
 		},
 	},
 
-	mocha: {
-	},
+	mocha: {},
 
 	compilers: {
 		solc: {
-			version: "0.7.3",
+			version: "0.7.0",
 		},
 	},
 };
