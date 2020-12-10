@@ -6,6 +6,19 @@
   }
 }
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  font-size: 29px;
+  line-height: 1.55;
+}
+
+.disclaimer {
+  color: #887989;
+  margin-bottom: 6rem;
+}
+
 .successWrapper {
   display: flex;
   flex-direction: column;

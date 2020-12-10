@@ -1,7 +1,7 @@
 import '../styles/globals.scss';
 
 import { AppProps } from 'next/app';
-import { createContext, FC, Fragment } from 'react';
+import { createContext, FC, Fragment, useEffect } from 'react';
 import Web3 from 'web3';
 
 import { PageWithLayout } from '../types';
@@ -14,6 +14,10 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
     : Fragment;
 
   const web3 = new Web3(Web3.givenProvider);
+
+  // useEffect(() => {
+  //   console.log(window.ethereum);
+  // }, []);
 
   return (
     <Web3Context.Provider value={web3}>
