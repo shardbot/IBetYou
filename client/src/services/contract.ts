@@ -1,10 +1,9 @@
-import { Bet } from '../../../blockchain/types/web3-v1-contracts/Bet';
-import { BetFactory } from '../../../blockchain/types/web3-v1-contracts/BetFactory';
 import { betAbi, betFactoryAbi } from '../abis';
+import { Bet } from '../types/web3-v1-contracts/Bet';
+import { BetFactory } from '../types/web3-v1-contracts/BetFactory';
 import { convertEthToWei, getDateInMs } from '../utils';
 
-// TODO move this to env
-const BET_FACTORY_CONTRACT_ADDRESS = '0xdB26cD60a810A89485c63cC5ABEb209E5643bac8';
+const BET_FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
 const createBetFactoryContract = (web3: Web3) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -52,7 +51,6 @@ export const bet = async (
 ) => {
   const contract = createBetContract(web3, betContractAddress);
 
-  // TODO refactor
   if (bettorType === 'bettor') {
     return contract.methods.addBettor().send({
       from: accountAddress,
@@ -68,15 +66,21 @@ export const bet = async (
 
 export const addJudge = async (
   web3: Web3,
-  judgeType: JudgeType,
-  betContractAddress: string | any
+  judgeType: JudgeType | any,
+  betContractAddress: string | any,
+  accountAddress: string | any
 ) => {
   const contract = createBetContract(web3, betContractAddress);
 
-  // TODO refactor
   if (judgeType === 'bettor-judge') {
-    return contract.methods.addBettorJudge().call();
+    console.log('add bettor judge');
+    return contract.methods.addBettorJudge().send({
+      from: accountAddress
+    });
   } else {
-    return contract.methods.addCounterBettorJudge().call();
+    console.log('add counter-bettor judge');
+    return contract.methods.addCounterBettorJudge().send({
+      from: accountAddress
+    });
   }
 };

@@ -11,10 +11,12 @@ app.use(cors());
 app.post("/api/invitation", (req, res) => {
   const data = req.body;
 
+  const judgeParam = data.judgeType && `&type=${data.judgeType}`;
+
   const html =
     data.type === "counter-bettor"
       ? `I invite you to bet me at <a href="https://ibetyou.me/accept-bet?address=${data.betAddress}">Link</a>`
-      : `I invite you to be a judge at <a href="https://ibetyou.me/judge?address=${data.betAddress}">Link</a>`;
+      : `I invite you to be a judge at <a href="https://ibetyou.me/judge?address=${data.betAddress}${judgeParam}">Link</a>`;
 
   mailer
     .sendMail({

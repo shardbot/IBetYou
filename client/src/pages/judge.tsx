@@ -40,7 +40,6 @@ const Confirmation: FC<ConfirmationProps> = ({ bet, isLoading, confirmJudge }) =
   );
 };
 
-// TODO better name for page
 const Judge: FC = () => {
   const web3 = useContext(Web3Context);
   const router = useRouter();
@@ -50,22 +49,25 @@ const Judge: FC = () => {
 
   useEffect(() => {
     const { address } = router.query;
+
     if (address) {
-      console.log('HERE - get info');
       getBet(web3, address).then((bet) => setBet(bet));
     }
   }, [router, web3.eth.Contract]);
 
   const confirmJudge = async () => {
-    const { address } = router.query;
+    const { address, type } = router.query;
     setIsLoading(true);
 
     try {
-      const res = await addJudge(web3, 'bettor-judge', address);
-      console.log(res);
+      await window.ethereum.enable();
+      const accounts = await web3.eth.getAccounts();
+
+      await addJudge(web3, type, address, accounts[0]);
     } catch (e) {
       alert(e);
       setIsLoading(false);
+      return;
     }
 
     setIsLoading(false);
@@ -74,9 +76,10 @@ const Judge: FC = () => {
 
   return (
     <div className={styles.container}>
-      {bet && !isSuccess ? (
+      {bet && !isSuccess && (
         <Confirmation bet={bet} confirmJudge={confirmJudge} isLoading={isLoading} />
-      ) : (
+      )}
+      {isSuccess && (
         <div className={styles.successWrapper}>
           <p className={styles.successMsg}>You successfully accepted to be a judge for this bet.</p>
           <LinkButton

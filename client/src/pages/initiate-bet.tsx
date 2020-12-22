@@ -54,6 +54,7 @@ const InitiateBet: FC = () => {
       console.log(betAddress);
     } catch (e) {
       alert(e.message);
+      console.log(e);
       setIsLoading(false);
       return;
     }
@@ -65,8 +66,7 @@ const InitiateBet: FC = () => {
       console.log(createdBet);
 
       // send deposit
-      const betResponse = await makeBet(web3, account, betAddress, createdBet.deposit, 'bettor');
-      console.log(betResponse);
+      await makeBet(web3, account, betAddress, createdBet.deposit, 'bettor');
     } catch (e) {
       alert(e.message);
       setIsLoading(false);
@@ -74,21 +74,18 @@ const InitiateBet: FC = () => {
     }
 
     try {
-      // TODO refactor, remove unnecessary const
       // 3. SEND EMAIL
       // opponent
-      const emailResponse = await sendEmail(bet.opponentEmail, betAddress, 'counter-bettor');
-      console.log(emailResponse);
+      await sendEmail(bet.opponentEmail, betAddress, 'counter-bettor', null);
+
       // judge
-      const judgeEmailResponse = await sendEmail(bet.judgeEmail, betAddress, 'judge');
-      console.log(judgeEmailResponse);
+      await sendEmail(bet.judgeEmail, betAddress, 'judge', 'bettor-judge');
     } catch (e) {
       alert(e.message);
       setIsLoading(false);
       return;
     }
 
-    // TODO clear input fields
     setIsLoading(false);
     setIsSuccess(true);
   };

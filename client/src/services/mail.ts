@@ -1,14 +1,20 @@
 type Type = 'counter-bettor' | 'judge';
+type JudgeType = 'bettor-judge' | 'counter-bettor-judge';
 
-export const sendEmail = async (receiverEmail: string, betAddress: string | any, type: Type) => {
-  // TODO move link url to the env
-  const response = await fetch('http://localhost:3001/api/invitation', {
+export const sendEmail = async (
+  receiverEmail: string,
+  betAddress: string | any,
+  type: Type,
+  judgeType: JudgeType | null
+) => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invitation`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       email: receiverEmail,
       betAddress,
-      type
+      type,
+      judgeType
     })
   });
 

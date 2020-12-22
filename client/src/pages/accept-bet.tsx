@@ -29,8 +29,6 @@ const AcceptBet: FC = () => {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   useEffect(() => {
-    // // TODO refactor
-    // // Check if query have address parameter
     if (!query) {
       return;
     }
@@ -55,6 +53,7 @@ const AcceptBet: FC = () => {
 
     try {
       const accounts = await web3.eth.getAccounts();
+
       // accept bet as counter bettor
       await makeBet(web3, accounts[0], address, bet.deposit, 'counter-bettor');
     } catch (e) {
@@ -65,7 +64,7 @@ const AcceptBet: FC = () => {
 
     try {
       // send mail to judge
-      await sendEmail(judgeEmail, address, 'judge');
+      await sendEmail(judgeEmail, address, 'judge', 'counter-bettor-judge');
     } catch (e) {
       alert(e.message);
       setIsLoading(false);
@@ -74,12 +73,11 @@ const AcceptBet: FC = () => {
 
     setIsLoading(false);
     setIsSuccess(true);
-    // TODO clear state, email input
   };
 
   return (
     <div className={styles.container}>
-      {bet && !isSuccess ? (
+      {bet && !isSuccess && (
         <>
           <AcceptBetForm
             web3={web3}
@@ -94,8 +92,8 @@ const AcceptBet: FC = () => {
             using a smart contracts and is irreversible.
           </p>
         </>
-      ) : (
-        // TODO create generic component for this
+      )}
+      {isSuccess && (
         <div className={styles.successWrapper}>
           <p className={styles.successMsg}>Your bet has been placed. Good Luck.</p>
           <LinkButton
