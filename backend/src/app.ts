@@ -1,7 +1,9 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import mailer from "./services/EmailService";
+import { mailer, EmailTemplate } from "./services/EmailService";
+import pug from "pug";
+import path from "path";
 
 const app = express();
 app.use(bodyParser.json());
@@ -10,20 +12,25 @@ app.use(cors());
 
 app.post("/api/invitation", (req, res) => {
   const data = req.body;
-
   const judgeParam = data.judgeType && `&type=${data.judgeType}`;
+  let link, msg, btnText = null;
 
-  const html =
-    data.type === "counter-bettor"
-      ? `I invite you to bet me at <a href="https://ibetyou.me/accept-bet?address=${data.betAddress}">Link</a>`
-      : `I invite you to be a judge at <a href="https://ibetyou.me/judge?address=${data.betAddress}${judgeParam}">Link</a>`;
+  if (data.type === "counter-bettor") {
+    link = `https://ibetyou.me/accept-bet?address=${data.betAddress}`;
+    msg = "I invite you to bet me!";
+    btnText = "Accept the Bet";
+  } else {
+    link = `https://ibetyou.me/judge?address=${data.betAddress}${judgeParam}`;
+    msg = "I invite you to be a judge!";
+    btnText = "Accept to be a judge";
+  }
 
   mailer
     .sendMail({
       from: "no-reply@ibetyou.me",
       to: `${data.email}`,
       subject: `IBetYou Invitation`,
-      html: html,
+      html: EmailTemplate(msg, link, btnText),
     })
     .then(() => {
       console.log("Email sent successfully.");
