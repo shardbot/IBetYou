@@ -1,10 +1,7 @@
-.idea/
-
-blockchain/cache
-ethereum/node_modules
-ethereum/.vscode/
-backend/node_modules
-client/node_modules
-node_modules
-backend/.env/
+.idea
+cache/
+.vscode/
+node_modules/
 .env
+artifacts/
+build/
