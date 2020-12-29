@@ -1,4 +1,7 @@
-.idea/
-
-ethereum/node_modules
-ethereum/.vscode/
+.idea
+cache/
+.vscode/
+node_modules/
+.env
+artifacts/
+build/

@@ -1,0 +1,19 @@
+.form {
+  display: flex;
+  flex-direction: column;
+
+  div {
+    margin-bottom: 2rem;
+  }
+
+  button {
+    margin-top: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.loadingWrapper {
+  display: flex;
+  margin-top: 2rem;
+}

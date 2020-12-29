@@ -1,0 +1,42 @@
+{
+  "name": "betting-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "truffle compile",
+    "compile:hardhat": "npx hardhat compile",
+    "deploy": "truffle migrate --network goerli",
+    "deploy:hardhat": "npx hardhat run scripts/deploy.js --network localhost",
+    "localnode": "npx hardhat node",
+    "generate-types": "typechain --target=truffle-v5 'build/contracts/*.json'",
+    "postinstall": "npm run compile:hardhat && npm run generate-types"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shard-Labs/betting-app.git"
+  },
+  "keywords": [],
+  "author": "Shard Labs info@shardlabs.io",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Shard-Labs/betting-app/issues"
+  },
+  "homepage": "https://github.com/Shard-Labs/betting-app#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^3.3.0",
+    "@truffle/hdwallet-provider": "^1.1.1",
+    "@typechain/truffle-v5": "^3.0.0",
+    "dotenv": "^8.2.0",
+    "openzeppelin-solidity": "^3.3.0",
+    "truffle": "^5.1.53",
+    "typechain": "^4.0.0"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-waffle": "^2.0.0",
+    "ethers": "^5.0.19",
+    "ethereum-waffle": "^3.2.0",
+    "hardhat": "^2.0.3",
+    "@nomiclabs/hardhat-ethers": "^2.0.0"
+  }
+}
