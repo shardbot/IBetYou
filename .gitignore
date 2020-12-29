@@ -7,4 +7,5 @@ backend/node_modules
 client/node_modules
 node_modules
 backend/.env/
+blockchain/artifacts/
 .env
