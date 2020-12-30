@@ -32,10 +32,13 @@ app.post("/api/invitation", (req, res) => {
 			html: EmailTemplate(msg, link, btnText),
 		})
 		.then(
-			() => {},
+			() => {
+				res.sendStatus(200);
+				console.log("Email sent successfully.");
+			},
 			(error) => {
+				res.sendStatus(400);
 				console.error(error);
-
 				if (error.response) {
 					console.error(error.response.body);
 				}
