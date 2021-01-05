@@ -1,24 +1,23 @@
-import nodeMailer from "nodemailer";
-import sgTransport from "nodemailer-sendgrid-transport";
+import mailer from "@sendgrid/mail";
 import path from "path";
 import pug from "pug";
 require("dotenv").config();
 
-const options = {
-	auth: {
-		api_key: process.env.SENDGRID_API_KEY,
-	},
-};
+mailer.setApiKey(process.env.SENDGRID_API_KEY);
 
-export const mailer = nodeMailer.createTransport(sgTransport(options));
+export { mailer };
 
-export const EmailTemplate = (message: string, link: string, btnText: string) => {
+export const EmailTemplate = (
+	message: string,
+	link: string,
+	btnText: string
+) => {
 	const template = path.resolve("src", "services", "templates", "email.pug");
 	const html = pug.compileFile(template, { pretty: true })({
 		message,
 		link,
-		btnText
-	})
+		btnText,
+	});
 
 	return html;
-}
+};
