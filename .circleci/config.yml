@@ -1,0 +1,46 @@
+version: 2.1
+
+jobs:
+  build_push_docker:
+    docker:
+      - image: circleci/node:10.19.0-buster
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: ./scripts/build_and_publish.sh
+  deploy:
+    docker:
+      - image: circleci/node:10.19.0-buster
+    steps:
+    - checkout
+    - setup_remote_docker
+    - add_ssh_keys:
+        fingerprints:
+          - "be:35:89:eb:24:85:0a:80:52:e8:86:b9:5c:66:49:29"
+    - run:
+        name: Deploy
+        no_output_timeout: 30m
+        command: |
+          ./scripts/deploy.sh
+
+workflows:
+  version: 2.1
+  build_and_deploy:
+    jobs:
+      - build_push_docker:
+          context: shardlabs
+          filters:
+            branches:
+              only:
+                - main
+                - develop
+
+      - deploy:
+          filters:
+            branches:
+              only:
+                - main
+                - develop
+          requires:
+            - build_push_docker
+            

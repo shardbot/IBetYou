@@ -2,23 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { AccessControlContract } from "./AccessControl";
-import { BetContract } from "./Bet";
-import { BetFactoryContract } from "./BetFactory";
-import { MigrationsContract } from "./Migrations";
-
 declare global {
   namespace Truffle {
-    interface Artifacts {
-      require(name: "AccessControl"): AccessControlContract;
-      require(name: "Bet"): BetContract;
-      require(name: "BetFactory"): BetFactoryContract;
-      require(name: "Migrations"): MigrationsContract;
-    }
+    interface Artifacts {}
   }
 }
-
-export { AccessControlContract, AccessControlInstance } from "./AccessControl";
-export { BetContract, BetInstance } from "./Bet";
-export { BetFactoryContract, BetFactoryInstance } from "./BetFactory";
-export { MigrationsContract, MigrationsInstance } from "./Migrations";
