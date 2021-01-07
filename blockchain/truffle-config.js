@@ -12,7 +12,7 @@ module.exports = {
 			network_id: 4
 		},
 		matic: {
-			provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://rpc-mumbai.matic.today`),
+			provider: () => new HDWalletProvider(process.env.MATIC_TEST_PRIVATE_KEY, process.env.MATIC_TEST_RPC),
 			network_id: 80001,
 			gas: 4500000,
 			gasPrice: 10000000000,
