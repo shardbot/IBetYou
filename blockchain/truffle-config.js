@@ -1,6 +1,6 @@
-const dotenv = require("dotenv");
-dotenv.config(".env");
-const HDWalletProvider = require("@truffle/hdwallet-provider");
+const dotenv = require('dotenv');
+dotenv.config('.env');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 module.exports = {
 	networks: {
@@ -9,15 +9,29 @@ module.exports = {
 				process.env.PRIVATE_KEY,
 				`https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`
 			),
-			network_id: 4,
+			network_id: 4
 		},
+		matic: {
+			provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://rpc-mumbai.matic.today`),
+			network_id: 80001,
+			gas: 4500000,
+			gasPrice: 10000000000,
+			confirmations: 2,
+			timeoutBlocks: 200,
+			skipDryRun: true
+		},
+		develop: {
+			host: 'localhost',
+			port: 8545,
+			network_id: '*' // match any network
+		}
 	},
 
 	mocha: {},
 
 	compilers: {
 		solc: {
-			version: "0.7.0",
-		},
-	},
+			version: '0.7.0'
+		}
+	}
 };
