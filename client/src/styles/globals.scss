@@ -6,8 +6,10 @@
 
 // FONT
 $font-family: 'Raleway', sans-serif;
+$background-color: 'bg-navy-blue-mamba';
 
 html,
 body {
   font-family: $font-family;
+  @apply bg-navy-blue-mamba text-white #{!important};
 }

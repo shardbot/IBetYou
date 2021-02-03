@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react';
 
-import { Header } from '../global/Header';
-import { Meta } from '../global/Meta';
+import { Header } from '../global';
+import { Meta } from '../global';
 
 interface MainLayoutProps {
   children?: ReactNode;
@@ -12,7 +12,7 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     <>
       <Meta title="IBetYou" />
       <Header />
-      <main className="main main-container">{children}</main>
+      <main className="container mx-auto">{children}</main>
     </>
   );
 };
