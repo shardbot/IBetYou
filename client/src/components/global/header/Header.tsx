@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import MenuIcon from '../../../assets/icons/menu.svg';
 import { LOGO_IMG_SRC } from '../../../constants';
@@ -7,6 +7,10 @@ import { MainNavigation } from './MainNavigation';
 
 export const Header: FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? 'hidden' : 'auto';
+  }, [isMenuOpen]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
