@@ -6,10 +6,11 @@ import KeyIcon from '../assets/icons/key.svg';
 import DashboardIcon from '../assets/icons/layout.svg';
 import PlusCircleIcon from '../assets/icons/plus-circle.svg';
 import UnlockIcon from '../assets/icons/unlock.svg';
-import { Button } from '../components/global';
+import { Button, LinkButton } from '../components/global';
 import { MainLayout } from '../components/layouts';
 import {
   DIGITAL_CURRENCY_IMG_SRC,
+  LOGO_IMG_SRC,
   MONEY_TRANSFER_IMG_SRC,
   ONLINE_TRANSACTIONS_IMG_SRC,
   SECURITY_ON_IMG_SRC
@@ -158,37 +159,34 @@ const Home: FC = () => {
         <div className="px-4 lg:px-8 text-center flex flex-col items-center justify-center">
           <h1 className="text-4xl lg:text-5xl font-bold mb-16 lg:mb-24">How do I get started?</h1>
           <ul className="flex flex-col lg:flex-row">
-            <li className="p-4 mb-8 lg:mb-0 flex flex-col items-center">
-              <span className="mb-4 lg:mb-12">
+            <li className="p-4 mb-8 lg:mb-0 flex flex-col items-center flex-1">
+              <span className="mb-6 lg:mb-12">
                 <UnlockIcon className="h-16 2xl:h-24 w-16 2xl:w-24" />
               </span>
               <p className="text-slate-gray text-base lg:text-lg">
-                When you and your friends confirm a bet, we instantly put a smart contract in place.
-                That means no one can wriggle their way out of paying when the bet expires.
+                Log in with your existing crypto wallet.
               </p>
             </li>
             <span className="transform rotate-90 lg:rotate-0 self-center mb-8 lg:mx-8">
-              <ArrowRightIcon className="h-14 2xl:h-18 w-14 2xl:w-18" />
+              <ArrowRightIcon className="h-12 2xl:h-18 w-12 2xl:w-18" />
             </span>
-            <li className="p-4 mb-8 lg:mb-0 flex flex-col items-center">
-              <span className="mb-4 lg:mb-12">
+            <li className="p-4 mb-8 lg:mb-0 flex flex-col items-center flex-1">
+              <span className="mb-6 lg:mb-12">
                 <PlusCircleIcon className="h-16 2xl:h-24 w-16 2xl:w-24" />
               </span>
               <p className="text-slate-gray text-base lg:text-lg">
-                You don’t need to create a new account to access IBetYou. Just log in with your
-                existing crypto wallet account and you’re in.
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
               </p>
             </li>
             <span className="transform rotate-90 lg:rotate-0 self-center mb-8 lg:mx-8">
-              <ArrowRightIcon className="h-14 2xl:h-18 w-14 2xl:w-18" />
+              <ArrowRightIcon className="h-12 2xl:h-18 w-12 2xl:w-18" />
             </span>
-            <li className="p-4 flex flex-col items-center">
-              <span className="mb-4 lg:mb-12">
+            <li className="p-4 flex flex-col items-center flex-1">
+              <span className="mb-6 lg:mb-12">
                 <DollarSignIcon className="h-16 2xl:h-24 w-16 2xl:w-24" />
               </span>
               <p className="text-slate-gray text-base lg:text-lg">
-                No, this isn’t yet another freemium that will pitch you upsells later. Our app is
-                free, will remain free, and will never try to sell you silly upgrades.
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
               </p>
             </li>
           </ul>

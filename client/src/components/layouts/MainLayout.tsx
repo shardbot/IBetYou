@@ -1,6 +1,6 @@
 import { FC, ReactNode } from 'react';
 
-import { Header } from '../global';
+import { Footer, Header } from '../global';
 import { Meta } from '../global';
 
 interface MainLayoutProps {
@@ -12,7 +12,8 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     <>
       <Meta title="IBetYou" />
       <Header />
-      <main className="container mx-auto">{children}</main>
+      <main className="container mx-auto 3xl:px-24">{children}</main>
+      <Footer />
     </>
   );
 };
