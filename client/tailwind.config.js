@@ -10,7 +10,11 @@ module.exports = {
       colors: {
         'navy-blue-mamba': '#151E25',
         'real-dark': '#1F2932',
-        'green-cyan': '#2CC597'
+        'green-cyan': '#2CC597',
+        'slate-gray': '#75818B'
+      },
+      screens: {
+        '3xl': '1920px'
       }
     }
   },

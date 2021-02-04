@@ -1,4 +1,4 @@
-export { Header } from './Header';
+export { Header } from './header/Header';
 export { Meta } from './Meta';
 export { Input } from './Input';
 export { LinkButton } from './LinkButton';
