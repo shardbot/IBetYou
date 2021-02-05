@@ -16,8 +16,11 @@ module.exports = {
 	solidity: '0.7.3',
 	networks: {
 		matic: {
-      network_id: 80001,
-			url: `https://rpc-mumbai.matic.today`,
+			url: `https://rpc-mainnet.maticvigil.com/`,
+			network_id: 80001,
+			chain_id: 137,
+			gas: 4500000,
+			gasPrice: 10000000000,
 			accounts: [`0x${MATIC_PRIVATE_KEY}`]
 		}
 	}
