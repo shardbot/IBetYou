@@ -6,11 +6,10 @@ import KeyIcon from '../assets/icons/key.svg';
 import DashboardIcon from '../assets/icons/layout.svg';
 import PlusCircleIcon from '../assets/icons/plus-circle.svg';
 import UnlockIcon from '../assets/icons/unlock.svg';
-import { Button, LinkButton } from '../components/global';
+import { Button } from '../components/global';
 import { MainLayout } from '../components/layouts';
 import {
   DIGITAL_CURRENCY_IMG_SRC,
-  LOGO_IMG_SRC,
   MONEY_TRANSFER_IMG_SRC,
   ONLINE_TRANSACTIONS_IMG_SRC,
   SECURITY_ON_IMG_SRC
