@@ -7,6 +7,9 @@ const DIGITAL_CURRENCY_IMG_SRC = '/assets/images/digital_currency.svg';
 const POSITIVE_ATTITUDE_IMG_SRC = '/assets/images/positive_attitude.svg';
 const SAVINGS_IMG_SRC = '/assets/images/savings.svg';
 const PRODUCT_TEARDOWN_IMG_SRC = '/assets/images/product_teardown.svg';
+const CONNECTION_IMG_SRC = '/assets/images/connection.svg';
+const MAKE_IT_RAIN_IMG_SRC = '/assets/images/make_it_rain.svg';
+const MY_UNIVERSE_IMG_SRC = '/assets/images/my_universe.svg';
 
 export {
   LOGO_IMG_SRC,
@@ -16,5 +19,8 @@ export {
   DIGITAL_CURRENCY_IMG_SRC,
   POSITIVE_ATTITUDE_IMG_SRC,
   SAVINGS_IMG_SRC,
-  PRODUCT_TEARDOWN_IMG_SRC
+  PRODUCT_TEARDOWN_IMG_SRC,
+  CONNECTION_IMG_SRC,
+  MAKE_IT_RAIN_IMG_SRC,
+  MY_UNIVERSE_IMG_SRC
 };

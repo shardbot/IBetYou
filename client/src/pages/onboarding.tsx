@@ -31,7 +31,7 @@ const Onboarding: FC = () => {
                 </p>
               </div>
             </div>
-            <img src={SAVINGS_IMG_SRC} alt="money transfer" />
+            <img src={SAVINGS_IMG_SRC} alt="savings" />
           </div>
         </article>
         {/* SECOND */}
@@ -50,7 +50,7 @@ const Onboarding: FC = () => {
                 </p>
               </div>
             </div>
-            <img src={POSITIVE_ATTITUDE_IMG_SRC} alt="money transfer" />
+            <img src={POSITIVE_ATTITUDE_IMG_SRC} alt="positive attitude" />
           </div>
         </article>
         {/* THIRD */}
@@ -70,7 +70,7 @@ const Onboarding: FC = () => {
                 <p className="text-slate-gray text-base lg:text-lg">Your hard work is done!</p>
               </div>
             </div>
-            <img src={PRODUCT_TEARDOWN_IMG_SRC} alt="money transfer" />
+            <img src={PRODUCT_TEARDOWN_IMG_SRC} alt="product teardown" />
           </div>
         </article>
       </section>
