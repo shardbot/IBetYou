@@ -62,7 +62,7 @@ export const MainNavigation: FC<MainNavigationProps> = ({ type, isActive, onClos
       <>
         {/* OVERLAY */}
         <div
-          className={`z-10 fixed inset-0 cursor-default ${!isActive ? 'hidden' : ''}`}
+          className={`z-10 fixed inset-0 cursor-default lg:hidden ${!isActive ? 'hidden' : ''}`}
           onClick={onClose}
           role="button"
           tabIndex={0}
@@ -85,6 +85,7 @@ export const MainNavigation: FC<MainNavigationProps> = ({ type, isActive, onClos
               className={`text-sm text-left font-bold p-4 hover:text-green-cyan ${
                 router.asPath === item.to ? 'text-green-cyan' : ''
               }`}
+              onClick={onClose}
               key={item.id}
               to={item.to}
               text={item.text}
