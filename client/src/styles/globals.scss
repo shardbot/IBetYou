@@ -12,10 +12,19 @@ $background-color: 'bg-navy-blue-mamba';
   .btn-primary {
     @apply rounded-lg bg-green-cyan h-full px-4 py-2 font-bold focus:outline-none focus:ring-1 focus:ring-white;
   }
+
+  .sub-text {
+    @apply text-slate-gray text-base lg:text-lg;
+  }
 }
 
 html,
 body {
   font-family: $font-family;
-  @apply bg-navy-blue-mamba text-white #{!important};
+  scroll-behavior: smooth;
+  @apply bg-navy-blue-mamba text-white flex h-screen w-screen overflow-x-hidden #{!important};
+}
+
+#__next {
+  @apply flex flex-col w-full #{!important};
 }
