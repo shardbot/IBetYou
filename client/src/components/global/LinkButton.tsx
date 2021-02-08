@@ -8,7 +8,7 @@ interface LinkButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const LinkButton: FC<LinkButtonProps> = ({ to, text, ...props }) => {
   return (
-    <Link href={to}>
+    <Link href={to} scroll={true}>
       <button {...props}>{text}</button>
     </Link>
   );

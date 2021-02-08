@@ -22,9 +22,9 @@ html,
 body {
   font-family: $font-family;
   scroll-behavior: smooth;
-  @apply bg-navy-blue-mamba text-white flex h-screen w-screen overflow-x-hidden #{!important};
+  @apply bg-navy-blue-mamba text-white flex w-screen overflow-x-hidden #{!important};
 }
 
 #__next {
-  @apply flex flex-col w-full #{!important};
+  @apply flex flex-col w-full min-h-screen #{!important};
 }

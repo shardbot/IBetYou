@@ -14,7 +14,7 @@ const UseCase: FC = () => {
           ones.
         </p>
       </div>
-      <section className="py-8 mb-24 3xl:mb-64 3xl:px-56">
+      <section className="py-8">
         {/* FIRST */}
         <article className="mb-24 lg:mb-40 3xl:mb-56">
           <div className="px-4 lg:px-8 text-center flex flex-col lg:flex-row items-center justify-center lg:justify-between">

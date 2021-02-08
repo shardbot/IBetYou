@@ -20,7 +20,7 @@ const Home: FC = () => {
   return (
     <>
       {/* HERO */}
-      <section className="py-8 mb-24 lg:mt-24 xl:my-32 3xl:my-64">
+      <section className="py-8 mb-24 lg:mt-24 xl:my-24 3xl:my-64">
         <div className="px-4 lg:px-8 text-center flex flex-col lg:flex-row items-center justify-center lg:justify-between">
           <div className="mb-12 lg:mb-0 text-center lg:text-left lg:w-1/2">
             <h1 className="font-bold text-3xl lg:text-6xl mb-6">
@@ -34,7 +34,11 @@ const Home: FC = () => {
               Get Started
             </Button>
           </div>
-          <img src={MONEY_TRANSFER_IMG_SRC} alt="money transfer" />
+          <img
+            className="lg:w-1/2 lg:h-1/2 lg:ml-16"
+            src={MONEY_TRANSFER_IMG_SRC}
+            alt="money transfer"
+          />
         </div>
       </section>
 

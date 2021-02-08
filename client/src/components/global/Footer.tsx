@@ -5,8 +5,8 @@ import { LinkButton } from './LinkButton';
 
 export const Footer: FC = () => {
   return (
-    <footer className="mt-32 bg-real-dark px-4">
-      <div className="py-16 flex flex-col justify-center items-center">
+    <footer className="bg-real-dark px-4">
+      <div className="py-12 xl:py-16 flex flex-col justify-center items-center">
         <img className="w-16 h-16" src={LOGO_IMG_SRC} alt="logo" />
         <div className="flex justify-between mt-4 mb-4">
           <LinkButton className="font-bold p-4" to="/use-case" text="Use case" />

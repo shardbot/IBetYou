@@ -12,7 +12,9 @@ export const MainLayout: FC<MainLayoutProps> = ({ children }) => {
     <>
       <Meta title="IBetYou" />
       <Header />
-      <main className="container mx-auto h-auto xl:px-36">{children}</main>
+      <main className="container mx-auto h-auto xl:px-24 2xl:px-34 3xl:px-48 mb-32 flex-1">
+        {children}
+      </main>
       <Footer />
     </>
   );

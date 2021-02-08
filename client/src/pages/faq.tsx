@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
 import { FaqItem } from '../components/faq';
 import { MainLayout } from '../components/layouts';
@@ -11,11 +11,13 @@ const Faq: FC = () => {
       <div className="mt-16 mb-12 lg:my-16 lg:mb-32 text-center">
         <h1 className="text-2xl lg:text-5xl font-bold">Frequently Asked Questions</h1>
       </div>
-      <section className="py-8 mb-24 3xl:mb-64 3xl:px-56">
+      <section className="py-8">
         {faqs.map((item) => (
           <div key={`faq-${item.id}`}>
             <FaqItem faq={item} />
-            <span className="block w-full border-b border-slate-gray my-6" />
+            {item.id < faqs.length && (
+              <span className="block w-full border-b border-slate-gray my-6" />
+            )}
           </div>
         ))}
       </section>
