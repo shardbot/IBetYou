@@ -1,4 +1,5 @@
-export { Header } from './Header';
+export { Header } from './header/Header';
+export { Footer } from './Footer';
 export { Meta } from './Meta';
 export { Input } from './Input';
 export { LinkButton } from './LinkButton';

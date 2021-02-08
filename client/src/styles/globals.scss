@@ -1,61 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&display=swap');
-
-// FILES
-@import "variables";
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap');
 
 // FONT
-$font-family: 'Oswald', sans-serif;
+$font-family: 'Raleway', sans-serif;
+$background-color: 'bg-navy-blue-mamba';
 
-:root {
-  --main-bg-color: #{$main-bg-color};
-  --header-bg-color: #{$header-bg-color};
-  --primary-text-color: #{$primary-text-color};
-  --secondary-text-color: #{$secondary-text-color};
-  --primary: #{$primary};
-  --secondary: #{$secondary};
+@import '~tailwindcss/base';
+@import '~tailwindcss/components';
+@import '~tailwindcss/utilities';
+
+@layer components {
+  .btn-primary {
+    @apply rounded-lg bg-green-cyan h-full px-4 py-2 font-bold focus:outline-none focus:ring-1 focus:ring-white;
+  }
+
+  .sub-text {
+    @apply text-slate-gray text-base lg:text-lg;
+  }
 }
 
 html,
 body {
-  padding: 0;
-  margin: 0;
   font-family: $font-family;
-  background: var(--main-bg-color);
-  color: var(--primary-text-color);
+  scroll-behavior: smooth;
+  @apply bg-navy-blue-mamba text-white flex w-screen overflow-x-hidden #{!important};
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-ul {
-  list-style: none;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-.main-container {
-  padding: 2rem;
-  margin: 10rem auto 6rem;
-
-  @media (min-width: map-get($breakpoints, 'xl')) {
-    width: 80%;
-  }
-
-  @media (min-width: map-get($breakpoints, 'xxl')) {
-    width: 60%;
-  }
-}
-
-textarea {
-  font-family: inherit;
-}
-
-input {
-  font-family: inherit;
+#__next {
+  @apply flex flex-col w-full min-h-screen #{!important};
 }
