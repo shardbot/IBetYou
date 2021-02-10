@@ -10,6 +10,7 @@ const PRODUCT_TEARDOWN_IMG_SRC = '/assets/images/product_teardown.svg';
 const CONNECTION_IMG_SRC = '/assets/images/connection.svg';
 const MAKE_IT_RAIN_IMG_SRC = '/assets/images/make_it_rain.svg';
 const MY_UNIVERSE_IMG_SRC = '/assets/images/my_universe.svg';
+const GAME_DAY_IMG_SRC = '/assets/images/game_day.svg';
 
 export {
   LOGO_IMG_SRC,
@@ -22,5 +23,6 @@ export {
   PRODUCT_TEARDOWN_IMG_SRC,
   CONNECTION_IMG_SRC,
   MAKE_IT_RAIN_IMG_SRC,
-  MY_UNIVERSE_IMG_SRC
+  MY_UNIVERSE_IMG_SRC,
+  GAME_DAY_IMG_SRC
 };
