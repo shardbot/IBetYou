@@ -3,6 +3,8 @@ pragma solidity >=0.4.0 <0.8.0;
 pragma experimental ABIEncoderV2;
 
 // Libraries
+import {IQuickSwapRouter02} from "./interfaces/IQuickSwapRouter02.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {PullPayment} from "@openzeppelin/contracts/payment/PullPayment.sol";
 import {
@@ -16,10 +18,24 @@ contract Bet is ReentrancyGuard, PullPayment {
     using SafeMath for uint256;
 
     //----------------------------------------
+    // Global variables
+    //----------------------------------------
+    IQuickSwapRouter02 router =
+        IQuickSwapRouter02(0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff);
+
+    //----------------------------------------
     // Constants
     //----------------------------------------
     uint256 internal constant MAX_JUDGES = 2;
     uint256 internal constant JUDGE_PER_SIDE = 1;
+
+    //----------------------------------------
+    // Token addresses
+    //----------------------------------------
+    address public constant maUSDC =
+        address(0x9719d867A500Ef117cC201206B8ab51e794d3F82);
+    address public constant QUICK =
+        address(0x831753DD7087CaC61aB5644b308642cc1c33Dc13);
 
     //----------------------------------------
     // Contract roles
@@ -92,6 +108,8 @@ contract Bet is ReentrancyGuard, PullPayment {
         betStorage.betState = BetState.BET_CREATED;
         emit CurrentState(betStorage.betState);
     }
+
+    receive() external payable {}
 
     //----------------------------------------
     // Modifiers
@@ -240,6 +258,7 @@ contract Bet is ReentrancyGuard, PullPayment {
         atState(BetState.BET_OVER)
         onlyWinner(msg.sender)
     {
+        //Add conversion from maUSDC to ETH(MATIC) here
         _asyncTransfer(msg.sender, address(this).balance);
     }
 
@@ -322,6 +341,7 @@ contract Bet is ReentrancyGuard, PullPayment {
             betStorage.roleParticipants[BETTOR_JUDGE] != address(0) &&
             betStorage.roleParticipants[COUNTER_BETTOR_JUDGE] != address(0)
         ) {
+            //Exchange ETH(MATIC) for maUSDC here
             _nextState();
         }
         return betStorage.betState;
@@ -394,5 +414,72 @@ contract Bet is ReentrancyGuard, PullPayment {
         betStorage.participantRoles[_sender] = _role;
         betStorage.roleParticipants[_role] = _sender;
         emit Action(_sender, _roleName, "Role assigned");
+    }
+
+    function _swapEthForMaUSDC(uint256 _unixTime) internal {
+        address[] memory path1 = _createPath(router.WETH(), QUICK);
+        address[] memory path2 = _createPath(QUICK, maUSDC);
+
+        router.swapExactETHForTokens{value: address(this).balance}(
+            0,
+            path1,
+            address(this),
+            _unixTime
+        );
+
+        uint256 QUICKAmount = _getTokenBalance(address(this), QUICK);
+        IERC20(QUICK).approve(address(router), QUICKAmount);
+        router.swapExactTokensForTokens(
+            QUICKAmount,
+            0,
+            path2,
+            address(this),
+            _unixTime
+        );
+    }
+
+    function _swapMaUSDCForEth(uint256 _unixTime) internal {
+        address[] memory path1 = _createPath(maUSDC, QUICK);
+        address[] memory path2 = _createPath(QUICK, router.WETH());
+
+        uint256 maUSDCAmount = _getTokenBalance(address(this), maUSDC);
+        IERC20(maUSDC).approve(address(router), maUSDCAmount);
+        router.swapExactTokensForTokens(
+            maUSDCAmount,
+            0,
+            path1,
+            address(this),
+            _unixTime
+        );
+
+        uint256 QUICKAmount = _getTokenBalance(address(this), QUICK);
+        IERC20(QUICK).approve(address(router), QUICKAmount);
+        router.swapExactTokensForETH(
+            QUICKAmount,
+            0,
+            path2,
+            address(this),
+            _unixTime
+        );
+    }
+
+    function _getTokenBalance(address _target, address _token)
+        internal
+        view
+        returns (uint256)
+    {
+        return IERC20(_token).balanceOf(_target);
+    }
+
+    function _createPath(address _address1, address _address2)
+        internal
+        pure
+        returns (address[] memory)
+    {
+        address[] memory path = new address[](2);
+        path[0] = _address1;
+        path[1] = _address2;
+
+        return path;
     }
 }
