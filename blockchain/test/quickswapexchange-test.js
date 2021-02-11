@@ -7,7 +7,7 @@ let deployer;
 let quickSwapExchangeTest;
 let d = new Date();
 
-const contractAddress = '';
+const contractAddress = '0x1172ee120c1593177993adB4c13A8de38951d780';
 
 describe('QuickSwapExchangeTest', function () {
 	before(async () => {
@@ -15,18 +15,25 @@ describe('QuickSwapExchangeTest', function () {
 		quickSwapExchangeTest = await new ethers.Contract(contractAddress, quickSwapTestABI, deployer);
 	});
 
-	it('Should return max amount of DAI for given ETH', async () => {
-		const etherAmount = 100;
-		const result = await quickSwapExchangeTest.getEstimatedDAIforETH(etherAmount);
-		console.log(result[0].toNumber());
-		expect(result).to.be.an('array').that.is.not.empty;
+	it('Should transfer 1 eth to contract', async () => {
+		console.log(ethers.utils.parseEther('1.0'));
+		await deployer.sendTransaction({
+			from: deployer.address,
+			to: contractAddress,
+			value: ethers.utils.parseEther('1.0'),
+			gasLimit: 800000
+		});
+		const contractValue = await quickSwapExchangeTest.getMaticBalance(contractAddress);
+		console.log(contractValue);
 	});
 
-	it('Should exchange ETH for maDAI', async () => {
-		const etherAmount = 15;
-		const swappedAmount = await quickSwapExchangeTest.swapEthForMaDai(d.getTime(), {
-			value: etherAmount
+	it('Should swap eth for maUSDC', async () => {
+		const tx = await quickSwapExchangeTest.swapEthForMaUSDC(d.getTime() + 15, {
+			gasLimit: 8000000,
+			gasPrice: 5
 		});
-		expect(swappedAmount).to.not.equal(0);
+		const contractMaUSDCValue = await quickSwapExchangeTest.getMaUSDCBalance(contractAddress);
+		console.log(tx);
+		console.log(contractMaUSDCValue);
 	});
 });

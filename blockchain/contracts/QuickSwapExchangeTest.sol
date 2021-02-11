@@ -8,95 +8,91 @@ contract QuickSwapExchangeTest {
     IQuickSwapRouter02 router =
         IQuickSwapRouter02(0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff);
 
-    address public maDAI = address(0xE0b22E0037B130A9F56bBb537684E6fA18192341);
-    address public matic = address(0x0000000000000000000000000000000000001010);
-    address public DAI = address(0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063);
+    address public maUSDC = address(0x9719d867A500Ef117cC201206B8ab51e794d3F82);
+    address public QUICK = address(0x831753DD7087CaC61aB5644b308642cc1c33Dc13);
+    address public MATIC = address(0x0000000000000000000000000000000000001010);
 
     address public WETH;
     address public factory;
 
-    constructor() {
+    address private owner;
+
+    receive() external payable {}
+
+    constructor() payable {
+        owner = msg.sender;
         WETH = router.WETH();
         factory = router.factory();
     }
 
-    receive() external payable {}
+    function swapEthForMaUSDC(uint256 unixTime) public {
+        address[] memory path1 = _createPath(WETH, QUICK);
+        address[] memory path2 = _createPath(QUICK, maUSDC);
 
-    function swapEthForMaDai(uint256 unixTime)
+        router.swapExactETHForTokens{value: address(this).balance / 2}(
+            0,
+            path1,
+            address(this),
+            unixTime
+        );
+
+        uint256 QUICKAmount = getTokenBalance(address(this), QUICK);
+        IERC20(QUICK).approve(address(router), QUICKAmount);
+        router.swapExactTokensForTokens(
+            QUICKAmount,
+            0,
+            path2,
+            address(this),
+            unixTime
+        );
+    }
+
+    function swapMaUSDCForEth(uint256 unixTime) public {
+        address[] memory path1 = _createPath(maUSDC, QUICK);
+        address[] memory path2 = _createPath(QUICK, WETH);
+
+        uint256 maUSDCAmount = getTokenBalance(address(this), maUSDC);
+        IERC20(maUSDC).approve(address(router), maUSDCAmount);
+        router.swapExactTokensForTokens(
+            maUSDCAmount,
+            0,
+            path1,
+            address(this),
+            unixTime
+        );
+
+        uint256 QUICKAmount = getTokenBalance(address(this), QUICK);
+        IERC20(QUICK).approve(address(router), QUICKAmount);
+        router.swapExactTokensForETH(
+            QUICKAmount,
+            0,
+            path2,
+            address(this),
+            unixTime
+        );
+    }
+
+    function sendEthToOwner() public {
+        payable(owner).transfer(address(this).balance);
+    }
+
+    function getTokenBalance(address target, address token)
         public
-        payable
+        view
         returns (uint256)
     {
-        address[] memory path = new address[](2);
-        path[0] = WETH;
-        path[1] = DAI;
-        path[2] = maDAI;
-
-        uint256 amountOutMin = getEstimatedMaDAIforETH(msg.value)[0];
-        // replace block.timestamp -- use time from frontend!
-        uint256[] memory amounts =
-            router.swapExactETHForTokens{value: msg.value}(
-                amountOutMin,
-                path,
-                msg.sender,
-                unixTime
-            );
-        uint256 outputTokenCount = uint256(amounts[amounts.length - 1]);
-
-        return outputTokenCount;
+        return IERC20(token).balanceOf(target);
     }
 
-    function swapEthForDai(uint256 unixTime) public payable returns (uint256) {
-        address[] memory path = new address[](2);
-        path[0] = WETH;
-        path[1] = DAI;
-
-        uint256 amountOutMin = getEstimatedDAIforETH(msg.value)[0];
-        // replace block.timestamp -- use time from frontend!
-        uint256[] memory amounts =
-            router.swapExactETHForTokens{value: msg.value}(
-                amountOutMin,
-                path,
-                msg.sender,
-                unixTime
-            );
-        uint256 outputTokenCount = uint256(amounts[amounts.length - 1]);
-
-        return outputTokenCount;
-    }
-
-    function getEstimatedDAIforETH(uint256 _ethAmount)
-        public
-        view
-        returns (uint256[] memory)
+    function _createPath(address address1, address address2)
+        private
+        pure
+        returns (address[] memory)
     {
         address[] memory path = new address[](2);
-        path[0] = DAI;
-        path[1] = WETH;
-        return router.getAmountsIn(_ethAmount, path);
-    }
+        path[0] = address1;
+        path[1] = address2;
 
-    function getEstimatedMaDAIforETH(uint256 _ethAmount)
-        public
-        view
-        returns (uint256[] memory)
-    {
-        address[] memory path = new address[](2);
-        path[0] = maDAI;
-        path[1] = WETH;
-
-        return router.getAmountsIn(_ethAmount, path);
-    }
-
-    function getMaDAIBalance(address _address) public view returns (uint256) {
-        return IERC20(maDAI).balanceOf(_address);
-    }
-
-    function getDAIBalance(address _address) public view returns (uint256) {
-        return IERC20(DAI).balanceOf(_address);
-    }
-
-    function getMaticBalance(address _address) public view returns (uint256) {
-        return _address.balance;
+        return path;
     }
 }
