@@ -7,9 +7,9 @@ let deployer;
 let quickSwapExchangeTest;
 let d = new Date();
 
-const contractAddress = '0x1172ee120c1593177993adB4c13A8de38951d780';
+const contractAddress = '';
 
-describe('QuickSwapExchangeTest', function () {
+describe('QuickSwapExchangeTest', () => {
 	before(async () => {
 		[deployer] = await ethers.getSigners();
 		quickSwapExchangeTest = await new ethers.Contract(contractAddress, quickSwapTestABI, deployer);

@@ -28,6 +28,7 @@ contract Bet is ReentrancyGuard, PullPayment {
     //----------------------------------------
     uint256 internal constant MAX_JUDGES = 2;
     uint256 internal constant JUDGE_PER_SIDE = 1;
+    uint256 internal constant MAX_INT = uint256(-1);
 
     //----------------------------------------
     // Token addresses
@@ -259,6 +260,7 @@ contract Bet is ReentrancyGuard, PullPayment {
         onlyWinner(msg.sender)
     {
         //Add conversion from maUSDC to ETH(MATIC) here
+        _swapMaUSDCForEth(MAX_INT);
         _asyncTransfer(msg.sender, address(this).balance);
     }
 
@@ -342,6 +344,7 @@ contract Bet is ReentrancyGuard, PullPayment {
             betStorage.roleParticipants[COUNTER_BETTOR_JUDGE] != address(0)
         ) {
             //Exchange ETH(MATIC) for maUSDC here
+            _swapEthForMaUSDC(MAX_INT);
             _nextState();
         }
         return betStorage.betState;
