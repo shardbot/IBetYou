@@ -1,113 +1,73 @@
-import { FC, SyntheticEvent, useContext, useState } from 'react';
+import { FC, useState } from 'react';
 
-import { InitiateBetForm } from '../components/forms';
-import { LinkButton } from '../components/global';
-import { MainLayout } from '../components/layouts';
-import { bet as makeBet, createBet, getBet } from '../services/contract';
-import { sendEmail } from '../services/mail';
-import btnStyles from '../styles/modules/Button.module.scss';
-import styles from '../styles/modules/pages/InitiateBet.module.scss';
+import CalendarIcon from '../assets/icons/calendar.svg';
+import UserIcon from '../assets/icons/dollar-sign.svg';
+import EyeIcon from '../assets/icons/eye.svg';
+import MailIcon from '../assets/icons/mail.svg';
+import TypeIcon from '../assets/icons/type.svg';
+import DollarSignIcon from '../assets/icons/user.svg';
+import { FormSteps } from '../components/forms/initiate-bet';
+import { SecondaryLayout } from '../components/layouts';
+import { StepsOverviewContainer } from '../components/steps';
 import { PageWithLayout } from '../types';
-import { Web3Context } from './_app';
 
-export interface InitialBet {
-  opponentEmail: string;
-  description: string;
-  judgeEmail: string;
-  deposit: string;
-  expirationDate: string;
-}
+const steps = [
+  {
+    id: 1,
+    number: 1,
+    title: 'Opponent email',
+    icon: <MailIcon />
+  },
+  {
+    id: 2,
+    number: 2,
+    title: 'Bet description',
+    icon: <TypeIcon />
+  },
+  {
+    id: 3,
+    number: 3,
+    title: 'Appoint judge',
+    icon: <UserIcon />
+  },
+  {
+    id: 4,
+    number: 4,
+    title: 'Stake of the bet',
+    icon: <DollarSignIcon />
+  },
+  {
+    id: 5,
+    number: 5,
+    title: 'Expiration date',
+    icon: <CalendarIcon />
+  },
+  {
+    id: 6,
+    number: 6,
+    title: 'Summary',
+    icon: <EyeIcon />
+  }
+];
 
 const InitiateBet: FC = () => {
-  const web3 = useContext(Web3Context);
-  const [bet, setBet] = useState<InitialBet>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
-
-  const initiateBet = async (e: SyntheticEvent) => {
-    e.preventDefault();
-
-    let betAddress = null;
-    let account = null;
-
-    setIsLoading(true);
-
-    try {
-      // 1. CREATE BET
-      // Enable metamask
-      await window.ethereum.enable();
-
-      // Get accounts
-      const accounts = await web3.eth.getAccounts();
-      account = accounts[0];
-
-      // call createBet method in smart contract
-      const response = await createBet(web3, account, {
-        expirationDate: bet.expirationDate,
-        description: bet.description,
-        deposit: bet.deposit
-      });
-      console.log(response);
-
-      // get address of created bet
-      betAddress = response.events.BetDeployed.returnValues[0];
-      console.log(betAddress);
-    } catch (e) {
-      alert(e.message);
-      console.log(e);
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      // 2. SEND DEPOSIT
-      // get previously created bet
-      const createdBet = await getBet(web3, betAddress);
-      console.log(createdBet);
-
-      // send deposit
-      await makeBet(web3, account, betAddress, createdBet.deposit, 'bettor');
-    } catch (e) {
-      alert(e.message);
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      // 3. SEND EMAIL
-      // opponent
-      await sendEmail(bet.opponentEmail, betAddress, 'counter-bettor', null);
-
-      // judge
-      await sendEmail(bet.judgeEmail, betAddress, 'judge', 'bettor-judge');
-    } catch (e) {
-      alert(e.message);
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(false);
-    setIsSuccess(true);
-  };
+  const [currentStep, setCurrentStep] = useState(1);
+  const formSteps = FormSteps(setCurrentStep, currentStep);
 
   return (
-    <div className={styles.container}>
-      {!isSuccess ? (
-        <InitiateBetForm setBet={setBet} bet={bet} onSubmit={initiateBet} isLoading={isLoading} />
-      ) : (
-        <div className={styles.successWrapper}>
-          <p className={styles.successMsg}>Your bet has been placed. Good Luck.</p>
-          <LinkButton
-            className={[btnStyles.button, btnStyles.buttonPrimary].join(' ')}
-            to="/"
-            text="HOME"
-          />
-        </div>
-      )}
+    <div className="px-12 xs:px-8">
+      <div className="max-w-xl mx-auto flex flex-col mb-24">
+        {/* OVERVIEW */}
+        {currentStep <= steps.length && (
+          <StepsOverviewContainer steps={steps} currentStep={currentStep} />
+        )}
+        {/* FORM */}
+        {formSteps[currentStep - 1].content}
+      </div>
     </div>
   );
 };
 
-(InitiateBet as PageWithLayout).Layout = MainLayout;
+(InitiateBet as PageWithLayout).Layout = SecondaryLayout;
 
 export default InitiateBet;

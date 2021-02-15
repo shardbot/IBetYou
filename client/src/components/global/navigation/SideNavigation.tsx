@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { useRouter } from 'next/router';
 import { FC } from 'react';
 
@@ -40,13 +41,16 @@ export const SideNavigation: FC<SideNavigationProps> = ({ isActive, onClose, isD
 
   if (isDesktop) {
     return (
-      <div className="flex flex-col p-4 bg-real-dark w-full">
+      <div className="flex flex-col bg-real-dark w-full">
         <div className="mt-32">
           {navigationItems.map((item) => (
             <LinkButton
-              className={`flex items-center text-lg text-left p-4 hover:text-green-cyan w-full mb-4 ${
-                router.asPath === item.to ? 'text-green-cyan' : ''
-              }`}
+              className={classNames(
+                `flex items-center text-lg text-left p-6 hover:text-green-cyan w-full mb-4`,
+                {
+                  'text-green-cyan bg-navy-blue-mamba': router.asPath === item.to
+                }
+              )}
               onClick={onClose}
               key={item.id}
               to={item.to}
@@ -61,7 +65,7 @@ export const SideNavigation: FC<SideNavigationProps> = ({ isActive, onClose, isD
 
   return (
     <Drawer isActive={isActive} onClose={onClose}>
-      <div className="flex flex-col p-4 bg-real-dark w-full">
+      <div className="flex flex-col bg-real-dark w-full">
         <img
           src={LOGO_IMG_SRC}
           alt="IBetYou logo"
@@ -70,9 +74,12 @@ export const SideNavigation: FC<SideNavigationProps> = ({ isActive, onClose, isD
         <div className="mt-16 sm:mt-32">
           {navigationItems.map((item) => (
             <LinkButton
-              className={`flex items-center text-md sm:text-lg text-left p-4 hover:text-green-cyan w-full mb-4 ${
-                router.asPath === item.to ? 'text-green-cyan' : ''
-              }`}
+              className={classNames(
+                `flex items-center text-md sm:text-lg text-left p-6 hover:text-green-cyan w-full mb-4`,
+                {
+                  'text-green-cyan bg-navy-blue-mamba': router.asPath === item.to
+                }
+              )}
               onClick={onClose}
               key={item.id}
               to={item.to}
