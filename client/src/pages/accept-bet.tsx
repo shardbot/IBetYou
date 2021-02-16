@@ -27,7 +27,7 @@ const AcceptBet: FC = () => {
   const formSteps = FormSteps(setCurrentStep, currentStep);
 
   return (
-    <div className="px-12 xs:px-8">
+    <div className="px-6">
       <div className="max-w-xl mx-auto flex flex-col mb-24">
         {/* OVERVIEW */}
         {currentStep <= steps.length && (
