@@ -17,7 +17,7 @@ export const FormSteps = (setStep: Dispatch<SetStateAction<number>>, step: numbe
         message="You successfully accepted the bet!"
         secondMessage="Good Luck!"
         buttonLabel="Go to Dashboard"
-        to="/dashboard"
+        to="/user/dashboard"
       />
     )
   }
