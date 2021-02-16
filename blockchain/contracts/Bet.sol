@@ -10,8 +10,11 @@ import {PullPayment} from "@openzeppelin/contracts/payment/PullPayment.sol";
 import {
     ReentrancyGuard
 } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {
+    PaymentSplitter
+} from "@openzeppelin/contracts/payment/PaymentSplitter.sol";
 
-contract Bet is ReentrancyGuard, PullPayment {
+contract Bet is ReentrancyGuard {
     //----------------------------------------
     // Type definitions
     //----------------------------------------
@@ -22,6 +25,10 @@ contract Bet is ReentrancyGuard, PullPayment {
     //----------------------------------------
     IQuickSwapRouter02 router =
         IQuickSwapRouter02(0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff);
+    address private winner;
+    PaymentSplitter splitter;
+    uint256[] private shares;
+    address[] private addresses;
 
     //----------------------------------------
     // Constants
@@ -209,6 +216,8 @@ contract Bet is ReentrancyGuard, PullPayment {
     // External functions
     //----------------------------------------
 
+    function addFunds() public payable {}
+
     /**
      * @notice Assigns caller as bettor
      */
@@ -254,14 +263,8 @@ contract Bet is ReentrancyGuard, PullPayment {
     /**
      * @notice Transfers this contract's balance to caller if he won this bet
      */
-    function claimReward()
-        public
-        atState(BetState.BET_OVER)
-        onlyWinner(msg.sender)
-    {
-        //Add conversion from maUSDC to ETH(MATIC) here
-        _swapMaUSDCForEth(MAX_INT);
-        _asyncTransfer(msg.sender, address(this).balance);
+    function claimReward() public atState(BetState.BET_OVER) {
+        splitter.release(msg.sender);
     }
 
     /**
@@ -383,6 +386,15 @@ contract Bet is ReentrancyGuard, PullPayment {
             betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]] >
             JUDGE_PER_SIDE
         ) {
+            if (
+                betStorage.votes[
+                    betStorage.roleParticipants[COUNTER_BETTOR_ROLE]
+                ] > betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]]
+            ) winner = betStorage.roleParticipants[COUNTER_BETTOR_ROLE];
+            else winner = betStorage.roleParticipants[BETTOR_ROLE];
+
+            _swapMaUSDCForEth(MAX_INT);
+            _setUpPaymentSplitter();
             _nextState();
         } else if (
             betStorage.votes[betStorage.roleParticipants[COUNTER_BETTOR_ROLE]]
@@ -419,6 +431,10 @@ contract Bet is ReentrancyGuard, PullPayment {
         emit Action(_sender, _roleName, "Role assigned");
     }
 
+    /**
+     * @notice Swaps MATIC(ETH) tokens for maUSDC tokens
+     * @param _unixTime If transaction is not mined and unixTime has expire, transaction will revert
+     */
     function _swapEthForMaUSDC(uint256 _unixTime) internal {
         address[] memory path1 = _createPath(router.WETH(), QUICK);
         address[] memory path2 = _createPath(QUICK, maUSDC);
@@ -441,6 +457,10 @@ contract Bet is ReentrancyGuard, PullPayment {
         );
     }
 
+    /**
+     * @notice Swaps maUSDC tokens for MATIC(ETH) tokens
+     * @param _unixTime If transaction is not mined and unixTime has expire, transaction will revert
+     */
     function _swapMaUSDCForEth(uint256 _unixTime) internal {
         address[] memory path1 = _createPath(maUSDC, QUICK);
         address[] memory path2 = _createPath(QUICK, router.WETH());
@@ -466,6 +486,11 @@ contract Bet is ReentrancyGuard, PullPayment {
         );
     }
 
+    /**
+     * @notice Returns token balance of an address
+     * @param _target address of token bearer
+     * @param _token address of a token
+     */
     function _getTokenBalance(address _target, address _token)
         internal
         view
@@ -474,6 +499,11 @@ contract Bet is ReentrancyGuard, PullPayment {
         return IERC20(_token).balanceOf(_target);
     }
 
+    /**
+     * @notice Returns trade route for a token exchange
+     * @param _address1 address of starting token (input)
+     * @param _address2 address of output token
+     */
     function _createPath(address _address1, address _address2)
         internal
         pure
@@ -484,5 +514,23 @@ contract Bet is ReentrancyGuard, PullPayment {
         path[1] = _address2;
 
         return path;
+    }
+
+    /**
+     * @notice Sets up PaymentSplitter so funds can be claimed
+     */
+    function _setUpPaymentSplitter() internal {
+        addresses = [
+            winner,
+            betStorage.roleParticipants[COUNTER_BETTOR_JUDGE],
+            betStorage.roleParticipants[BETTOR_JUDGE],
+            betStorage.admin
+        ];
+        shares = [97, 1, 1, 1];
+
+        splitter = new PaymentSplitter{value: address(this).balance}(
+            addresses,
+            shares
+        );
     }
 }
