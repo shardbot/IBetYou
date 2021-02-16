@@ -1,1 +1,1 @@
-export { StepList } from './StepList';
+export { StepsOverviewContainer } from './StepsOverviewContainer';

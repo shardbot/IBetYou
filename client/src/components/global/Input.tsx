@@ -9,20 +9,29 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement | HTMLTextArea
   validation?: string;
   placeholder?: string;
   children?: ReactNode;
+  classes?: string;
 }
 
-export const Input: FC<InputProps> = ({ name, label, type, validation, children, ...props }) => {
+export const Input: FC<InputProps> = ({
+  name,
+  label,
+  type,
+  validation,
+  children,
+  classes,
+  ...props
+}) => {
   return (
-    <div className={styles.inputWrapper}>
-      <label className={styles.label} htmlFor={name}>
+    <div className="flex flex-col">
+      <label className="mb-2 font-bold text-slate-gray" htmlFor={name}>
         {label}
       </label>
       {type === 'textarea' ? (
-        <textarea name={name} className={styles.input} id={name} {...props} />
+        <textarea className={`input ${classes}`} name={name} id={name} {...props} />
       ) : (
-        <input name={name} className={styles.input} id={name} type={type} {...props} />
+        <input className={`input ${classes}`} name={name} id={name} type={type} {...props} />
       )}
-      {validation && <span className={styles.validation}>Error</span>}
+      {validation && <span>Error</span>}
       {children}
     </div>
   );

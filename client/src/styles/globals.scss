@@ -10,7 +10,15 @@ $background-color: 'bg-navy-blue-mamba';
 
 @layer components {
   .btn-primary {
-    @apply rounded-lg bg-green-cyan h-full px-4 py-2 font-bold focus:outline-none focus:ring-1 focus:ring-white;
+    @apply rounded-lg bg-green-cyan h-full px-4 py-4 font-bold focus:outline-none focus:ring-1 focus:ring-white;
+  }
+
+  .btn-secondary {
+    @apply rounded-lg bg-real-dark h-full px-4 py-4 font-bold focus:outline-none focus:ring-1 focus:ring-white;
+  }
+
+  .input {
+    @apply px-4 py-3 bg-real-dark rounded-lg focus:outline-none focus:ring-1 focus:ring-white;
   }
 
   .sub-text {
@@ -27,4 +35,10 @@ body {
 
 #__next {
   @apply flex flex-col w-full min-h-screen #{!important};
+}
+
+.radio-box {
+  input:checked + label {
+    border: 2px solid #2CC597;
+  }
 }

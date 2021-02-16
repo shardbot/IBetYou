@@ -1,31 +1,27 @@
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 
 import MenuIcon from '../../../assets/icons/menu.svg';
 import { LOGO_IMG_SRC } from '../../../constants';
 import { Button } from '../Button';
-import { MainNavigation } from './MainNavigation';
+import { MainNavigation } from '../navigation';
 
-export const Header: FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+interface HeaderProps {
+  handleToggle: () => void;
+}
 
-  useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? 'hidden' : 'auto';
-  }, [isMenuOpen]);
-
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
-  const closeMenu = () => setIsMenuOpen(false);
-
+export const Header: FC<HeaderProps> = ({ handleToggle }) => {
   return (
     <>
       <header className="md:container md:mx-auto">
-        <div className="flex justify-between items-center p-4">
+        {/* MOBILE */}
+        <div className="flex justify-between items-center m-4">
           <div className="flex items-center">
-            <Button className="lg:hidden h-full mr-4" onClick={toggleMenu}>
+            <Button className="lg:hidden h-full mr-4" onClick={handleToggle}>
               <MenuIcon />
             </Button>
             <img src={LOGO_IMG_SRC} alt="IBetYou logo" />
           </div>
+          {/* DESKTOP */}
           <div className="flex items-center">
             <MainNavigation type="desktop" />
             <Button className="btn-primary text-xs md:text-base md:ml-8 lg:ml-32">
@@ -33,8 +29,6 @@ export const Header: FC = () => {
             </Button>
           </div>
         </div>
-        {/* Mobile */}
-        <MainNavigation type="mobile" isActive={isMenuOpen} onClose={closeMenu} />
       </header>
     </>
   );
