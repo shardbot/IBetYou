@@ -216,8 +216,6 @@ contract Bet is ReentrancyGuard {
     // External functions
     //----------------------------------------
 
-    function addFunds() public payable {}
-
     /**
      * @notice Assigns caller as bettor
      */
