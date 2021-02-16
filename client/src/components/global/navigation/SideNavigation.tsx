@@ -12,19 +12,19 @@ import { LinkButton } from '../LinkButton';
 const navigationItems = [
   {
     id: 1,
-    to: '/dashboard',
+    to: '/user/dashboard',
     text: 'Dashboard',
     icon: <LayoutIcon className="w-6 h-6 mr-4" />
   },
   {
     id: 2,
-    to: '/initiate-bet',
+    to: '/user/initiate-bet',
     text: 'Initiate bet',
     icon: <DollarSignIcon className="w-6 h-6 mr-4" />
   },
   {
     id: 3,
-    to: '/faq',
+    to: '/user/faq',
     text: 'FAQ',
     icon: <HelpCircleIcon className="w-6 h-6 mr-4" />
   }

@@ -24,7 +24,7 @@ export const FaqItem: FC<FaqItemProps> = ({ faq }) => {
         <button className="mr-4 self-start pt-0.5" onClick={handleToggle}>
           {isVisible ? <MinusIcon /> : <PlusIcon />}
         </button>
-        <h1 className="font-bold text-lg">{faq.title}</h1>
+        <h1 className="font-bold text-base md:text-lg">{faq.title}</h1>
       </div>
       <div className={['lg:pl-12 mt-2', `${!isVisible ? 'hidden' : ''}`].join(' ')}>
         {faq.content.map((text, i) => (

@@ -1,15 +1,15 @@
 import { FC, useState } from 'react';
 
-import CalendarIcon from '../assets/icons/calendar.svg';
-import UserIcon from '../assets/icons/dollar-sign.svg';
-import EyeIcon from '../assets/icons/eye.svg';
-import MailIcon from '../assets/icons/mail.svg';
-import TypeIcon from '../assets/icons/type.svg';
-import DollarSignIcon from '../assets/icons/user.svg';
-import { FormSteps } from '../components/forms/initiate-bet';
-import { SecondaryLayout } from '../components/layouts';
-import { StepsOverviewContainer } from '../components/steps';
-import { PageWithLayout } from '../types';
+import CalendarIcon from '../../assets/icons/calendar.svg';
+import UserIcon from '../../assets/icons/dollar-sign.svg';
+import EyeIcon from '../../assets/icons/eye.svg';
+import MailIcon from '../../assets/icons/mail.svg';
+import TypeIcon from '../../assets/icons/type.svg';
+import DollarSignIcon from '../../assets/icons/user.svg';
+import { FormSteps } from '../../components/forms/initiate-bet';
+import { SecondaryLayout } from '../../components/layouts';
+import { StepsOverviewContainer } from '../../components/steps';
+import { PageWithLayout } from '../../types';
 
 const steps = [
   {

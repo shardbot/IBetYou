@@ -1,8 +1,8 @@
 import { FC, useState } from 'react';
 
-import { BetCard, Table, Tabs } from '../components/dashboard';
-import { SecondaryLayout } from '../components/layouts';
-import { PageWithLayout } from '../types';
+import { BetCard, Table, Tabs } from '../../components/dashboard';
+import { SecondaryLayout } from '../../components/layouts';
+import { PageWithLayout } from '../../types';
 
 const Dashboard: FC = () => {
   const [activeTab, setActiveTab] = useState(1);

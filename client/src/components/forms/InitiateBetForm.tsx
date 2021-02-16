@@ -1,6 +1,6 @@
 import { ChangeEvent, Dispatch, FC, SetStateAction, SyntheticEvent } from 'react';
 
-import { InitialBet } from '../../pages/initiate-bet';
+import { InitialBet } from '../../pages/user/initiate-bet';
 import btnStyles from '../../styles/modules/Button.module.scss';
 import styles from '../../styles/modules/InitiateBetForm.module.scss';
 import { Button, Input, Loader } from '../global';
