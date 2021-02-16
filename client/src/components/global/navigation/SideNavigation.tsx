@@ -64,14 +64,14 @@ export const SideNavigation: FC<SideNavigationProps> = ({ isActive, onClose, isD
   }
 
   return (
-    <Drawer isActive={isActive} onClose={onClose}>
+    <Drawer isActive={isActive} onClose={onClose} isDashboard={true}>
       <div className="flex flex-col bg-real-dark w-full">
         <img
           src={LOGO_IMG_SRC}
           alt="IBetYou logo"
           className="h-16 w-16 sm:h-24 sm:w-24 mx-auto mt-8"
         />
-        <div className="mt-16 sm:mt-32">
+        <nav className="mt-16 sm:mt-32">
           {navigationItems.map((item) => (
             <LinkButton
               className={classNames(
@@ -87,7 +87,7 @@ export const SideNavigation: FC<SideNavigationProps> = ({ isActive, onClose, isD
               icon={item.icon}
             />
           ))}
-        </div>
+        </nav>
       </div>
     </Drawer>
   );

@@ -61,7 +61,7 @@ export const MainNavigation: FC<MainNavigationProps> = ({ type, isActive, onClos
   if (type === 'mobile') {
     return (
       <Drawer isActive={isActive} onClose={onClose}>
-        <div className="flex flex-col p-4 bg-real-dark w-full">
+        <nav className="flex flex-col p-4 bg-real-dark w-full">
           <div className="flex items-center justify-between mb-8">
             <img className="h-16 w-16" src={LOGO_IMG_SRC} alt="IBetYou logo" />
             <Button className="h-auto" onClick={onClose}>
@@ -79,7 +79,7 @@ export const MainNavigation: FC<MainNavigationProps> = ({ type, isActive, onClos
               text={item.text}
             />
           ))}
-        </div>
+        </nav>
       </Drawer>
     );
   }
