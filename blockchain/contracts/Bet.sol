@@ -13,6 +13,7 @@ import {
 import {
     PaymentSplitter
 } from "@openzeppelin/contracts/payment/PaymentSplitter.sol";
+import "hardhat/console.sol";
 
 contract Bet is ReentrancyGuard {
     //----------------------------------------
@@ -516,15 +517,28 @@ contract Bet is ReentrancyGuard {
 
     /**
      * @notice Sets up PaymentSplitter so funds can be claimed
+     * if there is positive yield will send third of it to factory, other two thirds will be available to for judges to claim
+     * otherwise only winner gets reward
      */
     function _setUpPaymentSplitter() internal {
-        addresses = [
-            winner,
-            betStorage.roleParticipants[COUNTER_BETTOR_JUDGE],
-            betStorage.roleParticipants[BETTOR_JUDGE],
-            betStorage.admin
-        ];
-        shares = [97, 1, 1, 1];
+        uint256 yieldPercentage =
+            ((address(this).balance - 2 * betStorage.deposit) * 100) /
+                address(this).balance;
+
+        if (yieldPercentage > 0) {
+            uint256 judgeShare =
+                (yieldPercentage * address(this).balance) / 300;
+            payable(betStorage.admin).transfer(judgeShare);
+            addresses = [
+                winner,
+                betStorage.roleParticipants[COUNTER_BETTOR_JUDGE],
+                betStorage.roleParticipants[BETTOR_JUDGE]
+            ];
+            shares = [2 * betStorage.deposit, judgeShare, judgeShare];
+        } else {
+            addresses = [winner];
+            shares = [1];
+        }
 
         splitter = new PaymentSplitter{value: address(this).balance}(
             addresses,
