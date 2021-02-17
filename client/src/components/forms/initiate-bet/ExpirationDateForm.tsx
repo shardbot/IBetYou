@@ -1,6 +1,6 @@
 import { ChangeEvent, Dispatch, FC, SetStateAction, SyntheticEvent, useState } from 'react';
 
-import { Button, Input } from '../../global';
+import { Input } from '../../global';
 import { Header } from '../common';
 import { ActionGroup } from '../common/ActionGroup';
 
@@ -31,8 +31,8 @@ export const ExpirationDateForm: FC<ExpirationDateFormProps> = ({ setStep, step 
   return (
     <form>
       <Header
-        title="Let’s start with your opponent email"
-        subText="Please fill in the details below so that we can send the invitation to your opponent."
+        title="Does your bet has an expiration date?"
+        subText="Please provide an expiration date in the future  if your bet has one."
         className="mb-12 sm:mb-24"
       />
 

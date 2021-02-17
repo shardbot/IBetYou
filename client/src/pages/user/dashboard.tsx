@@ -1,6 +1,8 @@
 import { FC, useState } from 'react';
 
+import DollarSignIcon from '../../assets/icons/dollar-sign.svg';
 import { BetCard, Table, Tabs } from '../../components/dashboard';
+import { InformationCard } from '../../components/dashboard/card/InformationCard';
 import { SecondaryLayout } from '../../components/layouts';
 import { PageWithLayout } from '../../types';
 
@@ -12,15 +14,15 @@ const Dashboard: FC = () => {
       <h1 className="font-bold text-3xl mb-2">My bets</h1>
       <span className="text-slate-gray">Welcome to your bets</span>
       {/* TOTAL */}
-      <div className="h-auto w-full md:w-max bg-real-dark rounded-lg lg:px-16 lg:py-12 flex flex-col mt-8 mb-16 p-8">
-        <h3 className="text-lg mb-4">Total stake</h3>
-        <span className="font-bold text-3xl">1.005 ETH</span>
-      </div>
+      <InformationCard iconBackground="bg-green-100" accentText="0.005 ETH" subText="Total stake">
+        <DollarSignIcon className="w-8 h-8 text-green-cyan" />
+      </InformationCard>
       {/* TABS */}
       <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* MOBILE */}
-      <div className="mt-8 lg:hidden">
+      <div className="mt-8 lg:hidden space-y-4">
+        <BetCard />
         <BetCard />
       </div>
 
