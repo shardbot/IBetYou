@@ -1,17 +1,25 @@
-import { Dispatch, FC, SetStateAction, SyntheticEvent } from 'react';
+import { FC, SyntheticEvent, useState } from 'react';
 
-import { Button, Input } from '../../global';
+import { validation } from '../../../utils';
+import { Input } from '../../global';
 import { Header } from '../common';
 import { ActionGroup } from '../common/ActionGroup';
+import { FormProps } from '../index';
+import { handleOnChange } from './FormSteps';
 
-interface OpponentEmailFormProps {
-  setStep: Dispatch<SetStateAction<number>>;
-  step: number;
-}
+export const OpponentEmailForm: FC<FormProps> = ({ setStep, step, bet, setBet }) => {
+  const [error, setError] = useState<string | null>(null);
 
-export const OpponentEmailForm: FC<OpponentEmailFormProps> = ({ setStep, step }) => {
   const handleContinue = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    const { opponentEmail } = bet;
+    if (validation.isEmpty(opponentEmail) || !validation.isEmail(opponentEmail)) {
+      setError(validation.messages.email);
+      return;
+    }
+
+    setError(null);
     setStep(step + 1);
   };
 
@@ -29,6 +37,9 @@ export const OpponentEmailForm: FC<OpponentEmailFormProps> = ({ setStep, step })
           label="Enter your opponent email"
           type="text"
           placeholder="Email"
+          onChange={(e) => handleOnChange(e, setBet)}
+          value={bet.opponentEmail}
+          validation={error}
         />
       </div>
 

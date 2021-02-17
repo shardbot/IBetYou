@@ -1,15 +1,11 @@
-import { Dispatch, FC, SetStateAction, SyntheticEvent } from 'react';
+import { FC, SyntheticEvent } from 'react';
 
 import { Input } from '../../global';
 import { Header } from '../common';
 import { ActionGroup } from '../common/ActionGroup';
+import { FormProps } from '../index';
 
-interface SummaryFormProps {
-  setStep: Dispatch<SetStateAction<number>>;
-  step: number;
-}
-
-export const SummaryForm: FC<SummaryFormProps> = ({ setStep, step }) => {
+export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     setStep(step + 1);
@@ -29,18 +25,20 @@ export const SummaryForm: FC<SummaryFormProps> = ({ setStep, step }) => {
           name="description"
           label="Bet description"
           type="textarea"
-          value="I bet you that bitcoin will be at 100,000 $ at the end of this bet"
+          value={bet.description}
           readOnly={true}
           classes="mb-4 h-32"
         />
-        <Input
-          name="expirationDate"
-          label="Date of expiry"
-          type="text"
-          value="12/02/2021"
-          readOnly={true}
-          disabled
-        />
+        {bet.expirationDate && (
+          <Input
+            name="expirationDate"
+            label="Date of expiry"
+            type="text"
+            value="12/02/2021"
+            readOnly={true}
+            disabled
+          />
+        )}
       </div>
 
       <div className="mb-12 sm:mb-24 text-center">

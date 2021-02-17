@@ -1,10 +1,11 @@
-import { FC, useState } from 'react';
+import { FC, useReducer, useState } from 'react';
 
 import EyeIcon from '../assets/icons/eye.svg';
 import UserIcon from '../assets/icons/user.svg';
 import { FormSteps } from '../components/forms/accept-bet';
 import { SecondaryLayout } from '../components/layouts';
 import { StepsOverviewContainer } from '../components/steps';
+import { BetReducer, DefaultBetState } from '../reducers/betReducer';
 import { PageWithLayout } from '../types';
 
 const steps = [
@@ -24,7 +25,8 @@ const steps = [
 
 const AcceptBet: FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const formSteps = FormSteps(setCurrentStep, currentStep);
+  const [bet, setBet] = useReducer(BetReducer, DefaultBetState);
+  const formSteps = FormSteps(setCurrentStep, currentStep, bet, setBet);
 
   return (
     <div className="px-6">

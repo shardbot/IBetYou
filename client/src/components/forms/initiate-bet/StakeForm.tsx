@@ -1,17 +1,25 @@
-import { Dispatch, FC, SetStateAction, SyntheticEvent } from 'react';
+import { FC, SyntheticEvent, useState } from 'react';
 
 import { Input } from '../../global';
 import { Header } from '../common';
 import { ActionGroup } from '../common/ActionGroup';
+import { FormProps } from '../index';
+import { handleOnChange } from './FormSteps';
+import { validation } from '../../../utils';
 
-interface StakeFormProps {
-  setStep: Dispatch<SetStateAction<number>>;
-  step: number;
-}
+export const StakeForm: FC<FormProps> = ({ setStep, step, bet, setBet }) => {
+  const [error, setError] = useState<string | null>(null);
 
-export const StakeForm: FC<StakeFormProps> = ({ setStep, step }) => {
   const handleContinue = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    const { stake } = bet;
+    if (validation.isEmpty(stake) || !validation.isNumber(+stake)) {
+      setError(validation.messages.stake);
+      return;
+    }
+
+    setError(null);
     setStep(step + 1);
   };
 
@@ -29,7 +37,17 @@ export const StakeForm: FC<StakeFormProps> = ({ setStep, step }) => {
       />
 
       <div className="mb-12 sm:mb-24">
-        <Input name="stake" label="Enter amount" type="number" placeholder="Amount" />
+        <Input
+          name="stake"
+          label="Enter amount"
+          type="number"
+          placeholder="Amount"
+          value={bet.stake}
+          onChange={(e) => {
+            handleOnChange(e, setBet);
+          }}
+          validation={error}
+        />
       </div>
 
       <div className="flex justify-end">

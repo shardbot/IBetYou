@@ -1,17 +1,25 @@
-import { Dispatch, FC, SetStateAction, SyntheticEvent } from 'react';
+import { FC, SyntheticEvent, useState } from 'react';
 
 import { Input } from '../../global';
 import { Header } from '../common';
 import { ActionGroup } from '../common/ActionGroup';
+import { FormProps } from '../index';
+import { handleOnChange } from './FormSteps';
+import { validation } from '../../../utils';
 
-interface BetDescriptionFormProps {
-  setStep: Dispatch<SetStateAction<number>>;
-  step: number;
-}
+export const BetDescriptionForm: FC<FormProps> = ({ setStep, step, bet, setBet }) => {
+  const [error, setError] = useState<string | null>(null);
 
-export const BetDescriptionForm: FC<BetDescriptionFormProps> = ({ setStep, step }) => {
   const handleContinue = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    const { description } = bet;
+    if (validation.isEmpty(description)) {
+      setError(validation.messages.description);
+      return;
+    }
+
+    setError(null);
     setStep(step + 1);
   };
 
@@ -35,6 +43,9 @@ export const BetDescriptionForm: FC<BetDescriptionFormProps> = ({ setStep, step 
           type="textarea"
           placeholder="Description"
           classes="h-32"
+          onChange={(e) => handleOnChange(e, setBet)}
+          value={bet.description}
+          validation={error}
         />
       </div>
 
