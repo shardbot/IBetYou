@@ -1,8 +1,11 @@
-import { FC } from 'react';
+import { useRouter } from 'next/router';
+import { FC, SyntheticEvent } from 'react';
 
 import MenuIcon from '../../../assets/icons/menu.svg';
 import { LOGO_IMG_SRC } from '../../../constants';
+import { useAuth } from '../../../hooks/useAuth';
 import { Button } from '../Button';
+import { LinkButton } from '../LinkButton';
 import { MainNavigation } from '../navigation';
 
 interface HeaderProps {
@@ -10,6 +13,24 @@ interface HeaderProps {
 }
 
 export const Header: FC<HeaderProps> = ({ handleToggle }) => {
+  const { connectWallet, isLoggedIn, redirectToDashboard } = useAuth();
+  const router = useRouter();
+
+  const handleConnectWallet = async (e: SyntheticEvent) => {
+    if (isLoggedIn()) {
+      router.push('user/dashboard');
+    }
+
+    const connect = await connectWallet();
+
+    console.log('Here >>> ', connect);
+    if (connect) {
+      redirectToDashboard();
+
+      // router.push('user/dashboard');
+    }
+  };
+
   return (
     <>
       <header className="md:container md:mx-auto">
@@ -24,9 +45,19 @@ export const Header: FC<HeaderProps> = ({ handleToggle }) => {
           {/* DESKTOP */}
           <div className="flex items-center">
             <MainNavigation type="desktop" />
-            <Button className="btn-primary text-xs md:text-base md:ml-8 lg:ml-32">
-              Connect wallet
-            </Button>
+            {isLoggedIn() ? (
+              <LinkButton
+                className="btn-primary py-2 text-xs lg:text-base md:ml-8 lg:ml-32"
+                to="user/dashboard"
+                text="Dashboard"
+              />
+            ) : (
+              <Button
+                className="btn-primary py-2 text-xs lg:text-base md:ml-8 lg:ml-32"
+                onClick={handleConnectWallet}>
+                Connect wallet
+              </Button>
+            )}
           </div>
         </div>
       </header>

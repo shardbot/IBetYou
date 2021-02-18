@@ -37,6 +37,7 @@ export const JudgeEmailForm: FC<FormProps> = ({ step, setStep, bet, setBet }) =>
           label="Enter your judge email"
           type="text"
           placeholder="Email"
+          value={bet.judgeEmail}
           onChange={(e) => handleOnChange(e, setBet)}
           validation={error}
         />

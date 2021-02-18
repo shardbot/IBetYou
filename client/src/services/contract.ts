@@ -3,9 +3,12 @@ import { Bet } from '../types/web3-v1-contracts/Bet';
 import { BetFactory } from '../types/web3-v1-contracts/BetFactory';
 import { convertEthToWei, getDateInMs } from '../utils';
 
-const BET_FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+// const BET_FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+// MOCK
+const BET_FACTORY_CONTRACT_ADDRESS = '0x78Ff3daD05c080f45569c5a14d7C1B05a917ACC1';
 
 const createBetFactoryContract = (web3: Web3) => {
+  console.log(web3);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return (new web3.eth.Contract(betFactoryAbi, BET_FACTORY_CONTRACT_ADDRESS) as any) as BetFactory;
@@ -30,6 +33,12 @@ export const getBet = async (web3: Web3, betContractAddress: string | any) => {
   const contract = createBetContract(web3, betContractAddress);
 
   return contract.methods.getBet().call();
+};
+
+export const getBets = async (web3: Web3) => {
+  const contract = createBetFactoryContract(web3);
+
+  return contract.methods.getBets().call();
 };
 
 export const createBet = async (web3: Web3, accountAddress: string, betParams: BetParams) => {

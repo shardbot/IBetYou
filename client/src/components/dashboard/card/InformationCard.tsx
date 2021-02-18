@@ -3,7 +3,7 @@ import { FC } from 'react';
 interface InformationCardProps {
   iconBackground: string;
   children: JSX.Element;
-  accentText: string;
+  accentText: string | number;
   subText: string;
 }
 

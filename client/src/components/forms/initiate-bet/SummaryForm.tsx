@@ -1,13 +1,83 @@
-import { FC, SyntheticEvent } from 'react';
+import { FC, SyntheticEvent, useContext, useState } from 'react';
 
+import { useAuth } from '../../../hooks/useAuth';
+import { Web3Context } from '../../../pages/_app';
+import { bet as makeBet, createBet, getBet } from '../../../services/contract';
+import { sendEmail } from '../../../services/mail';
 import { Input } from '../../global';
-import { Header } from '../common';
+import { ErrorAlert, Header } from '../common';
 import { ActionGroup } from '../common/ActionGroup';
 import { FormProps } from '../index';
 
 export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
-  const handleSubmit = (e: SyntheticEvent) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { getAccount, readyToTransact } = useAuth();
+  const web3 = useContext(Web3Context);
+  const [error, setError] = useState<string>(null);
+
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    // get account information
+    const account = getAccount();
+    // address given from created bet
+    let betAddress = null;
+
+    setIsLoading(true);
+
+    // check if wallet is ready to transact - proper network must be selected
+    const isReadyToTransact = await readyToTransact();
+    console.log(isReadyToTransact);
+    if (!isReadyToTransact) {
+      setError('Please select correct network!');
+      setIsLoading(false);
+      return;
+    }
+
+    // Try to create bet if wallet is ready
+    try {
+      const response = await createBet(web3, account.address, {
+        expirationDate: bet.expirationDate,
+        description: bet.description,
+        deposit: bet.deposit
+      });
+
+      // get address of created bet
+      betAddress = response.events.BetDeployed.returnValues[0];
+    } catch (e) {
+      setError('Oops! Something went wrong! Please try again.');
+      console.log(e);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // 2. SEND DEPOSIT
+      // get previously created bet
+      const createdBet = await getBet(web3, betAddress);
+
+      // send deposit
+      await makeBet(web3, account.address, betAddress, createdBet.deposit, 'bettor');
+    } catch (e) {
+      setError('Oops! Something went wrong! Please try again.');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // 3. SEND EMAIL
+      // opponent
+      await sendEmail(bet.opponentEmail, betAddress, 'counter-bettor', null);
+
+      // judge
+      await sendEmail(bet.judgeEmail, betAddress, 'judge', 'bettor-judge');
+    } catch (e) {
+      setError('Oops! Something went wrong! Please try again.');
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(false);
+
     setStep(step + 1);
   };
 
@@ -64,7 +134,7 @@ export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
 
       <div className="mb-12 sm:mb-24 text-center">
         <span className="mr-4 font-bold text-slate-gray text-sm">Stake of the bet</span>
-        <span className="font-bold text-5xl">{bet.stake} ETH</span>
+        <span className="font-bold text-5xl">{bet.deposit} ETH</span>
       </div>
       <div className="mb-8 text-center">
         <p className="text-slate-gray">
@@ -75,8 +145,15 @@ export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
       </div>
 
       <div className="flex justify-end">
-        <ActionGroup handleBack={handleBack} handleContinue={handleSubmit} isSubmit={true} />
+        <ActionGroup
+          handleBack={handleBack}
+          handleContinue={handleSubmit}
+          isSubmit={true}
+          isLoading={isLoading}
+        />
       </div>
+
+      {error && <ErrorAlert message={error} />}
     </form>
   );
 };

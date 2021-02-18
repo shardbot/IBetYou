@@ -12,9 +12,10 @@ declare global {
 export type PageWithLayout = NextPage & { Layout?: FC };
 
 export interface Bet {
-  opponentEmail: string;
+  opponentEmail?: string;
   description: string;
   expirationDate?: string;
-  judgeEmail: string;
-  stake: number | string;
+  judgeEmail?: string;
+  betState?: string;
+  deposit: string;
 }

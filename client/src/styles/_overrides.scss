@@ -1,5 +1,4 @@
 // Override bnc-onboard modal
-
 .bn-onboard-custom .bn-onboard-modal {
   font-family: $font-family;
 }
@@ -28,6 +27,7 @@
 }
 
 .bn-onboard-icon-button {
+  color: $white !important;
   &:hover {
     background: $navy-blue-mamba;
   }

@@ -11,6 +11,7 @@ const CONNECTION_IMG_SRC = '/assets/images/connection.svg';
 const MAKE_IT_RAIN_IMG_SRC = '/assets/images/make_it_rain.svg';
 const MY_UNIVERSE_IMG_SRC = '/assets/images/my_universe.svg';
 const GAME_DAY_IMG_SRC = '/assets/images/game_day.svg';
+const EMPTY_IMG_SRC = '/assets/images/empty.svg';
 
 export {
   LOGO_IMG_SRC,
@@ -24,5 +25,6 @@ export {
   CONNECTION_IMG_SRC,
   MAKE_IT_RAIN_IMG_SRC,
   MY_UNIVERSE_IMG_SRC,
-  GAME_DAY_IMG_SRC
+  GAME_DAY_IMG_SRC,
+  EMPTY_IMG_SRC
 };

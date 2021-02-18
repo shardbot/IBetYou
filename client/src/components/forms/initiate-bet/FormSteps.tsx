@@ -1,6 +1,7 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
-import { Bet, BetAction } from '../../../pages/user/initiate-bet';
+import { BetAction } from '../../../reducers/betReducer';
+import { Bet } from '../../../types';
 import { Success } from '../common/Success';
 import { BetDescriptionForm } from './BetDescriptionForm';
 import { ExpirationDateForm } from './ExpirationDateForm';

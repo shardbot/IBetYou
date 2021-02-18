@@ -13,8 +13,8 @@ export const StakeForm: FC<FormProps> = ({ setStep, step, bet, setBet }) => {
   const handleContinue = (e: SyntheticEvent) => {
     e.preventDefault();
 
-    const { stake } = bet;
-    if (validation.isEmpty(stake) || !validation.isNumber(+stake)) {
+    const { deposit } = bet;
+    if (validation.isEmpty(deposit) || !validation.isNumber(+deposit)) {
       setError(validation.messages.stake);
       return;
     }
@@ -38,11 +38,11 @@ export const StakeForm: FC<FormProps> = ({ setStep, step, bet, setBet }) => {
 
       <div className="mb-12 sm:mb-24">
         <Input
-          name="stake"
+          name="deposit"
           label="Enter amount"
           type="number"
           placeholder="Amount"
-          value={bet.stake}
+          value={bet.deposit}
           onChange={(e) => {
             handleOnChange(e, setBet);
           }}

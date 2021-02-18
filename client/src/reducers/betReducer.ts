@@ -4,7 +4,7 @@ export const DefaultBetState: Bet = {
   opponentEmail: '',
   description: '',
   judgeEmail: '',
-  stake: 0,
+  deposit: '',
   expirationDate: ''
 };
 

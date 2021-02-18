@@ -8,7 +8,7 @@ export const Header: FC = () => {
         <th className="w-1/3">BET DESCRIPTION</th>
         <th className="w-1/5">EXPIRATION DATE</th>
         <th className="w-1/6">STATUS</th>
-        <th className="w-1/6">STAKE</th>
+        <th className="w-1/6">STAKE (ETH)</th>
         <th className="w-1/4">ACTION</th>
       </tr>
     </thead>

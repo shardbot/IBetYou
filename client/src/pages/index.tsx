@@ -1,4 +1,5 @@
-import { FC } from 'react';
+import { useRouter } from 'next/router';
+import { FC, SyntheticEvent } from 'react';
 
 import ArrowRightIcon from '../assets/icons/arrow-right.svg';
 import DollarSignIcon from '../assets/icons/dollar-sign.svg';
@@ -14,9 +15,21 @@ import {
   ONLINE_TRANSACTIONS_IMG_SRC,
   SECURITY_ON_IMG_SRC
 } from '../constants';
+import { useAuth } from '../hooks/useAuth';
 import { PageWithLayout } from '../types';
 
 const Home: FC = () => {
+  const { connectWallet, isLoggedIn } = useAuth();
+  const router = useRouter();
+
+  const handleGetStarted = async (e: SyntheticEvent) => {
+    const connect = await connectWallet();
+
+    if (connect) {
+      router.push('user/dashboard');
+    }
+  };
+
   return (
     <>
       {/* HERO */}
@@ -30,7 +43,9 @@ const Home: FC = () => {
               IBetYou is a smarter way to place and track your bets. Keep ‘em all in one place, make
               sure no one bails out, and win money in your favorite cryptocurrency.
             </p>
-            <Button className="btn-primary text-xs lg:text-base px-16 lg:px-24 py-4">
+            <Button
+              className="btn-primary text-xs lg:text-base px-16 lg:px-24 py-4"
+              onClick={handleGetStarted}>
               Get Started
             </Button>
           </div>
@@ -196,7 +211,9 @@ const Home: FC = () => {
         </div>
       </section>
       <div className="flex justify-center">
-        <Button className="btn-primary text-xs lg:text-base px-16 lg:px-24 py-4">
+        <Button
+          className="btn-primary text-xs lg:text-base px-16 lg:px-24 py-4"
+          onClick={handleGetStarted}>
           Get Started
         </Button>
       </div>

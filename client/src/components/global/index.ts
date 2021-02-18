@@ -5,3 +5,5 @@ export { Input } from './Input';
 export { LinkButton } from './LinkButton';
 export { Button } from './Button';
 export { StatusBadge } from './StatusBadge';
+export { FullScreenLoader } from './FullScreenLoader';
+export { Loader } from './Loader';

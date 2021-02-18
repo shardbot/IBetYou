@@ -8,7 +8,9 @@ interface StatusBadgeProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const styles = {
-  active: 'bg-green-cyan text-green-cyan',
+  active: 'bg-light-blue text-light-blue',
+  pending: 'bg-yellow text-yellow',
+  claim: 'bg-green-cyan text-green-cyan',
   finished: 'bg-green-cyan text-green-cyan'
 };
 
