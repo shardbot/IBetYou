@@ -2,7 +2,15 @@
 
 // FONT
 $font-family: 'Raleway', sans-serif;
+$navy-blue-mamba: '#151E25';
+$real-dark: '#1F2932';
+$slate-gray: '#75818B';
+$white: '#FFF';
+$light-red: '#FF718D';
+
 $background-color: 'bg-navy-blue-mamba';
+
+@import './overrides';
 
 @import '~tailwindcss/base';
 @import '~tailwindcss/components';
