@@ -93,3 +93,35 @@ export const addJudge = async (
     });
   }
 };
+
+export const vote = async (
+  web3: Web3,
+  voteType: 'for-bettor' | 'for-counter-bettor',
+  betContractAddress: string | any,
+  accountAddress: string | any
+) => {
+  const contract = createBetContract(web3, betContractAddress);
+
+  if (voteType === 'for-bettor') {
+    console.log('vote for bettor');
+    return contract.methods.voteForBettor().send({
+      from: accountAddress
+    });
+  } else {
+    console.log('vote for counter-bettor');
+    return contract.methods.voteForCounterBettor().send({
+      from: accountAddress
+    });
+  }
+};
+
+export const claimReward = async (
+  web3: Web3,
+  betContractAddress: string | any,
+  accountAddress: string | any
+) => {
+  const contract = createBetContract(web3, betContractAddress);
+  return contract.methods.claimReward().send({
+    to: accountAddress
+  });
+};
