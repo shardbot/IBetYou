@@ -3,9 +3,7 @@ import { Bet } from '../types/web3-v1-contracts/Bet';
 import { BetFactory } from '../types/web3-v1-contracts/BetFactory';
 import { convertEthToWei, getDateInMs } from '../utils';
 
-// const BET_FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-// MOCK
-const BET_FACTORY_CONTRACT_ADDRESS = '0x78Ff3daD05c080f45569c5a14d7C1B05a917ACC1';
+const BET_FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
 const createBetFactoryContract = (web3: Web3) => {
   console.log(web3);
@@ -122,6 +120,7 @@ export const claimReward = async (
 ) => {
   const contract = createBetContract(web3, betContractAddress);
   return contract.methods.claimReward().send({
+    from: accountAddress,
     to: accountAddress
   });
 };

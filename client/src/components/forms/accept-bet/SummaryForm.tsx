@@ -113,9 +113,9 @@ export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
       </div>
       <div className="mb-8 text-center">
         <p className="text-slate-gray">
-          Disclaimer text. Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the standard dummy text ever since the 1500s, when an
-          unknown printer took a galley of type and scrambled it to make a type specimen book.
+          By accepting this bet you confirm that you understand that this bet will lock $ for a
+          specified amount of time and the amount will be transferred to the specified address This
+          is done using a smart contracts and is irreversible.
         </p>
       </div>
 

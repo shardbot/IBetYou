@@ -19,14 +19,15 @@ const Dashboard: FC = () => {
   const [totalStake, setTotalStake] = useState<number>(null);
   const web3 = useContext(Web3Context);
 
-  useEffect(() => {
+  const handleFetchBets = () => {
     setIsLoading(true);
     getBets(web3).then((addresses) => {
       console.log(addresses);
       Promise.all(addresses.map((address) => getBet(web3, address))).then((results) => {
-        const transformedResults = results.map((item) => {
+        const transformedResults = results.map((item, i) => {
           return {
             ...item,
+            address: addresses[i],
             expirationDate: item.expirationTime
           };
         });
@@ -40,6 +41,10 @@ const Dashboard: FC = () => {
         setIsLoading(false);
       });
     });
+  };
+
+  useEffect(() => {
+    handleFetchBets();
   }, []);
 
   useEffect(() => {
@@ -85,13 +90,13 @@ const Dashboard: FC = () => {
                 {/* MOBILE */}
                 <div className="mt-8 lg:hidden space-y-4">
                   {filteredBets.map((bet, i) => (
-                    <BetCard key={i} bet={bet} number={i + 1} />
+                    <BetCard key={i} bet={bet} number={i + 1} handleFetch={handleFetchBets} />
                   ))}
                 </div>
 
                 {/* DESKTOP */}
                 <div className="mx-auto hidden lg:flex flex-col mb-24 mt-8">
-                  <Table bets={bets} />
+                  <Table bets={filteredBets} handleFetch={handleFetchBets} />
                 </div>
               </>
             )}

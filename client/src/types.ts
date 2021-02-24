@@ -17,5 +17,6 @@ export interface Bet {
   expirationDate?: string;
   judgeEmail?: string;
   betState?: string;
+  betAddress?: string;
   deposit: string;
 }

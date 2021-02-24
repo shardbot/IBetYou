@@ -34,7 +34,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
   useEffect(() => {
     const onboardInstance = Onboard({
       dappId: 'test',
-      networkId: 1337,
+      networkId: 137,
       hideBranding: true,
       subscriptions: {
         wallet: (wallet) => {

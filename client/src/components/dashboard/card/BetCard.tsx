@@ -2,7 +2,9 @@ import classNames from 'classnames';
 import { FC, useContext, useState } from 'react';
 
 import ChevronDownIcon from '../../../assets/icons/chevron-down.svg';
+import { useAuth } from '../../../hooks/useAuth';
 import { Web3Context } from '../../../pages/_app';
+import { claimReward, vote } from '../../../services/contract';
 import { Bet } from '../../../types';
 import { convertWeiToEth, formatDate, getStatus } from '../../../utils';
 import { Button, StatusBadge } from '../../global';
@@ -10,14 +12,54 @@ import { Button, StatusBadge } from '../../global';
 interface BetCardProps {
   bet: Bet;
   number: number;
+  handleFetch: () => void;
 }
 
-export const BetCard: FC<BetCardProps> = ({ bet, number }) => {
+const map = {
+  1: 'In progress',
+  2: 'In progress',
+  3: 'Vote',
+  4: 'Vote',
+  5: 'Claim',
+  6: 'Finished'
+};
+
+export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const web3 = useContext(Web3Context);
+  const { getAccount } = useAuth();
+
+  const handleAction = async () => {
+    if (+bet.betState === 5) {
+      try {
+        await claimReward(web3, bet.betAddress, getAccount().address);
+        handleFetch();
+        return;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    if (+bet.betState === 3 || +bet.betState === 4) {
+      try {
+        await vote(web3, 'for-bettor', bet.betAddress, getAccount().address);
+        handleFetch();
+        return;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
 
   const handleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const checkIfDisabled = (betState: string) => {
+    if (+betState < 3 || +betState === 6) {
+      console.log('Here - true');
+      return true;
+    } else return false;
   };
 
   return (
@@ -27,7 +69,7 @@ export const BetCard: FC<BetCardProps> = ({ bet, number }) => {
         <div className="flex-1 flex flex-col">
           <div className="flex items-center">
             <StatusBadge type={getStatus(bet.betState)} />
-            {bet.expirationDate && (
+            {bet.expirationDate !== '0' && (
               <>
                 <span className="block w-1 h-1 bg-white rounded-full mx-2" />
                 <span>{formatDate(bet.expirationDate)}</span>
@@ -39,11 +81,12 @@ export const BetCard: FC<BetCardProps> = ({ bet, number }) => {
             className={classNames(
               'btn-primary block text-sm font-bold mt-4 py-2 px-8 h-auto w-max sticky',
               {
-                'disabled:opacity-50': +bet.betState < 5
+                'disabled:opacity-50': checkIfDisabled(bet.betState)
               }
             )}
-            disabled={+bet.betState < 5}>
-            {+bet.betState < 5 ? 'In progress' : 'Claim reward'}
+            onClick={handleAction}
+            disabled={checkIfDisabled(bet.betState)}>
+            {map[+bet.betState]}
           </Button>
         </div>
         <Button
