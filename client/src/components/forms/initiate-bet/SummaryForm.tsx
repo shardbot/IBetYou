@@ -1,17 +1,83 @@
-import { Dispatch, FC, SetStateAction, SyntheticEvent } from 'react';
+import { FC, SyntheticEvent, useContext, useState } from 'react';
 
+import { useAuth } from '../../../hooks/useAuth';
+import { Web3Context } from '../../../pages/_app';
+import { bet as makeBet, createBet, getBet } from '../../../services/contract';
+import { sendEmail } from '../../../services/mail';
 import { Input } from '../../global';
-import { Header } from '../common';
+import { ErrorAlert, Header } from '../common';
 import { ActionGroup } from '../common/ActionGroup';
+import { FormProps } from '../index';
 
-interface SummaryFormProps {
-  setStep: Dispatch<SetStateAction<number>>;
-  step: number;
-}
+export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { getAccount, readyToTransact } = useAuth();
+  const web3 = useContext(Web3Context);
+  const [error, setError] = useState<string>(null);
 
-export const SummaryForm: FC<SummaryFormProps> = ({ setStep, step }) => {
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    // get account information
+    const account = getAccount();
+    // address given from created bet
+    let betAddress = null;
+
+    setIsLoading(true);
+
+    // check if wallet is ready to transact - proper network must be selected
+    const isReadyToTransact = await readyToTransact();
+    console.log(isReadyToTransact);
+    if (!isReadyToTransact) {
+      setError('Please select correct network!');
+      setIsLoading(false);
+      return;
+    }
+
+    // Try to create bet if wallet is ready
+    try {
+      const response = await createBet(web3, account.address, {
+        expirationDate: bet.expirationDate,
+        description: bet.description,
+        deposit: bet.deposit
+      });
+
+      // get address of created bet
+      betAddress = response.events.BetDeployed.returnValues[0];
+    } catch (e) {
+      setError('Oops! Something went wrong! Please try again.');
+      console.log(e);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // 2. SEND DEPOSIT
+      // get previously created bet
+      const createdBet = await getBet(web3, betAddress);
+
+      // send deposit
+      await makeBet(web3, account.address, betAddress, createdBet.deposit, 'bettor');
+    } catch (e) {
+      setError('Oops! Something went wrong! Please try again.');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // 3. SEND EMAIL
+      // opponent
+      await sendEmail(bet.opponentEmail, betAddress, 'counter-bettor', null);
+
+      // judge
+      await sendEmail(bet.judgeEmail, betAddress, 'judge', 'bettor-judge');
+    } catch (e) {
+      setError('Oops! Something went wrong! Please try again.');
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(false);
+
     setStep(step + 1);
   };
 
@@ -31,7 +97,7 @@ export const SummaryForm: FC<SummaryFormProps> = ({ setStep, step }) => {
           name="opponentEmail"
           label="Email of the opponent"
           type="text"
-          value="test@shardlabs.io"
+          value={bet.opponentEmail}
           disabled
           readOnly={true}
           classes="mb-4"
@@ -40,7 +106,8 @@ export const SummaryForm: FC<SummaryFormProps> = ({ setStep, step }) => {
           name="description"
           label="Bet description"
           type="textarea"
-          value="I bet you that bitcoin will be at 100,000 $ at the end of this bet"
+          value={bet.description}
+          disabled
           readOnly={true}
           classes="mb-4 h-32"
         />
@@ -48,36 +115,45 @@ export const SummaryForm: FC<SummaryFormProps> = ({ setStep, step }) => {
           name="email"
           label="Email of the appointed judge"
           type="text"
-          value="test@shardlabs.io"
+          value={bet.judgeEmail}
           readOnly={true}
           disabled
           classes="mb-4"
         />
-        <Input
-          name="expirationDate"
-          label="Date of expiry"
-          type="text"
-          value="12/02/2021"
-          readOnly={true}
-          disabled
-        />
+        {bet.expirationDate && (
+          <Input
+            name="expirationDate"
+            label="Date of expiry"
+            type="text"
+            value={bet.expirationDate}
+            readOnly={true}
+            disabled
+          />
+        )}
       </div>
 
       <div className="mb-12 sm:mb-24 text-center">
         <span className="mr-4 font-bold text-slate-gray text-sm">Stake of the bet</span>
-        <span className="font-bold text-5xl">1 ETH</span>
+        <span className="font-bold text-5xl">{bet.deposit} ETH</span>
       </div>
       <div className="mb-8 text-center">
         <p className="text-slate-gray">
-          Disclaimer text. Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the standard dummy text ever since the 1500s, when an
-          unknown printer took a galley of type and scrambled it to make a type specimen book.
+          By accepting this bet you confirm that you understand that this bet will lock $ for a
+          specified amount of time and the amount will be transferred to the specified address This
+          is done using a smart contracts and is irreversible.
         </p>
       </div>
 
       <div className="flex justify-end">
-        <ActionGroup handleBack={handleBack} handleContinue={handleSubmit} isSubmit={true} />
+        <ActionGroup
+          handleBack={handleBack}
+          handleContinue={handleSubmit}
+          isSubmit={true}
+          isLoading={isLoading}
+        />
       </div>
+
+      {error && <ErrorAlert message={error} />}
     </form>
   );
 };

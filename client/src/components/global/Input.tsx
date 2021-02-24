@@ -1,6 +1,5 @@
+import classNames from 'classnames';
 import { FC, InputHTMLAttributes, ReactNode } from 'react';
-
-import styles from '../../styles/modules/Input.module.scss';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
   name: string;
@@ -27,11 +26,28 @@ export const Input: FC<InputProps> = ({
         {label}
       </label>
       {type === 'textarea' ? (
-        <textarea className={`input ${classes}`} name={name} id={name} {...props} />
+        <textarea
+          className={classNames('input', {
+            [classes]: !!classes,
+            'border border-light-red': !!validation
+          })}
+          name={name}
+          id={name}
+          {...props}
+        />
       ) : (
-        <input className={`input ${classes}`} name={name} id={name} type={type} {...props} />
+        <input
+          className={classNames('input', {
+            [classes]: !!classes,
+            'border border-light-red': !!validation
+          })}
+          name={name}
+          id={name}
+          type={type}
+          {...props}
+        />
       )}
-      {validation && <span>Error</span>}
+      {validation && <span className="mt-2 text-xs text-light-red">{validation}</span>}
       {children}
     </div>
   );

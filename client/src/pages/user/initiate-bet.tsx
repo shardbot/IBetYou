@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useReducer, useState } from 'react';
 
 import CalendarIcon from '../../assets/icons/calendar.svg';
 import UserIcon from '../../assets/icons/dollar-sign.svg';
@@ -9,6 +9,7 @@ import DollarSignIcon from '../../assets/icons/user.svg';
 import { FormSteps } from '../../components/forms/initiate-bet';
 import { SecondaryLayout } from '../../components/layouts';
 import { StepsOverviewContainer } from '../../components/steps';
+import { BetReducer, DefaultBetState } from '../../reducers/betReducer';
 import { PageWithLayout } from '../../types';
 
 const steps = [
@@ -52,7 +53,8 @@ const steps = [
 
 const InitiateBet: FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const formSteps = FormSteps(setCurrentStep, currentStep);
+  const [bet, setBet] = useReducer(BetReducer, DefaultBetState);
+  const formSteps = FormSteps(setCurrentStep, currentStep, bet, setBet);
 
   return (
     <div className="px-6">

@@ -1,18 +1,17 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, SyntheticEvent, useState } from 'react';
+import { ChangeEvent, FC, SyntheticEvent, useState } from 'react';
 
-import { Button, Input } from '../../global';
+import { validation } from '../../../utils';
+import { Input } from '../../global';
 import { Header } from '../common';
 import { ActionGroup } from '../common/ActionGroup';
+import { FormProps } from '../index';
+import { handleOnChange } from './FormSteps';
 
 type CheckBoxChoices = 'no' | 'yes';
 
-interface ExpirationDateFormProps {
-  setStep: Dispatch<SetStateAction<number>>;
-  step: number;
-}
-
-export const ExpirationDateForm: FC<ExpirationDateFormProps> = ({ setStep, step }) => {
+export const ExpirationDateForm: FC<FormProps> = ({ setStep, step, bet, setBet }) => {
   const [checkBox, setCheckBox] = useState<CheckBoxChoices>('no');
+  const [error, setError] = useState<string | null>(null);
 
   const handleCheck = (e: ChangeEvent<HTMLInputElement>) => {
     setCheckBox(e.target.value as CheckBoxChoices);
@@ -20,6 +19,16 @@ export const ExpirationDateForm: FC<ExpirationDateFormProps> = ({ setStep, step 
 
   const handleContinue = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    if (checkBox === 'yes') {
+      const { expirationDate } = bet;
+      if (validation.isEmpty(expirationDate)) {
+        setError(validation.messages.date);
+        return;
+      }
+    }
+
+    setError(null);
     setStep(step + 1);
   };
 
@@ -31,8 +40,8 @@ export const ExpirationDateForm: FC<ExpirationDateFormProps> = ({ setStep, step 
   return (
     <form>
       <Header
-        title="Let’s start with your opponent email"
-        subText="Please fill in the details below so that we can send the invitation to your opponent."
+        title="Does your bet has an expiration date?"
+        subText="Please provide an expiration date in the future  if your bet has one."
         className="mb-12 sm:mb-24"
       />
 
@@ -75,7 +84,15 @@ export const ExpirationDateForm: FC<ExpirationDateFormProps> = ({ setStep, step 
         </div>
 
         <div className={`mt-12 ${checkBox === 'no' ? 'hidden' : ''}`}>
-          <Input classes="w-full" name="expirationDate" label="Date of expiry" type="date" />
+          <Input
+            classes="w-full"
+            name="expirationDate"
+            label="Date of expiry"
+            type="date"
+            value={bet.expirationDate}
+            onChange={(e) => handleOnChange(e, setBet)}
+            validation={error}
+          />
         </div>
       </div>
 

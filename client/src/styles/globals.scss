@@ -2,7 +2,15 @@
 
 // FONT
 $font-family: 'Raleway', sans-serif;
+$navy-blue-mamba: #151e25;
+$real-dark: #1f2932;
+$slate-gray: #75818b;
+$white: #fff;
+$light-red: #ff718d;
+
 $background-color: 'bg-navy-blue-mamba';
+
+@import './overrides';
 
 @import '~tailwindcss/base';
 @import '~tailwindcss/components';
@@ -39,6 +47,33 @@ body {
 
 .radio-box {
   input:checked + label {
-    border: 2px solid #2CC597;
+    border: 2px solid #2cc597;
   }
+}
+
+// Loader animation
+@keyframes loader-rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.loader {
+  border-right-color: transparent;
+  animation: loader-rotate 1s linear infinite;
+}
+
+// background on autofill
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px $real-dark inset !important;
+  -webkit-text-fill-color: white !important;
+}
+// input arrows
+.input[type=number] {
+  &::-webkit-inner-spin-button{ display: none; }
+  -moz-appearance:textfield;
 }

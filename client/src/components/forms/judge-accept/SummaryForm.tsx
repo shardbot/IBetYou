@@ -1,17 +1,58 @@
-import { Dispatch, FC, SetStateAction, SyntheticEvent } from 'react';
+import { useRouter } from 'next/router';
+import { FC, SyntheticEvent, useContext, useState } from 'react';
 
+import { useAuth } from '../../../hooks/useAuth';
+import { Web3Context } from '../../../pages/_app';
+import { addJudge } from '../../../services/contract';
+import { convertWeiToEth } from '../../../utils';
 import { Input } from '../../global';
-import { Header } from '../common';
+import { ErrorAlert, Header } from '../common';
 import { ActionGroup } from '../common/ActionGroup';
+import { FormProps } from '../index';
 
-interface SummaryFormProps {
-  setStep: Dispatch<SetStateAction<number>>;
-  step: number;
-}
+export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>(null);
+  const web3 = useContext(Web3Context);
+  const { connectWallet, getAccount, readyToTransact } = useAuth();
+  const router = useRouter();
 
-export const SummaryForm: FC<SummaryFormProps> = ({ setStep, step }) => {
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    const { address, type } = router.query;
+    setIsLoading(true);
+
+    let account = null;
+
+    // connect wallet
+    const wallet = await connectWallet();
+    if (!wallet) {
+      setError('Please connect wallet!');
+      setIsLoading(false);
+      return;
+    }
+
+    // check if wallet is ready to transact
+    const isReadyToTransact = await readyToTransact();
+    console.log(isReadyToTransact);
+
+    if (isReadyToTransact) {
+      account = getAccount();
+      console.log(account);
+
+      try {
+        // add judge
+        await addJudge(web3, type, address, account.address);
+      } catch (e) {
+        console.log(e);
+        setError('Oops! Something went wrong! Please try again.');
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    setIsLoading(false);
+    setError(null);
     setStep(step + 1);
   };
 
@@ -29,35 +70,40 @@ export const SummaryForm: FC<SummaryFormProps> = ({ setStep, step }) => {
           name="description"
           label="Bet description"
           type="textarea"
-          value="I bet you that bitcoin will be at 100,000 $ at the end of this bet"
-          readOnly={true}
-          classes="mb-4 h-32"
-        />
-        <Input
-          name="expirationDate"
-          label="Date of expiry"
-          type="text"
-          value="12/02/2021"
+          value={bet.description}
           readOnly={true}
           disabled
+          classes="mb-4 h-32"
         />
+        {bet.expirationDate && (
+          <Input
+            name="expirationDate"
+            label="Date of expiry"
+            type="text"
+            value={bet.expirationDate}
+            readOnly={true}
+            disabled
+          />
+        )}
       </div>
 
       <div className="mb-12 sm:mb-24 text-center">
         <span className="mr-4 font-bold text-slate-gray text-sm">Stake of the bet</span>
-        <span className="font-bold text-5xl">1 ETH</span>
+        <span className="font-bold text-5xl">{convertWeiToEth(web3, bet.deposit)} ETH</span>
       </div>
       <div className="mb-8 text-center">
         <p className="text-slate-gray">
-          Disclaimer text. Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the standard dummy text ever since the 1500s, when an
-          unknown printer took a galley of type and scrambled it to make a type specimen book.
+          By accepting this bet you confirm that you understand that this bet will lock $ for a
+          specified amount of time and the amount will be transferred to the specified address This
+          is done using a smart contracts and is irreversible.
         </p>
       </div>
 
       <div className="flex justify-end">
-        <ActionGroup handleContinue={handleSubmit} isSubmit={true} />
+        <ActionGroup handleContinue={handleSubmit} isSubmit={true} isLoading={isLoading} />
       </div>
+
+      {error && <ErrorAlert message={error} />}
     </form>
   );
 };

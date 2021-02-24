@@ -1,17 +1,25 @@
-import { Dispatch, FC, SetStateAction, SyntheticEvent } from 'react';
+import { FC, SyntheticEvent, useState } from 'react';
 
+import { validation } from '../../../utils';
 import { Input } from '../../global';
 import { Header } from '../common';
 import { ActionGroup } from '../common/ActionGroup';
+import { FormProps } from '../index';
+import { handleOnChange } from '../initiate-bet/FormSteps';
 
-interface JudgeEmailFormProps {
-  setStep: Dispatch<SetStateAction<number>>;
-  step: number;
-}
+export const JudgeEmailForm: FC<FormProps> = ({ step, setStep, bet, setBet }) => {
+  const [error, setError] = useState<string | null>(null);
 
-export const JudgeEmailForm: FC<JudgeEmailFormProps> = ({ step, setStep }) => {
   const handleContinue = (e: SyntheticEvent) => {
     e.preventDefault();
+
+    const { judgeEmail } = bet;
+    if (validation.isEmpty(judgeEmail) || !validation.isEmail(judgeEmail)) {
+      setError(validation.messages.email);
+      return;
+    }
+
+    setError(null);
     setStep(step + 1);
   };
 
@@ -24,7 +32,15 @@ export const JudgeEmailForm: FC<JudgeEmailFormProps> = ({ step, setStep }) => {
       />
 
       <div className="mb-12 sm:mb-24">
-        <Input name="judgeEmail" label="Enter your judge email" type="text" placeholder="Email" />
+        <Input
+          name="judgeEmail"
+          label="Enter your judge email"
+          type="text"
+          placeholder="Email"
+          value={bet.judgeEmail}
+          onChange={(e) => handleOnChange(e, setBet)}
+          validation={error}
+        />
       </div>
 
       <div className="flex justify-end">

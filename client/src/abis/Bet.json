@@ -71,6 +71,32 @@
   },
   {
     "inputs": [],
+    "name": "MATIC",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "QUICK",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "addBettor",
     "outputs": [],
     "stateMutability": "payable",
@@ -122,6 +148,11 @@
     "name": "getBet",
     "outputs": [
       {
+        "internalType": "address",
+        "name": "betAddress",
+        "type": "address"
+      },
+      {
         "internalType": "string",
         "name": "description",
         "type": "string"
@@ -146,19 +177,13 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "dest",
-        "type": "address"
-      }
-    ],
-    "name": "payments",
+    "inputs": [],
+    "name": "maUSDC",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "address",
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -179,16 +204,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address payable",
-        "name": "payee",
-        "type": "address"
-      }
-    ],
-    "name": "withdrawPayments",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]
