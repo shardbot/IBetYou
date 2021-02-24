@@ -4,7 +4,6 @@ import { BetFactory } from '../types/web3-v1-contracts/BetFactory';
 import { convertEthToWei, getDateInMs } from '../utils';
 
 const BET_FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-console.log(BET_FACTORY_CONTRACT_ADDRESS);
 
 const createBetFactoryContract = (web3: Web3) => {
   console.log(web3);
