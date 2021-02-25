@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "title": "Why do you allow only cryptocurrency?",
+    "content": [
+      "There are few more satisfying things in life than proving you’re right. IBetYou couples this with winning money ina cryptocurrency of your choice. We want that for you.",
+      "Also, betting with cryptocurrency means you never have to give us your credit card details or transfer money. This helps you keep your details (and your bank account) safe and sound."
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Who is this app for?",
+    "content": [
+      "IBetYou is for competitive risk-takers, know-it-alls, and those who want to add some fun to their life or find the right incentive to achieve their goals.",
+      "You don’t have to be a professional gambler or cryptocurrency trader to play with IBetYou."
+    ]
+  },
+  {
+    "id": 3,
+    "title": "What if I or my opponent want to cancel a bet?",
+    "content": [
+      "We believe holding your end of the bargain is important. IBetYou was created precisely to stop dishonest betting and promote fair play.",
+      "That’s why we don’t allow canceling bets once they’re confirmed by everyone involved.",
+      "If you don’t want to take part in a bet, don’t confirm it in the first place."
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Why do you allow only cryptocurrency?",
+    "content": [
+      "The sky is your limit.",
+      "Well, metaphorically speaking, because you can bet on the weather too. But you can also bet on who’ll win the elections, what song the DJ will play next, or whether you know how to spell connoisseur.",
+      "Whatever comes to your mind can be translated into a bet and nothing’s off limits."
+    ]
+  },
+  {
+    "id": 5,
+    "title": "What is a smart contract?",
+    "content": [
+      "In the simplest terms, a smart contract is a contract that allows you and your friends to make traceable and irreversible transactions.",
+      "When a smart contract is in place, you don’t need an outside enforcement mechanism or any other third-party authority. This allows you to receive and send cryptocurrency without doing any paperwork."
+    ]
+  }
+]

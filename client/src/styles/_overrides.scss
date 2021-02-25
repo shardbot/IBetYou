@@ -1,0 +1,52 @@
+// Override bnc-onboard modal
+.bn-onboard-custom .bn-onboard-modal {
+  font-family: $font-family;
+}
+
+.bn-onboard-modal-content {
+  background: $real-dark !important;
+  color: $slate-gray !important;
+
+  &-header {
+    color: $white;
+
+    &-icon {
+      background: $navy-blue-mamba !important;
+    }
+  }
+
+  &-close {
+    svg {
+      fill: $white;
+    }
+
+    &:hover {
+      background: $navy-blue-mamba !important;
+    }
+  }
+}
+
+.bn-onboard-icon-button {
+  color: $white !important;
+  &:hover {
+    background: $navy-blue-mamba;
+  }
+}
+
+.bn-onboard-selected-wallet {
+  background: $navy-blue-mamba !important;
+}
+
+.bn-onboard-prepare-button {
+  border-color: $navy-blue-mamba !important;
+  color: $white !important;
+
+  &:hover {
+    background: $navy-blue-mamba !important;
+  }
+}
+
+.bn-onboard-prepare-error {
+  border-color: $light-red !important;
+  color: $light-red !important;
+}

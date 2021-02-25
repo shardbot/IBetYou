@@ -1,6 +1,5 @@
+import classNames from 'classnames';
 import { FC, InputHTMLAttributes, ReactNode } from 'react';
-
-import styles from '../../styles/modules/Input.module.scss';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
   name: string;
@@ -9,20 +8,46 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement | HTMLTextArea
   validation?: string;
   placeholder?: string;
   children?: ReactNode;
+  classes?: string;
 }
 
-export const Input: FC<InputProps> = ({ name, label, type, validation, children, ...props }) => {
+export const Input: FC<InputProps> = ({
+  name,
+  label,
+  type,
+  validation,
+  children,
+  classes,
+  ...props
+}) => {
   return (
-    <div className={styles.inputWrapper}>
-      <label className={styles.label} htmlFor={name}>
+    <div className="flex flex-col">
+      <label className="mb-2 font-bold text-slate-gray" htmlFor={name}>
         {label}
       </label>
       {type === 'textarea' ? (
-        <textarea name={name} className={styles.input} id={name} {...props} />
+        <textarea
+          className={classNames('input', {
+            [classes]: !!classes,
+            'border border-light-red': !!validation
+          })}
+          name={name}
+          id={name}
+          {...props}
+        />
       ) : (
-        <input name={name} className={styles.input} id={name} type={type} {...props} />
+        <input
+          className={classNames('input', {
+            [classes]: !!classes,
+            'border border-light-red': !!validation
+          })}
+          name={name}
+          id={name}
+          type={type}
+          {...props}
+        />
       )}
-      {validation && <span className={styles.validation}>Error</span>}
+      {validation && <span className="mt-2 text-xs text-light-red">{validation}</span>}
       {children}
     </div>
   );

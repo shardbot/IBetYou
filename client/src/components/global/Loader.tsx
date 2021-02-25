@@ -1,7 +1,5 @@
 import { FC } from 'react';
 
-import styles from '../../styles/modules/Loader.module.scss';
-
 export const Loader: FC = () => {
-  return <span className={styles.loader}>Loading...</span>;
+  return <div className="w-12 h-12 border-4 border-green-cyan rounded-full loader" />;
 };
