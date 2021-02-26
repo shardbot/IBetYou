@@ -61,7 +61,7 @@ const Dashboard: FC = () => {
 
   return (
     <>
-      <div className="px-6 xs:px-8 md:px-12 xl:px-16 2xl:px-32 3xl:px-64">
+      <div className="px-6 xs:px-8 md:px-12 xl:px-16 2xl:px-24 3xl:px-32">
         <h1 className="font-bold text-3xl mb-2">My bets</h1>
         <span className="text-slate-gray">Welcome to your bets</span>
         {isLoading ? (
