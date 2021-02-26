@@ -66,7 +66,7 @@ const Dashboard: FC = () => {
         <span className="text-slate-gray">Welcome to your bets</span>
         {isLoading ? (
           <span className="flex justify-center mt-16">
-            <Loader />
+            <Loader classes="w-12 h-12" />
           </span>
         ) : (
           <>
