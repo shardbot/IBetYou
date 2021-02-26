@@ -35,7 +35,7 @@ export const Header: FC<HeaderProps> = ({ handleToggle }) => {
     <>
       <header className="md:container md:mx-auto">
         {/* MOBILE */}
-        <div className="flex justify-between items-center m-4">
+        <div className="flex justify-between items-center m-4 xl:px-24 2xl:px-34 3xl:px-48">
           <div className="flex items-center">
             <Button className="lg:hidden h-full mr-4" onClick={handleToggle}>
               <MenuIcon />

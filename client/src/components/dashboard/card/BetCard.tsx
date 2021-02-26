@@ -7,7 +7,7 @@ import { Web3Context } from '../../../pages/_app';
 import { claimReward, vote } from '../../../services/contract';
 import { Bet } from '../../../types';
 import { convertWeiToEth, formatDate, getStatus } from '../../../utils';
-import { Button, StatusBadge } from '../../global';
+import { Button, Loader, StatusBadge } from '../../global';
 
 interface BetCardProps {
   bet: Bet;
@@ -28,15 +28,19 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const web3 = useContext(Web3Context);
   const { getAccount } = useAuth();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleAction = async () => {
+    setIsLoading(true);
     if (+bet.betState === 5) {
       try {
         await claimReward(web3, bet.betAddress, getAccount().address);
         handleFetch();
+        setIsLoading(false);
         return;
       } catch (e) {
         console.log(e);
+        setIsLoading(false);
       }
     }
 
@@ -44,9 +48,11 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
       try {
         await vote(web3, 'for-bettor', bet.betAddress, getAccount().address);
         handleFetch();
+        setIsLoading(false);
         return;
       } catch (e) {
         console.log(e);
+        setIsLoading(false);
       }
     }
   };
@@ -77,17 +83,21 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
             )}
           </div>
           <span className="font-bold mt-1">{convertWeiToEth(web3, bet.deposit)} ETH</span>
-          <Button
-            className={classNames(
-              'btn-primary block text-sm font-bold mt-4 py-2 px-8 h-auto w-max sticky',
-              {
-                'disabled:opacity-50': checkIfDisabled(bet.betState)
-              }
-            )}
-            onClick={handleAction}
-            disabled={checkIfDisabled(bet.betState)}>
-            {map[+bet.betState]}
-          </Button>
+          {isLoading ? (
+            <Loader classes="w-8 h-8 mt-4" />
+          ) : (
+            <Button
+              className={classNames(
+                'btn-primary block text-sm font-bold mt-4 py-2 px-8 h-auto w-max sticky',
+                {
+                  'disabled:opacity-50': checkIfDisabled(bet.betState)
+                }
+              )}
+              onClick={handleAction}
+              disabled={checkIfDisabled(bet.betState)}>
+              {map[+bet.betState]}
+            </Button>
+          )}
         </div>
         <Button
           className={classNames('h-full mb-2 block self-end', {
