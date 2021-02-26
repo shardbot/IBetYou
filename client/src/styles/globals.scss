@@ -77,3 +77,8 @@ select:-webkit-autofill {
   &::-webkit-inner-spin-button{ display: none; }
   -moz-appearance:textfield;
 }
+
+// date icon
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

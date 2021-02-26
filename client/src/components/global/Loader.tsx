@@ -1,5 +1,16 @@
+import classNames from 'classnames';
 import { FC } from 'react';
 
-export const Loader: FC = () => {
-  return <div className="w-12 h-12 border-4 border-green-cyan rounded-full loader" />;
+interface LoaderProps {
+  classes?: string;
+}
+
+export const Loader: FC<LoaderProps> = ({ classes }) => {
+  return (
+    <div
+      className={classNames(`border-4 border-green-cyan rounded-full loader`, {
+        [classes]: !!classes
+      })}
+    />
+  );
 };
