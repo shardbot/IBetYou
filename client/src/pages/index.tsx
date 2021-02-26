@@ -193,7 +193,7 @@ const Home: FC = () => {
                 <PlusCircleIcon className="h-16 2xl:h-24 w-16 2xl:w-24" />
               </span>
               <p className="text-slate-gray text-base lg:text-lg">
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                Create irreversible bet in under 2 minutes.
               </p>
             </li>
             <span className="transform rotate-90 lg:rotate-0 self-center mb-8 lg:mx-8">
@@ -204,7 +204,7 @@ const Home: FC = () => {
                 <DollarSignIcon className="h-16 2xl:h-24 w-16 2xl:w-24" />
               </span>
               <p className="text-slate-gray text-base lg:text-lg">
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                Prove that you’re right and win crypto and NFTs.
               </p>
             </li>
           </ul>

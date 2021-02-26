@@ -6,3 +6,4 @@ node_modules/
 artifacts/
 build/
 dist/
+.DS_Store
