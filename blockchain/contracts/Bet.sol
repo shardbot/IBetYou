@@ -14,6 +14,8 @@ import {
 } from "@openzeppelin/contracts/payment/PaymentSplitter.sol";
 
 contract Bet is ReentrancyGuard {
+    bool private masterCopy = true;
+
     //----------------------------------------
     // Global variables
     //----------------------------------------
@@ -200,6 +202,8 @@ contract Bet is ReentrancyGuard {
         address _mapperAddress,
         address _exchangeAddress
     ) external nonReentrant transitionAfter atState(BetState.BET_CREATED) {
+        require(!masterCopy, "Not allowed to make changes on master copy.");
+
         betStorage.admin = _admin;
         betStorage.description = _description;
         betStorage.deposit = _deposit;
