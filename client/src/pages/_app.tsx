@@ -14,6 +14,13 @@ const initialState = {
   wallet: null
 };
 
+const wallets = [
+  { walletName: 'walletLink', rpcUrl: `https://rpc-mumbai.matic.today`, appName: 'IBetYou' },
+  { walletName: 'metamask' },
+  { walletName: 'opera' },
+  { walletName: 'torus' }
+];
+
 export const Web3Context = createContext<Web3 | null>(null);
 export const OnboardContext = createContext<API | null>(null);
 export const AuthContext = createContext<{
@@ -36,6 +43,9 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       dappId: 'test',
       networkId: 137,
       hideBranding: true,
+      walletSelect: {
+        wallets: wallets
+      },
       subscriptions: {
         wallet: (wallet) => {
           const web3Instance = new Web3(wallet.provider);
