@@ -1,21 +1,36 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract BetMapper {
+import {IBetFactory} from "./interfaces/IBetFactory.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+
+contract BetMapper is Ownable {
+    modifier onlyBetContract(address _address) {
+        require(
+            factory.isBetDeployed(_address),
+            "Only bet contract can use this functionality."
+        );
+        _;
+    }
+
+    IBetFactory private factory;
+
     enum Role {BETTOR, JUDGE}
 
     mapping(address => mapping(Role => address[])) addressBets;
 
-    function registerBettor(address _bettorAddress, address _betAddress)
+    function registerBettor(address _address)
         external
+        onlyBetContract(msg.sender)
     {
-        addressBets[_bettorAddress][Role.BETTOR].push(_betAddress);
+        addressBets[_address][Role.BETTOR].push(msg.sender);
     }
 
-    function registerJudge(address _judgeAddress, address _betAddress)
+    function registerJudge(address _address)
         external
+        onlyBetContract(msg.sender)
     {
-        addressBets[_judgeAddress][Role.JUDGE].push(_betAddress);
+        addressBets[_address][Role.JUDGE].push(msg.sender);
     }
 
     function getBettingBets(address _address)
@@ -32,5 +47,9 @@ contract BetMapper {
         returns (address[] memory)
     {
         return addressBets[_address][Role.JUDGE];
+    }
+
+    function setFactory(address _address) external onlyOwner {
+        factory = IBetFactory(_address);
     }
 }

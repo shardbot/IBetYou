@@ -18,7 +18,9 @@ interface IBet {
         address _admin,
         uint256 _deposit,
         string memory _description,
-        uint256 _expirationTime
+        uint256 _expirationTime,
+        address _mapperAddress,
+        address _exchangeAddress
     ) external;
 
     /**

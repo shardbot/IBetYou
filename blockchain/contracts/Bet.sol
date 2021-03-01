@@ -17,10 +17,9 @@ contract Bet is ReentrancyGuard {
     //----------------------------------------
     // Global variables
     //----------------------------------------
-    address private winner;
     PaymentSplitter private splitter;
-    uint256[] private shares;
-    address[] private addresses;
+    IBetMapper private betMapper;
+    IExchange internal exchange;
 
     //----------------------------------------
     // Constants
@@ -28,12 +27,8 @@ contract Bet is ReentrancyGuard {
     uint256 internal constant MAX_JUDGES = 2;
     uint256 internal constant JUDGE_PER_SIDE = 1;
     uint256 internal constant MAX_INT = type(uint256).max;
-    IExchange internal constant exchange =
-        IExchange(0xdA41a34336322583E3cA3d631B539bb50224e6e2);
     address public constant maUSDC =
         address(0x9719d867A500Ef117cC201206B8ab51e794d3F82);
-    IBetMapper betMapper =
-        IBetMapper(0x4Eb27178cfCdBf7A66dCA5D31Cb0612261A72297);
 
     //----------------------------------------
     // Contract roles
@@ -80,6 +75,9 @@ contract Bet is ReentrancyGuard {
         uint256 expirationTime;
         uint256 deposit;
         uint256 judgeShare;
+        address winner;
+        uint256[] shares;
+        address[] addresses;
     }
 
     event CurrentState(BetState _betState);
@@ -198,13 +196,19 @@ contract Bet is ReentrancyGuard {
         address _admin,
         uint256 _deposit,
         string memory _description,
-        uint256 _expirationTime
-    ) public nonReentrant transitionAfter atState(BetState.BET_CREATED) {
+        uint256 _expirationTime,
+        address _mapperAddress,
+        address _exchangeAddress
+    ) external nonReentrant transitionAfter atState(BetState.BET_CREATED) {
         betStorage.admin = _admin;
         betStorage.description = _description;
         betStorage.deposit = _deposit;
         betStorage.expirationTime = _expirationTime;
         betStorage.betState = BetState.BET_CREATED;
+
+        betMapper = IBetMapper(_mapperAddress);
+        exchange = IExchange(_exchangeAddress);
+
         emit CurrentState(betStorage.betState);
     }
 
@@ -309,6 +313,7 @@ contract Bet is ReentrancyGuard {
         } else {
             _assignRole(msg.sender, COUNTER_BETTOR_ROLE, "COUNTER BETTOR");
         }
+        betMapper.registerBettor(msg.sender);
         if (
             betStorage.roleParticipants[BETTOR_ROLE] != address(0) &&
             betStorage.roleParticipants[COUNTER_BETTOR_ROLE] != address(0)
@@ -338,6 +343,7 @@ contract Bet is ReentrancyGuard {
                 "COUNTER BETTOR JUDGE"
             );
         }
+        betMapper.registerJudge(msg.sender);
         if (
             betStorage.roleParticipants[BETTOR_JUDGE] != address(0) &&
             betStorage.roleParticipants[COUNTER_BETTOR_JUDGE] != address(0)
@@ -383,8 +389,11 @@ contract Bet is ReentrancyGuard {
                 betStorage.votes[
                     betStorage.roleParticipants[COUNTER_BETTOR_ROLE]
                 ] > betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]]
-            ) winner = betStorage.roleParticipants[COUNTER_BETTOR_ROLE];
-            else winner = betStorage.roleParticipants[BETTOR_ROLE];
+            )
+                betStorage.winner = betStorage.roleParticipants[
+                    COUNTER_BETTOR_ROLE
+                ];
+            else betStorage.winner = betStorage.roleParticipants[BETTOR_ROLE];
 
             IERC20(maUSDC).approve(
                 address(exchange),
@@ -476,24 +485,24 @@ contract Bet is ReentrancyGuard {
                 (yieldPercentage * address(this).balance) /
                 300;
             payable(betStorage.admin).transfer(betStorage.judgeShare);
-            addresses = [
-                winner,
+            betStorage.addresses = [
+                betStorage.winner,
                 betStorage.roleParticipants[COUNTER_BETTOR_JUDGE],
                 betStorage.roleParticipants[BETTOR_JUDGE]
             ];
-            shares = [
+            betStorage.shares = [
                 2 * betStorage.deposit,
                 betStorage.judgeShare,
                 betStorage.judgeShare
             ];
         } else {
-            addresses = [winner];
-            shares = [1];
+            betStorage.addresses = [betStorage.winner];
+            betStorage.shares = [1];
         }
 
         splitter = new PaymentSplitter{value: address(this).balance}(
-            addresses,
-            shares
+            betStorage.addresses,
+            betStorage.shares
         );
     }
 }

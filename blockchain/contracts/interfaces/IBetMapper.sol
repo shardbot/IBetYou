@@ -4,10 +4,9 @@ pragma solidity ^0.8.0;
 interface IBetMapper {
     enum Role {BETTOR, JUDGE}
 
-    function registerBettor(address _bettorAddress, address _betAddress)
-        external;
+    function registerBettor(address _address) external;
 
-    function registerJudge(address _judgeAddress, address _betAddress) external;
+    function registerJudge(address _address) external;
 
     function getBettingBets(address _address)
         external
@@ -18,4 +17,6 @@ interface IBetMapper {
         external
         view
         returns (address[] memory);
+
+    function setFactory(address _address) external;
 }

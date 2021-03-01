@@ -9,7 +9,10 @@ contract BetFactory is Ownable {
     //----------------------------------------
     // State variables
     //----------------------------------------
+    mapping(address => bool) private deployed;
     address private betAddress;
+    address private mapperAddress;
+    address private exchangeAddress;
     IBet[] private bets;
 
     //----------------------------------------
@@ -34,8 +37,16 @@ contract BetFactory is Ownable {
     ) external returns (IBet) {
         address betClone = createClone(betAddress);
         IBet bet = IBet(betClone);
-        bet.init(this.owner(), deposit, description, expirationTime);
+        bet.init(
+            this.owner(),
+            deposit,
+            description,
+            expirationTime,
+            mapperAddress,
+            exchangeAddress
+        );
         bets.push(bet);
+        deployed[betClone] = true;
 
         emit BetDeployed(betClone);
 
@@ -59,14 +70,30 @@ contract BetFactory is Ownable {
         }
     }
 
-    function setBetAddress(address _address) public onlyOwner {
+    function setBetAddress(address _address) external onlyOwner {
         betAddress = _address;
+    }
+
+    function setMapperAddress(address _address) external onlyOwner {
+        mapperAddress = _address;
+    }
+
+    function setExchangeAddress(address _address) external onlyOwner {
+        exchangeAddress = _address;
     }
 
     /**
      * @notice Returns an array of all deployed bet instances
      */
-    function getBets() public view returns (IBet[] memory) {
+    function getBets() external view returns (IBet[] memory) {
         return bets;
+    }
+
+    /**
+     * @param _address bet address to check
+     * @notice verifies if a bet is deployed
+     */
+    function isBetDeployed(address _address) external view returns (bool) {
+        return deployed[_address];
     }
 }
