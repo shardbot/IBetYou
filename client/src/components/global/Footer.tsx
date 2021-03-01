@@ -14,8 +14,7 @@ export const Footer: FC = () => {
           <LinkButton className="font-bold p-4" to="/faq" text="FAQ" />
         </div>
         <p className="text-center">
-          About app and company. Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry.
+          © 2021 All Rights Reserved.
         </p>
       </div>
     </footer>
