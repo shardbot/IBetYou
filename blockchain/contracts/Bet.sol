@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 // Libraries
+import {IBetMapper} from "./interfaces/IBetMapper.sol";
 import {IExchange} from "./interfaces/IExchange.sol";
 import {IQuickSwapRouter02} from "./interfaces/IQuickSwapRouter02.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -11,7 +12,6 @@ import {
 import {
     PaymentSplitter
 } from "@openzeppelin/contracts/payment/PaymentSplitter.sol";
-import "hardhat/console.sol";
 
 contract Bet is ReentrancyGuard {
     //----------------------------------------
@@ -32,6 +32,8 @@ contract Bet is ReentrancyGuard {
         IExchange(0xdA41a34336322583E3cA3d631B539bb50224e6e2);
     address public constant maUSDC =
         address(0x9719d867A500Ef117cC201206B8ab51e794d3F82);
+    IBetMapper betMapper =
+        IBetMapper(0x4Eb27178cfCdBf7A66dCA5D31Cb0612261A72297);
 
     //----------------------------------------
     // Contract roles
@@ -89,24 +91,6 @@ contract Bet is ReentrancyGuard {
     //----------------------------------------
 
     Storage private betStorage;
-
-    //----------------------------------------
-    // Constructor
-    //----------------------------------------
-
-    constructor(
-        address _admin,
-        uint256 _deposit,
-        string memory _description,
-        uint256 _expirationTime
-    ) nonReentrant transitionAfter {
-        betStorage.admin = _admin;
-        betStorage.description = _description;
-        betStorage.deposit = _deposit;
-        betStorage.expirationTime = _expirationTime;
-        betStorage.betState = BetState.BET_CREATED;
-        emit CurrentState(betStorage.betState);
-    }
 
     receive() external payable {}
 
@@ -206,6 +190,23 @@ contract Bet is ReentrancyGuard {
     //----------------------------------------
     // External functions
     //----------------------------------------
+
+    /**
+     * @notice Constructor replacement
+     */
+    function init(
+        address _admin,
+        uint256 _deposit,
+        string memory _description,
+        uint256 _expirationTime
+    ) public nonReentrant transitionAfter atState(BetState.BET_CREATED) {
+        betStorage.admin = _admin;
+        betStorage.description = _description;
+        betStorage.deposit = _deposit;
+        betStorage.expirationTime = _expirationTime;
+        betStorage.betState = BetState.BET_CREATED;
+        emit CurrentState(betStorage.betState);
+    }
 
     /**
      * @notice Assigns caller as bettor
