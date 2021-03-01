@@ -1,188 +1,67 @@
-const Bet = artifacts.require("Bet");
-const now = new Date();
-const betCreatorName = "Satoshi";
-const betTakerName = "Hal";
+const { assert } = require('chai');
+const { expect } = require('chai').use(require('chai-bignumber')());
+const dotenv = require('dotenv');
+dotenv.config('.env');
 
-let betFactory;
-let betTaker;
-let betTakerJudges;
-let betCreatorJudges;
-let expirationTime;
-let minimumDeposit;
+const betJSON = require('../artifacts/contracts/Bet.sol/Bet.json');
+const betABI = betJSON['abi'];
+const betByteCode = betJSON['bytecode'];
+const providerAddress = 'https://rpc-mainnet.maticvigil.com/';
+
+let bettor;
+let counterBettor;
+let bettorJudge;
+let counterBettorJudge;
+let provider;
 let bet;
-// admin is factory owner
-let admin;
 
-contract("Bet", (accounts) => {
-	beforeEach(async () => {
-		admin = accounts[0];
-		betCreator = accounts[1];
-		betTaker = accounts[2];
-		betCreatorJudges = [accounts[3], accounts[4]];
-		betTakerJudges = [accounts[5], accounts[6]];
-		expirationTime = Math.round(now.getTime() / 1000);
-		minimumDeposit = 100;
-		bet = await Bet.new(
-			admin,
-			betCreator,
-			betCreatorName,
-			betTaker,
-			betCreatorJudges,
-			minimumDeposit,
-			expirationTime
+describe('Bet', () => {
+	before(async () => {
+		[deployer] = await ethers.getSigners();
+		bettor = deployer.address;
+		provider = await ethers.getDefaultProvider(providerAddress);
+		counterBettor = new ethers.Wallet(process.env.COUNTER_BETTOR_PRIVATE_KEY, provider);
+	});
+	it('Sends one ether from deployer to counter bettor.', async () => {
+		const balanceBefore = await counterBettor.getBalance();
+		const tx = await deployer.sendTransaction({
+			from: deployer.address,
+			to: counterBettor.address,
+			value: ethers.utils.parseEther('1.0')
+		});
+		provider.waitForTransaction(tx.hash, 1).then(
+			async () => {
+				const balanceAfter = await counterBettor.getBalance();
+				expect(balanceAfter).to.be.bignumber.greaterThan(balanceBefore);
+			},
+			() => {
+				assert.fail();
+			}
 		);
 	});
-	it("Successfully deployed a bet instance.", async () => {
-		assert.ok(bet.address);
+	it('Successfully deploys a new bet.', async () => {
+		const betFactoryMock = new ethers.ContractFactory(betABI, betByteCode, deployer);
+		bet = await betFactoryMock.deploy(bettor, ethers.utils.parseEther('1.0'), 'Test bet', 0);
+		console.log(`Deployed bet address: ${bet.address}`);
+
+		expect(bet.address).to.not.equal('0x0');
 	});
-	it("Can't assign more than two judges.", async () => {
-		betCreatorJudges = [accounts[3], accounts[4], accounts[5]];
-		try {
-			bet = await Bet.new(
-				betCreator,
-				betCreator,
-				betCreatorName,
-				betTaker,
-				betCreatorJudges,
-				minimumDeposit,
-				expirationTime
-			);
-			assert.fail();
-		} catch (error) {
-			const msgexist = error.message.search("revert") >= 0;
-			assert.ok(msgexist);
-		}
-	});
-	it("Only pre defined bet taker can accept bet.", async () => {
-		const notOpponentAddress = accounts[6];
-		try {
-			await bet.acceptBet(betTakerJudges, betTakerName, {
-				from: notOpponentAddress,
-				value: minimumDeposit,
-			});
-			assert.fail();
-		} catch (error) {
-			const msgexist = error.message.search("revert") >= 0;
-			assert.ok(msgexist);
-		}
-	});
-	it("Only accepts bet if value sent is greater or equal to minimum deposit.", async () => {
-		const unacceptableValue = minimumDeposit - 100;
-		try {
-			await bet.acceptBet(betTakerJudges, betTakerName, {
-				from: betTaker,
-				value: unacceptableValue,
-			});
-			assert.fail();
-		} catch (error) {
-			const msgexist = error.message.search("revert") >= 0;
-			assert.ok(msgexist);
-		}
-	});
-	it("Can't add judges twice to same bet eg. can't accept same bet twice.", async () => {
-		try {
-			await bet.acceptBet(betTakerJudges, betTakerName, {
-				from: betTaker,
-				value: minimumDeposit,
-			});
-			await bet.acceptBet(betTakerJudges, betTakerName, {
-				from: betTaker,
-				value: minimumDeposit,
-			});
-			assert.fail();
-		} catch (error) {
-			const msgexist = error.message.search("revert") >= 0;
-			assert.ok(msgexist);
-		}
-	});
-	it("Must add same number of judges as the opponent.", async () => {
-		betTakerJudges = [accounts[5]];
-		try {
-			await bet.acceptBet(betTakerJudges, betTakerName, {
-				from: betTaker,
-				value: minimumDeposit,
-			});
-			assert.fail();
-		} catch (error) {
-			const msgexist = error.message.search("revert") >= 0;
-			assert.ok(msgexist);
-		}
-	});
-	it("Only allows judges to vote", async () => {
-		const notJudge = accounts[6];
-		try {
-			await bet.judgeVote(betCreator, { from: notJudge });
-			assert.fail();
-		} catch (error) {
-			const msgexist = error.message.search("revert") >= 0;
-			assert.ok(msgexist);
-		}
-	});
-	it("Judge can't vote if event didn't happen yet.", async () => {
-		expirationTime += 1000;
-		bet = await Bet.new(
-			admin,
-			betCreator,
-			betCreatorName,
-			betTaker,
-			betCreatorJudges,
-			minimumDeposit,
-			expirationTime
-		);
-		try {
-			await bet.judgeVote(betCreator, { from: betCreatorJudges[0] });
-			assert.fail();
-			creator;
-		} catch (error) {
-			const msgexist = error.message.search("revert") >= 0;
-			assert.ok(msgexist);
-		}
-	});
-	it("Same judge can't vote twice on a same bet.", async () => {
-		try {
-			await bet.judgeVote(betCreator, { from: betCreatorJudges[0] });
-			await bet.judgeVote(betCreator, { from: betCreatorJudges[0] });
-			assert.fail();
-		} catch (error) {
-			const msgexist = error.message.search("revert") >= 0;
-			assert.ok(msgexist);
-		}
-	});
-	it("Judge can only vote for bettors.", async () => {
-		const notCandidate = accounts[6];
-		try {
-			await bet.judgeVote(notCandidate, { from: betCreatorJudges[0] });
-			assert.fail();
-		} catch (error) {
-			const msgexist = error.message.search("revert") >= 0;
-			assert.ok(msgexist);
-		}
-	});
-	it("Ends bet when one of the bettors has more than half of all judges votes.", async () => {
-		await bet.acceptBet(betTakerJudges, betTakerName, {
-			from: betTaker,
-			value: minimumDeposit,
+	it('Successfully changes state after bettor and counter bettor have been added.', async () => {
+		const betStateBefore = await bet.getBet();
+
+		betBettor = bet.connect(deployer);
+		await betBettor.addBettor({
+			value: ethers.utils.parseEther('1.0')
 		});
-		await bet.judgeVote(betCreator, { from: betCreatorJudges[0] });
-		await bet.judgeVote(betCreator, { from: betCreatorJudges[1] });
-		await bet.judgeVote(betCreator, { from: betTakerJudges[0] });
-		const isBetOver = await bet.betOver();
-		assert.ok(isBetOver);
-	});
-	it("Sets 'isDraw' flag when votes for both sides are equal.", async () => {
-		await bet.judgeVote(betCreator, { from: betCreatorJudges[0] });
-	});
-	it("Allows admin to vote when it's draw.", async () => {
-		await bet.acceptBet(betTakerJudges, betTakerName, {
-			from: betTaker,
-			value: minimumDeposit,
+
+		betCounterBettor = bet.connect(counterBettor);
+		await betCounterBettor.addCounterBettor({
+			value: ethers.utils.parseEther('1.0')
 		});
-		await bet.judgeVote(betCreator, { from: betCreatorJudges[0] });
-		await bet.judgeVote(betCreator, { from: betCreatorJudges[1] });
-		await bet.judgeVote(betCreator, { from: betTakerJudges[0] });
-		await bet.adminVote(betCreator, { from: admin });
-		const isBetOver = await bet.betOver();
-		const isDraw = await bet.isDraw();
-		assert(isBetOver && !isDraw);
+
+		const betStateAfter = await bet.getBet();
+		console.log(betStateBefore);
+
+		expect(betStateBefore.betState).to.not.equal(betStateAfter.betState);
 	});
 });

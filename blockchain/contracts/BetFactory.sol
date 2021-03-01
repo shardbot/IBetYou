@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.0;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
+import "./Bet.sol";
 
 // Libraries
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import  {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "./Bet.sol";
 
-contract BetFactory is Ownable, ReentrancyGuard {
+contract BetFactory is Ownable {
     //----------------------------------------
     // State variables
     //----------------------------------------
@@ -17,8 +15,9 @@ contract BetFactory is Ownable, ReentrancyGuard {
     // Constructor
     //----------------------------------------
     constructor() {}
-    
+
     event BetDeployed(address _deployedBet);
+
     //----------------------------------------
     // External functions
     //----------------------------------------
@@ -27,17 +26,24 @@ contract BetFactory is Ownable, ReentrancyGuard {
      * @param description Description of the bet
      * @param expirationTime Timestamp when the bet expires/can be judged upon
      */
-    function createBet(uint deposit, string memory description, uint expirationTime) external nonReentrant returns(Bet) {
-        Bet newBet = new Bet(this.owner(), deposit, description, expirationTime);
+    function createBet(
+        uint256 deposit,
+        string memory description,
+        uint256 expirationTime
+    ) external returns (Bet) {
+        Bet newBet =
+            new Bet(this.owner(), deposit, description, expirationTime);
         bets.push(newBet);
+
         emit BetDeployed(address(newBet));
+
         return newBet;
     }
+
     /**
      * @notice Returns an array of all deployed bet instances
      */
-    function getBets() public view returns(Bet[] memory) {
+    function getBets() public view returns (Bet[] memory) {
         return bets;
     }
-
 }

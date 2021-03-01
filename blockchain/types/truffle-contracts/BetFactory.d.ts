@@ -10,331 +10,177 @@ export interface BetFactoryContract
   "new"(meta?: Truffle.TransactionDetails): Promise<BetFactoryInstance>;
 }
 
-export interface Deployed {
-  name: "Deployed";
+export interface BetDeployed {
+  name: "BetDeployed";
   args: {
-    _value: string;
+    _deployedBet: string;
     0: string;
   };
 }
 
-export interface RoleAdminChanged {
-  name: "RoleAdminChanged";
+export interface OwnershipTransferred {
+  name: "OwnershipTransferred";
   args: {
-    role: string;
-    previousAdminRole: string;
-    newAdminRole: string;
-    0: string;
-    1: string;
-    2: string;
-  };
-}
-
-export interface RoleGranted {
-  name: "RoleGranted";
-  args: {
-    role: string;
-    account: string;
-    sender: string;
+    previousOwner: string;
+    newOwner: string;
     0: string;
     1: string;
-    2: string;
   };
 }
 
-export interface RoleRevoked {
-  name: "RoleRevoked";
-  args: {
-    role: string;
-    account: string;
-    sender: string;
-    0: string;
-    1: string;
-    2: string;
-  };
-}
-
-type AllEvents = Deployed | RoleAdminChanged | RoleGranted | RoleRevoked;
+type AllEvents = BetDeployed | OwnershipTransferred;
 
 export interface BetFactoryInstance extends Truffle.ContractInstance {
-  DEFAULT_ADMIN_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
+  /**
+   * Returns the address of the current owner.
+   */
+  owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   /**
-   * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+   * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
    */
-  getRoleAdmin(
-    role: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
+  renounceOwnership: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+  };
 
   /**
-   * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+   * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
    */
-  getRoleMember(
-    role: string,
-    index: number | BN | string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
-
-  /**
-   * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
-   */
-  getRoleMemberCount(
-    role: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
-
-  /**
-   * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
-   */
-  grantRole: {
-    (
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+  transferOwnership: {
+    (newOwner: string, txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
     call(
-      role: string,
-      account: string,
+      newOwner: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      role: string,
-      account: string,
+      newOwner: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      role: string,
-      account: string,
+      newOwner: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
 
   /**
-   * Returns `true` if `account` has been granted `role`.
+   * Creates a new Bet
+   * @param description Description of the bet
+   * @param expirationTime Timestamp when the bet expires/can be judged upon
    */
-  hasRole(
-    role: string,
-    account: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
-  /**
-   * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
-   */
-  renounceRole: {
-    (
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  /**
-   * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
-   */
-  revokeRole: {
-    (
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   createBet: {
     (
-      _description: string,
-      _expirationTime: number | BN | string,
+      deposit: number | BN | string,
+      description: string,
+      expirationTime: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      _description: string,
-      _expirationTime: number | BN | string,
+      deposit: number | BN | string,
+      description: string,
+      expirationTime: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     sendTransaction(
-      _description: string,
-      _expirationTime: number | BN | string,
+      deposit: number | BN | string,
+      description: string,
+      expirationTime: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _description: string,
-      _expirationTime: number | BN | string,
+      deposit: number | BN | string,
+      description: string,
+      expirationTime: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
 
-  getDeployedBets(txDetails?: Truffle.TransactionDetails): Promise<string[]>;
+  /**
+   * Returns an array of all deployed bet instances
+   */
+  getBets(txDetails?: Truffle.TransactionDetails): Promise<string[]>;
 
   methods: {
-    DEFAULT_ADMIN_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    /**
+     * Returns the address of the current owner.
+     */
+    owner(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     /**
-     * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
      */
-    getRoleAdmin(
-      role: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
+    renounceOwnership: {
+      (txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    };
 
     /**
-     * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
+     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
      */
-    getRoleMember(
-      role: string,
-      index: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-
-    /**
-     * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
-     */
-    getRoleMemberCount(
-      role: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<BN>;
-
-    /**
-     * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
-     */
-    grantRole: {
-      (
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    transferOwnership: {
+      (newOwner: string, txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
       call(
-        role: string,
-        account: string,
+        newOwner: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        role: string,
-        account: string,
+        newOwner: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        role: string,
-        account: string,
+        newOwner: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
 
     /**
-     * Returns `true` if `account` has been granted `role`.
+     * Creates a new Bet
+     * @param description Description of the bet
+     * @param expirationTime Timestamp when the bet expires/can be judged upon
      */
-    hasRole(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<boolean>;
-
-    /**
-     * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
-     */
-    renounceRole: {
-      (
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    /**
-     * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
-     */
-    revokeRole: {
-      (
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
     createBet: {
       (
-        _description: string,
-        _expirationTime: number | BN | string,
+        deposit: number | BN | string,
+        description: string,
+        expirationTime: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        _description: string,
-        _expirationTime: number | BN | string,
+        deposit: number | BN | string,
+        description: string,
+        expirationTime: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       sendTransaction(
-        _description: string,
-        _expirationTime: number | BN | string,
+        deposit: number | BN | string,
+        description: string,
+        expirationTime: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        _description: string,
-        _expirationTime: number | BN | string,
+        deposit: number | BN | string,
+        description: string,
+        expirationTime: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
 
-    getDeployedBets(txDetails?: Truffle.TransactionDetails): Promise<string[]>;
+    /**
+     * Returns an array of all deployed bet instances
+     */
+    getBets(txDetails?: Truffle.TransactionDetails): Promise<string[]>;
   };
 
   getPastEvents(event: string): Promise<EventData[]>;
