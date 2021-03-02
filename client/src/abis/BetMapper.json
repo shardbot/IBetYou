@@ -26,26 +26,7 @@
 				"type": "address"
 			}
 		],
-		"name": "getBettingBets",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "",
-				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "getJudgingBets",
+		"name": "getBets",
 		"outputs": [
 			{
 				"internalType": "address[]",
@@ -77,20 +58,7 @@
 				"type": "address"
 			}
 		],
-		"name": "registerBettor",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "registerJudge",
+		"name": "register",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

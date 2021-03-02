@@ -21,13 +21,10 @@ const Dashboard: FC = () => {
   const web3 = useContext(Web3Context);
 
   const { getAccount } = useAuth();
-  const fetchUserBets = () => {
-    getUserBets(web3, getAccount().address).then((result) => console.log(result));
-  };
 
   const handleFetchBets = () => {
     setIsLoading(true);
-    getBets(web3).then((addresses) => {
+    getUserBets(web3, getAccount().address).then((addresses) => {
       console.log(addresses);
       Promise.all(addresses.map((address) => getBet(web3, address))).then((results) => {
         const transformedResults = results.map((item, i) => {
@@ -50,8 +47,7 @@ const Dashboard: FC = () => {
   };
 
   useEffect(() => {
-    //handleFetchBets();
-    fetchUserBets();
+    handleFetchBets();
   }, []);
 
   useEffect(() => {

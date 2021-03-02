@@ -52,6 +52,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
       subscriptions: {
         wallet: (wallet) => {
           const web3Instance = new Web3(wallet.provider);
+          console.log(wallet.provider);
           setWeb3(web3Instance);
         }
       }

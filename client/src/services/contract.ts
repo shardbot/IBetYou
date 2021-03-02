@@ -60,7 +60,7 @@ export const createBet = async (web3: Web3, accountAddress: string, betParams: B
 export const getUserBets = async (web3: Web3, accountAddress: string) => {
   const contract = createBetMapperContract(web3);
 
-  return contract.methods.getBettingBets(accountAddress).call();
+  return contract.methods.getBets(accountAddress).call();
 };
 
 export const bet = async (

@@ -29,13 +29,9 @@ export interface IBetMapper extends BaseContract {
   ): IBetMapper;
   clone(): IBetMapper;
   methods: {
-    registerBettor(_address: string): NonPayableTransactionObject<void>;
+    register(_address: string): NonPayableTransactionObject<void>;
 
-    registerJudge(_address: string): NonPayableTransactionObject<void>;
-
-    getBettingBets(_address: string): NonPayableTransactionObject<string[]>;
-
-    getJudgingBets(_address: string): NonPayableTransactionObject<string[]>;
+    getBets(_address: string): NonPayableTransactionObject<string[]>;
 
     setFactory(_address: string): NonPayableTransactionObject<void>;
   };
