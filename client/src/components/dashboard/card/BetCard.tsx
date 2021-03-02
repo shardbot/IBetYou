@@ -63,7 +63,6 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
 
   const checkIfDisabled = (betState: string) => {
     if (+betState < 3 || +betState === 6) {
-      console.log('Here - true');
       return true;
     } else return false;
   };

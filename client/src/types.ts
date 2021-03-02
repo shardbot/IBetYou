@@ -11,6 +11,29 @@ declare global {
 
 export type PageWithLayout = NextPage & { Layout?: FC };
 
+export type GlobalState = {
+  notification: {
+    isActive: boolean;
+    content: any;
+    type?: 'default' | 'error' | 'success';
+  };
+};
+
+export type GlobalStateActions = {
+  type: 'SHOW_NOTIFICATION' | 'REMOVE_NOTIFICATION';
+  payload?: any;
+};
+
+export interface AuthState {
+  isConnected: boolean;
+  wallet: any;
+}
+
+export type AuthActions =
+  | { type: 'SET_WALLET'; payload }
+  | { type: 'LOG_IN'; payload }
+  | { type: 'LOG_OUT'; payload };
+
 export interface Bet {
   opponentEmail?: string;
   description: string;

@@ -1,19 +1,10 @@
-export type AuthAction =
-  | { type: 'SET_WALLET'; payload }
-  | { type: 'LOG_IN'; payload }
-  | { type: 'LOG_OUT'; payload };
+import { AuthActions, AuthState } from '../types';
 
-export interface AuthState {
-  isConnected: boolean;
-  wallet: any;
-}
-
-export const AuthReducer = (state: AuthState, action: AuthAction) => {
+export const authReducer = (state: AuthState, action: AuthActions) => {
   const { type } = action;
 
   switch (type) {
     case 'SET_WALLET':
-      console.log(action.payload);
       return {
         ...state,
         wallet: action.payload.wallet

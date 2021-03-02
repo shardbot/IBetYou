@@ -5,7 +5,10 @@ import { FC } from 'react';
 import DollarSignIcon from '../../../assets/icons/dollar-sign.svg';
 import HelpCircleIcon from '../../../assets/icons/help-circle.svg';
 import LayoutIcon from '../../../assets/icons/layout.svg';
+import LogOutIcon from '../../../assets/icons/log-out.svg';
 import { LOGO_IMG_SRC } from '../../../constants';
+import { useAuth } from '../../../hooks/useAuth';
+import { Button } from '../Button';
 import { Drawer } from '../Drawer';
 import { LinkButton } from '../LinkButton';
 
@@ -30,6 +33,17 @@ const navigationItems = [
   }
 ];
 
+const LogOutButton: FC = () => {
+  const { logOut } = useAuth();
+
+  return (
+    <Button className="mt-auto mb-16 flex self-center p-6" onClick={logOut}>
+      <LogOutIcon />
+      <span className="ml-4">Log Out</span>
+    </Button>
+  );
+};
+
 interface SideNavigationProps {
   isActive?: boolean;
   onClose?: () => void;
@@ -41,8 +55,8 @@ export const SideNavigation: FC<SideNavigationProps> = ({ isActive, onClose, isD
 
   if (isDesktop) {
     return (
-      <div className="flex flex-col bg-real-dark w-full">
-        <div className="mt-32">
+      <div className="flex flex-col bg-real-dark w-full h-full">
+        <nav className="mt-32">
           {navigationItems.map((item) => (
             <LinkButton
               className={classNames(
@@ -58,14 +72,15 @@ export const SideNavigation: FC<SideNavigationProps> = ({ isActive, onClose, isD
               icon={item.icon}
             />
           ))}
-        </div>
+        </nav>
+        <LogOutButton />
       </div>
     );
   }
 
   return (
     <Drawer isActive={isActive} onClose={onClose} isDashboard={true}>
-      <div className="flex flex-col bg-real-dark w-full">
+      <div className="flex flex-col bg-real-dark w-full h-full">
         <img
           src={LOGO_IMG_SRC}
           alt="IBetYou logo"
@@ -88,6 +103,7 @@ export const SideNavigation: FC<SideNavigationProps> = ({ isActive, onClose, isD
             />
           ))}
         </nav>
+        <LogOutButton />
       </div>
     </Drawer>
   );

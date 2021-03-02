@@ -15,7 +15,6 @@ export const getDateInMs = (date: string): number => {
 
 export const formatDate = (date: string): string => {
   const d = new Date(Number(date));
-  console.log(d);
   return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
 };
 

@@ -33,6 +33,7 @@ export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
         setIsLoading(false);
         return;
       } catch (e) {
+        console.log('Here')
         console.log(e);
         setIsLoading(false);
       }
@@ -64,7 +65,7 @@ export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
         {+bet.betState > 2 && +bet.betState < 6 ? (
           <>
             {isLoading ? (
-              <Loader classes="w-8 h-8" />
+              <Loader classes="w-8 h-8 ml-auto" />
             ) : (
               <Button
                 className="btn-primary block text-sm font-bold py-2 px-8 h-auto w-max sticky"

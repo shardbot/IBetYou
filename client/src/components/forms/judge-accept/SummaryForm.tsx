@@ -34,11 +34,9 @@ export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
 
     // check if wallet is ready to transact
     const isReadyToTransact = await readyToTransact();
-    console.log(isReadyToTransact);
 
     if (isReadyToTransact) {
       account = getAccount();
-      console.log(account);
 
       try {
         // add judge

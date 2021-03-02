@@ -1,7 +1,8 @@
+import { useRouter } from 'next/router';
 import { useContext } from 'react';
 
-import { AuthContext, OnboardContext } from '../pages/_app';
-import { useRouter } from 'next/router';
+import { AuthContext } from '../components/providers/Auth';
+import { OnboardContext } from '../pages/_app';
 
 export const useAuth = () => {
   const { state, dispatch } = useContext(AuthContext);
@@ -13,11 +14,6 @@ export const useAuth = () => {
   };
 
   const redirectToDashboard = () => {
-    dispatch({
-      type: 'LOG_IN',
-      payload: null
-    });
-
     router.push('/user/dashboard');
   };
 
@@ -26,6 +22,14 @@ export const useAuth = () => {
       type: 'LOG_IN',
       payload: null
     });
+  };
+
+  const logOut = () => {
+    dispatch({
+      type: 'LOG_OUT',
+      payload: null
+    });
+    router.push('/');
   };
 
   const isLoggedIn = () => {
@@ -41,15 +45,13 @@ export const useAuth = () => {
     console.log(select);
     // return if exited - function return false
     if (!select) {
-      console.log('Exited');
       return false;
     }
 
     // is wallet selected and ready to transact
     const isReadyToTransact = await readyToTransact();
-    console.log('Ready to transact?', isReadyToTransact);
 
-    console.log('Dispatch here');
+    if (!isReadyToTransact) return false;
 
     dispatch({
       type: 'SET_WALLET',
@@ -68,6 +70,7 @@ export const useAuth = () => {
     connectWallet,
     readyToTransact,
     redirectToDashboard,
-    logIn
+    logIn,
+    logOut
   };
 };

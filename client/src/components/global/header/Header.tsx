@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { FC, SyntheticEvent } from 'react';
+import { FC } from 'react';
 
 import MenuIcon from '../../../assets/icons/menu.svg';
 import { LOGO_IMG_SRC } from '../../../constants';
@@ -13,21 +13,19 @@ interface HeaderProps {
 }
 
 export const Header: FC<HeaderProps> = ({ handleToggle }) => {
-  const { connectWallet, isLoggedIn, redirectToDashboard } = useAuth();
+  const { connectWallet, isLoggedIn, redirectToDashboard, logIn } = useAuth();
   const router = useRouter();
 
-  const handleConnectWallet = async (e: SyntheticEvent) => {
+  const handleConnectWallet = async () => {
     if (isLoggedIn()) {
       router.push('user/dashboard');
     }
 
     const connect = await connectWallet();
 
-    console.log('Here >>> ', connect);
     if (connect) {
+      logIn();
       redirectToDashboard();
-
-      // router.push('user/dashboard');
     }
   };
 

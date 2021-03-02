@@ -1,50 +1,21 @@
-import { FC, useContext, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
-import { Web3Context } from '../_app';
 import DollarSignIcon from '../../assets/icons/dollar-sign.svg';
 import { BetCard, Table, Tabs } from '../../components/dashboard';
 import { InformationCard } from '../../components/dashboard/card/InformationCard';
 import { Loader } from '../../components/global';
 import { SecondaryLayout } from '../../components/layouts';
 import { EMPTY_IMG_SRC } from '../../constants';
-import { getBet, getBets } from '../../services/contract';
+import { useBets } from '../../hooks/useBets';
 import { Bet, PageWithLayout } from '../../types';
-import { convertWeiToEth } from '../../utils';
 
 const Dashboard: FC = () => {
   const [activeTab, setActiveTab] = useState(1);
-  const [bets, setBets] = useState<Bet[]>([]);
   const [filteredBets, setFilteredBets] = useState<Bet[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [totalStake, setTotalStake] = useState<number>(null);
-  const web3 = useContext(Web3Context);
-
-  const handleFetchBets = () => {
-    setIsLoading(true);
-    getBets(web3).then((addresses) => {
-      console.log(addresses);
-      Promise.all(addresses.map((address) => getBet(web3, address))).then((results) => {
-        const transformedResults = results.map((item, i) => {
-          return {
-            ...item,
-            address: addresses[i],
-            expirationDate: item.expirationTime
-          };
-        });
-        setBets(transformedResults);
-        const total = results.reduce((acc, currentValue) => {
-          return acc + +currentValue.deposit;
-        }, 0);
-        const totalInEth = convertWeiToEth(web3, total.toString());
-        setTotalStake(+totalInEth);
-
-        setIsLoading(false);
-      });
-    });
-  };
+  const { isLoading, totalStake, fetchBets, bets } = useBets();
 
   useEffect(() => {
-    handleFetchBets();
+    fetchBets();
   }, []);
 
   useEffect(() => {
@@ -90,13 +61,13 @@ const Dashboard: FC = () => {
                 {/* MOBILE */}
                 <div className="mt-8 lg:hidden space-y-4">
                   {filteredBets.map((bet, i) => (
-                    <BetCard key={i} bet={bet} number={i + 1} handleFetch={handleFetchBets} />
+                    <BetCard key={i} bet={bet} number={i + 1} handleFetch={fetchBets} />
                   ))}
                 </div>
 
                 {/* DESKTOP */}
                 <div className="mx-auto hidden lg:flex flex-col mb-24 mt-8">
-                  <Table bets={filteredBets} handleFetch={handleFetchBets} />
+                  <Table bets={filteredBets} handleFetch={fetchBets} />
                 </div>
               </>
             )}
