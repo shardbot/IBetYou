@@ -2,18 +2,18 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import BN from "bn.js";
-import { ContractOptions } from "web3-eth-contract";
-import { EventLog } from "web3-core";
-import { EventEmitter } from "events";
+import BN from 'bn.js';
+import { ContractOptions } from 'web3-eth-contract';
+import { EventLog } from 'web3-core';
+import { EventEmitter } from 'events';
 import {
   Callback,
   PayableTransactionObject,
   NonPayableTransactionObject,
   BlockType,
   ContractEventLog,
-  BaseContract,
-} from "./types";
+  BaseContract
+} from './types';
 
 interface EventOptions {
   filter?: object;
@@ -36,11 +36,7 @@ export type CurrentState = ContractEventLog<{
 export type Dispute = ContractEventLog<{}>;
 
 export interface Bet extends BaseContract {
-  constructor(
-    jsonInterface: any[],
-    address?: string,
-    options?: ContractOptions
-  ): Bet;
+  constructor(jsonInterface: any[], address?: string, options?: ContractOptions): Bet;
   clone(): Bet;
   methods: {
     maUSDC(): NonPayableTransactionObject<string>;
@@ -70,22 +66,26 @@ export interface Bet extends BaseContract {
     /**
      * Assigns caller as a bettor's judge
      */
-    addBettorJudge(): NonPayableTransactionObject<void>;
+    addBettorJudge(_txExpirationTime: number | string | BN): NonPayableTransactionObject<void>;
 
     /**
      * Assigns caller as a counter bettor's judge
      */
-    addCounterBettorJudge(): NonPayableTransactionObject<void>;
+    addCounterBettorJudge(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Judge or admin can call this function to vote for bettor
      */
-    voteForBettor(): NonPayableTransactionObject<void>;
+    voteForBettor(_txExpirationTime: number | string | BN): NonPayableTransactionObject<void>;
 
     /**
      * Judge or admin can call this function to vote for counter bettor
      */
-    voteForCounterBettor(): NonPayableTransactionObject<void>;
+    voteForCounterBettor(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Transfers this contract's balance to caller if he won this bet
@@ -113,10 +113,7 @@ export interface Bet extends BaseContract {
     Action(options?: EventOptions, cb?: Callback<Action>): EventEmitter;
 
     CurrentState(cb?: Callback<CurrentState>): EventEmitter;
-    CurrentState(
-      options?: EventOptions,
-      cb?: Callback<CurrentState>
-    ): EventEmitter;
+    CurrentState(options?: EventOptions, cb?: Callback<CurrentState>): EventEmitter;
 
     Dispute(cb?: Callback<Dispute>): EventEmitter;
     Dispute(options?: EventOptions, cb?: Callback<Dispute>): EventEmitter;
@@ -124,16 +121,12 @@ export interface Bet extends BaseContract {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
 
-  once(event: "Action", cb: Callback<Action>): void;
-  once(event: "Action", options: EventOptions, cb: Callback<Action>): void;
+  once(event: 'Action', cb: Callback<Action>): void;
+  once(event: 'Action', options: EventOptions, cb: Callback<Action>): void;
 
-  once(event: "CurrentState", cb: Callback<CurrentState>): void;
-  once(
-    event: "CurrentState",
-    options: EventOptions,
-    cb: Callback<CurrentState>
-  ): void;
+  once(event: 'CurrentState', cb: Callback<CurrentState>): void;
+  once(event: 'CurrentState', options: EventOptions, cb: Callback<CurrentState>): void;
 
-  once(event: "Dispute", cb: Callback<Dispute>): void;
-  once(event: "Dispute", options: EventOptions, cb: Callback<Dispute>): void;
+  once(event: 'Dispute', cb: Callback<Dispute>): void;
+  once(event: 'Dispute', options: EventOptions, cb: Callback<Dispute>): void;
 }

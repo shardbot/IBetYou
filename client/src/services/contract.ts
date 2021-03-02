@@ -92,15 +92,16 @@ export const addJudge = async (
   accountAddress: string | any
 ) => {
   const contract = createBetContract(web3, betContractAddress);
+  const txExpiration = Math.floor(Date.now() / 1000) + 300;
 
   if (judgeType === 'bettor-judge') {
     console.log('add bettor judge');
-    return contract.methods.addBettorJudge().send({
+    return contract.methods.addBettorJudge(txExpiration).send({
       from: accountAddress
     });
   } else {
     console.log('add counter-bettor judge');
-    return contract.methods.addCounterBettorJudge().send({
+    return contract.methods.addCounterBettorJudge(txExpiration).send({
       from: accountAddress
     });
   }
@@ -113,15 +114,16 @@ export const vote = async (
   accountAddress: string | any
 ) => {
   const contract = createBetContract(web3, betContractAddress);
+  const txExpiration = Math.floor(Date.now() / 1000) + 300;
 
   if (voteType === 'for-bettor') {
     console.log('vote for bettor');
-    return contract.methods.voteForBettor().send({
+    return contract.methods.voteForBettor(txExpiration).send({
       from: accountAddress
     });
   } else {
     console.log('vote for counter-bettor');
-    return contract.methods.voteForCounterBettor().send({
+    return contract.methods.voteForCounterBettor(txExpiration).send({
       from: accountAddress
     });
   }
