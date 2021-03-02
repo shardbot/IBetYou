@@ -1,9 +1,11 @@
-import { betAbi, betFactoryAbi } from '../abis';
+import { betAbi, betFactoryAbi, betMapperAbi } from '../abis';
 import { Bet } from '../types/web3-v1-contracts/Bet';
 import { BetFactory } from '../types/web3-v1-contracts/BetFactory';
+import { BetMapper } from '../types/web3-v1-contracts/BetMapper';
 import { convertEthToWei, getDateInMs } from '../utils';
 
 const BET_FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+const BET_MAPPER_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_BET_MAPPER_ADDRESS;
 
 const createBetFactoryContract = (web3: Web3) => {
   console.log(web3);
@@ -16,6 +18,12 @@ const createBetContract = (web3: Web3, address: string) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return (new web3.eth.Contract(betAbi, address) as any) as Bet;
+};
+
+const createBetMapperContract = (web3: Web3) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return (new web3.eth.Contract(betMapperAbi, BET_MAPPER_CONTRACT_ADDRESS) as any) as BetMapper;
 };
 
 interface BetParams {
@@ -47,6 +55,12 @@ export const createBet = async (web3: Web3, accountAddress: string, betParams: B
   return contract.methods.createBet(depositInWei, betParams.description, dateInMs).send({
     from: accountAddress
   });
+};
+
+export const getUserBets = async (web3: Web3, accountAddress: string) => {
+  const contract = createBetMapperContract(web3);
+
+  return contract.methods.getBettingBets(accountAddress).call();
 };
 
 export const bet = async (

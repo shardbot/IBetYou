@@ -21,20 +21,22 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface Migrations extends BaseContract {
+export interface IWETHGateway extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Migrations;
-  clone(): Migrations;
+  ): IWETHGateway;
+  clone(): IWETHGateway;
   methods: {
-    last_completed_migration(): NonPayableTransactionObject<string>;
+    depositETH(
+      onBehalfOf: string,
+      referralCode: number | string | BN
+    ): PayableTransactionObject<void>;
 
-    owner(): NonPayableTransactionObject<string>;
-
-    setCompleted(
-      completed: number | string | BN
+    withdrawETH(
+      amount: number | string | BN,
+      to: string
     ): NonPayableTransactionObject<void>;
   };
   events: {

@@ -21,21 +21,19 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface Migrations extends BaseContract {
+export interface BalancerDepositWithdraw extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Migrations;
-  clone(): Migrations;
+  ): BalancerDepositWithdraw;
+  clone(): BalancerDepositWithdraw;
   methods: {
-    last_completed_migration(): NonPayableTransactionObject<string>;
+    wrapEth(): NonPayableTransactionObject<void>;
 
-    owner(): NonPayableTransactionObject<string>;
+    checkWethBalance(): NonPayableTransactionObject<string>;
 
-    setCompleted(
-      completed: number | string | BN
-    ): NonPayableTransactionObject<void>;
+    getETHBalance(): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

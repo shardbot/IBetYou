@@ -21,21 +21,38 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface Migrations extends BaseContract {
+export interface QuickSwapExchangeTest extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Migrations;
-  clone(): Migrations;
+  ): QuickSwapExchangeTest;
+  clone(): QuickSwapExchangeTest;
   methods: {
-    last_completed_migration(): NonPayableTransactionObject<string>;
+    MATIC(): NonPayableTransactionObject<string>;
 
-    owner(): NonPayableTransactionObject<string>;
+    QUICK(): NonPayableTransactionObject<string>;
 
-    setCompleted(
-      completed: number | string | BN
+    WETH(): NonPayableTransactionObject<string>;
+
+    factory(): NonPayableTransactionObject<string>;
+
+    maUSDC(): NonPayableTransactionObject<string>;
+
+    swapEthForMaUSDC(
+      unixTime: number | string | BN
     ): NonPayableTransactionObject<void>;
+
+    swapMaUSDCForEth(
+      unixTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
+    sendEthToOwner(): NonPayableTransactionObject<void>;
+
+    getTokenBalance(
+      target: string,
+      token: string
+    ): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

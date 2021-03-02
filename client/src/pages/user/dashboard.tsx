@@ -7,9 +7,10 @@ import { InformationCard } from '../../components/dashboard/card/InformationCard
 import { Loader } from '../../components/global';
 import { SecondaryLayout } from '../../components/layouts';
 import { EMPTY_IMG_SRC } from '../../constants';
-import { getBet, getBets } from '../../services/contract';
+import { getBet, getBets, getUserBets } from '../../services/contract';
 import { Bet, PageWithLayout } from '../../types';
 import { convertWeiToEth } from '../../utils';
+import { useAuth } from '../../hooks/useAuth';
 
 const Dashboard: FC = () => {
   const [activeTab, setActiveTab] = useState(1);
@@ -18,6 +19,11 @@ const Dashboard: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [totalStake, setTotalStake] = useState<number>(null);
   const web3 = useContext(Web3Context);
+
+  const { getAccount } = useAuth();
+  const fetchUserBets = () => {
+    getUserBets(web3, getAccount().address).then((result) => console.log(result));
+  };
 
   const handleFetchBets = () => {
     setIsLoading(true);
@@ -44,7 +50,8 @@ const Dashboard: FC = () => {
   };
 
   useEffect(() => {
-    handleFetchBets();
+    //handleFetchBets();
+    fetchUserBets();
   }, []);
 
   useEffect(() => {

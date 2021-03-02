@@ -21,9 +21,11 @@ interface EventOptions {
   topics?: string[];
 }
 
-export type BetDeployed = ContractEventLog<{
-  _deployedBet: string;
+export type Deposited = ContractEventLog<{
+  payee: string;
+  weiAmount: string;
   0: string;
+  1: string;
 }>;
 export type OwnershipTransferred = ContractEventLog<{
   previousOwner: string;
@@ -31,14 +33,20 @@ export type OwnershipTransferred = ContractEventLog<{
   0: string;
   1: string;
 }>;
+export type Withdrawn = ContractEventLog<{
+  payee: string;
+  weiAmount: string;
+  0: string;
+  1: string;
+}>;
 
-export interface BetFactory extends BaseContract {
+export interface Escrow extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): BetFactory;
-  clone(): BetFactory;
+  ): Escrow;
+  clone(): Escrow;
   methods: {
     /**
      * Returns the address of the current owner.
@@ -55,40 +63,23 @@ export interface BetFactory extends BaseContract {
      */
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Creates a new Bet
-     * @param description Description of the bet
-     * @param expirationTime Timestamp when the bet expires/can be judged upon
-     */
-    createBet(
-      deposit: number | string | BN,
-      description: string,
-      expirationTime: number | string | BN
-    ): NonPayableTransactionObject<string>;
-
-    setBetAddress(_address: string): NonPayableTransactionObject<void>;
-
-    setMapperAddress(_address: string): NonPayableTransactionObject<void>;
-
-    setExchangeAddress(_address: string): NonPayableTransactionObject<void>;
+    depositsOf(payee: string): NonPayableTransactionObject<string>;
 
     /**
-     * Returns an array of all deployed bet instances
+     * Stores the sent amount as credit to be withdrawn.
+     * @param payee The destination address of the funds.
      */
-    getBets(): NonPayableTransactionObject<string[]>;
+    deposit(payee: string): PayableTransactionObject<void>;
 
     /**
-     * verifies if a bet is deployed
-     * @param _address bet address to check
+     * Withdraw accumulated balance for a payee, forwarding all gas to the recipient. WARNING: Forwarding all gas opens the door to reentrancy vulnerabilities. Make sure you trust the recipient, or are either following the checks-effects-interactions pattern or using {ReentrancyGuard}.
+     * @param payee The address whose funds will be withdrawn and transferred to.
      */
-    isBetDeployed(_address: string): NonPayableTransactionObject<boolean>;
+    withdraw(payee: string): NonPayableTransactionObject<void>;
   };
   events: {
-    BetDeployed(cb?: Callback<BetDeployed>): EventEmitter;
-    BetDeployed(
-      options?: EventOptions,
-      cb?: Callback<BetDeployed>
-    ): EventEmitter;
+    Deposited(cb?: Callback<Deposited>): EventEmitter;
+    Deposited(options?: EventOptions, cb?: Callback<Deposited>): EventEmitter;
 
     OwnershipTransferred(cb?: Callback<OwnershipTransferred>): EventEmitter;
     OwnershipTransferred(
@@ -96,14 +87,17 @@ export interface BetFactory extends BaseContract {
       cb?: Callback<OwnershipTransferred>
     ): EventEmitter;
 
+    Withdrawn(cb?: Callback<Withdrawn>): EventEmitter;
+    Withdrawn(options?: EventOptions, cb?: Callback<Withdrawn>): EventEmitter;
+
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
 
-  once(event: "BetDeployed", cb: Callback<BetDeployed>): void;
+  once(event: "Deposited", cb: Callback<Deposited>): void;
   once(
-    event: "BetDeployed",
+    event: "Deposited",
     options: EventOptions,
-    cb: Callback<BetDeployed>
+    cb: Callback<Deposited>
   ): void;
 
   once(event: "OwnershipTransferred", cb: Callback<OwnershipTransferred>): void;
@@ -111,5 +105,12 @@ export interface BetFactory extends BaseContract {
     event: "OwnershipTransferred",
     options: EventOptions,
     cb: Callback<OwnershipTransferred>
+  ): void;
+
+  once(event: "Withdrawn", cb: Callback<Withdrawn>): void;
+  once(
+    event: "Withdrawn",
+    options: EventOptions,
+    cb: Callback<Withdrawn>
   ): void;
 }

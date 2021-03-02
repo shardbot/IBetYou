@@ -15,10 +15,13 @@ const initialState = {
 };
 
 const wallets = [
-  { walletName: 'walletLink', rpcUrl: `https://rpc-mumbai.matic.today`, appName: 'IBetYou' },
   { walletName: 'metamask' },
-  { walletName: 'opera' },
-  { walletName: 'torus' }
+  {
+    walletName: 'walletConnect',
+    rpc: {
+      ['137']: 'https://rpc-mainnet.maticvigil.com/`'
+    }
+  }
 ];
 
 export const Web3Context = createContext<Web3 | null>(null);

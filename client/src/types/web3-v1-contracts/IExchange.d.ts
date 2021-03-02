@@ -21,20 +21,20 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface Migrations extends BaseContract {
+export interface IExchange extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Migrations;
-  clone(): Migrations;
+  ): IExchange;
+  clone(): IExchange;
   methods: {
-    last_completed_migration(): NonPayableTransactionObject<string>;
+    swapMaticForMaUSDC(
+      _unixTime: number | string | BN
+    ): PayableTransactionObject<void>;
 
-    owner(): NonPayableTransactionObject<string>;
-
-    setCompleted(
-      completed: number | string | BN
+    swapMaUSDCForMatic(
+      _unixTime: number | string | BN
     ): NonPayableTransactionObject<void>;
   };
   events: {

@@ -21,10 +21,6 @@ interface EventOptions {
   topics?: string[];
 }
 
-export type BetDeployed = ContractEventLog<{
-  _deployedBet: string;
-  0: string;
-}>;
 export type OwnershipTransferred = ContractEventLog<{
   previousOwner: string;
   newOwner: string;
@@ -32,13 +28,13 @@ export type OwnershipTransferred = ContractEventLog<{
   1: string;
 }>;
 
-export interface BetFactory extends BaseContract {
+export interface BetMapper extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): BetFactory;
-  clone(): BetFactory;
+  ): BetMapper;
+  clone(): BetMapper;
   methods: {
     /**
      * Returns the address of the current owner.
@@ -55,41 +51,17 @@ export interface BetFactory extends BaseContract {
      */
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Creates a new Bet
-     * @param description Description of the bet
-     * @param expirationTime Timestamp when the bet expires/can be judged upon
-     */
-    createBet(
-      deposit: number | string | BN,
-      description: string,
-      expirationTime: number | string | BN
-    ): NonPayableTransactionObject<string>;
+    registerBettor(_address: string): NonPayableTransactionObject<void>;
 
-    setBetAddress(_address: string): NonPayableTransactionObject<void>;
+    registerJudge(_address: string): NonPayableTransactionObject<void>;
 
-    setMapperAddress(_address: string): NonPayableTransactionObject<void>;
+    getBettingBets(_address: string): NonPayableTransactionObject<string[]>;
 
-    setExchangeAddress(_address: string): NonPayableTransactionObject<void>;
+    getJudgingBets(_address: string): NonPayableTransactionObject<string[]>;
 
-    /**
-     * Returns an array of all deployed bet instances
-     */
-    getBets(): NonPayableTransactionObject<string[]>;
-
-    /**
-     * verifies if a bet is deployed
-     * @param _address bet address to check
-     */
-    isBetDeployed(_address: string): NonPayableTransactionObject<boolean>;
+    setFactory(_address: string): NonPayableTransactionObject<void>;
   };
   events: {
-    BetDeployed(cb?: Callback<BetDeployed>): EventEmitter;
-    BetDeployed(
-      options?: EventOptions,
-      cb?: Callback<BetDeployed>
-    ): EventEmitter;
-
     OwnershipTransferred(cb?: Callback<OwnershipTransferred>): EventEmitter;
     OwnershipTransferred(
       options?: EventOptions,
@@ -98,13 +70,6 @@ export interface BetFactory extends BaseContract {
 
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
-
-  once(event: "BetDeployed", cb: Callback<BetDeployed>): void;
-  once(
-    event: "BetDeployed",
-    options: EventOptions,
-    cb: Callback<BetDeployed>
-  ): void;
 
   once(event: "OwnershipTransferred", cb: Callback<OwnershipTransferred>): void;
   once(
