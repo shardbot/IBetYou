@@ -232,30 +232,34 @@ contract Bet is ReentrancyGuard {
 
     /**
      * @notice Assigns caller as a bettor's judge
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
-    function addBettorJudge() external {
-        _addJudge(true);
+    function addBettorJudge(uint256 _txExpirationTime) external {
+        _addJudge(true, _txExpirationTime);
     }
 
     /**
      * @notice Assigns caller as a counter bettor's judge
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
-    function addCounterBettorJudge() external {
-        _addJudge(false);
+    function addCounterBettorJudge(uint256 _txExpirationTime) external {
+        _addJudge(false, _txExpirationTime);
     }
 
     /**
      * @notice Judge or admin can call this function to vote for bettor
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
-    function voteForBettor() external {
-        _giveVote(true);
+    function voteForBettor(uint256 _txExpirationTime) external {
+        _giveVote(true, _txExpirationTime);
     }
 
     /**
      * @notice Judge or admin can call this function to vote for counter bettor
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
-    function voteForCounterBettor() external {
-        _giveVote(false);
+    function voteForCounterBettor(uint256 _txExpirationTime) external {
+        _giveVote(false, _txExpirationTime);
     }
 
     /**
@@ -331,7 +335,7 @@ contract Bet is ReentrancyGuard {
      * @notice Assigns caller as bettor's or counter bettor's judge
      * @param _choice Determines if caller will be assigned as a bettor's judge(true) or counter bettor's judge(false)
      */
-    function _addJudge(bool _choice)
+    function _addJudge(bool _choice, uint256 _txExpirationTime)
         internal
         atState(BetState.ASSIGNING_JUDGES)
         excludeBettors(msg.sender)
@@ -353,7 +357,9 @@ contract Bet is ReentrancyGuard {
             betStorage.roleParticipants[COUNTER_BETTOR_JUDGE] != address(0)
         ) {
             //Exchange ETH(MATIC) for maUSDC here
-            exchange.swapMaticForMaUSDC{value: address(this).balance}(MAX_INT);
+            exchange.swapMaticForMaUSDC{value: address(this).balance}(
+                _txExpirationTime
+            );
             _nextState();
         }
         return betStorage.betState;
@@ -363,7 +369,7 @@ contract Bet is ReentrancyGuard {
      * @notice Gives a vote to bettor or counter bettor
      * @param _vote Determines if vote will be given to bettor(true) or counter bettor(false)
      */
-    function _giveVote(bool _vote)
+    function _giveVote(bool _vote, uint256 _txExpirationTime)
         internal
         timedTransition(BetState.BET_WAITING)
         atState(BetState.VOTING_STAGE)
@@ -403,7 +409,7 @@ contract Bet is ReentrancyGuard {
                 address(exchange),
                 _getTokenBalance(address(this), maUSDC)
             );
-            exchange.swapMaUSDCForMatic(MAX_INT);
+            exchange.swapMaUSDCForMatic(_txExpirationTime);
             _setUpPaymentSplitter();
             _nextState();
         } else if (

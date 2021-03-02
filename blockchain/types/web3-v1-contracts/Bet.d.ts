@@ -70,22 +70,30 @@ export interface Bet extends BaseContract {
     /**
      * Assigns caller as a bettor's judge
      */
-    addBettorJudge(): NonPayableTransactionObject<void>;
+    addBettorJudge(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Assigns caller as a counter bettor's judge
      */
-    addCounterBettorJudge(): NonPayableTransactionObject<void>;
+    addCounterBettorJudge(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Judge or admin can call this function to vote for bettor
      */
-    voteForBettor(): NonPayableTransactionObject<void>;
+    voteForBettor(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Judge or admin can call this function to vote for counter bettor
      */
-    voteForCounterBettor(): NonPayableTransactionObject<void>;
+    voteForCounterBettor(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Transfers this contract's balance to caller if he won this bet

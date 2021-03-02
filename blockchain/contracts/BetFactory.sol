@@ -25,6 +25,7 @@ contract BetFactory is Ownable {
     //----------------------------------------
     // External functions
     //----------------------------------------
+
     /**
      * @notice Creates a new Bet
      * @param description Description of the bet
@@ -53,31 +54,26 @@ contract BetFactory is Ownable {
         return bet;
     }
 
-    function createClone(address target) internal returns (address result) {
-        bytes20 targetBytes = bytes20(target);
-        assembly {
-            let clone := mload(0x40)
-            mstore(
-                clone,
-                0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000
-            )
-            mstore(add(clone, 0x14), targetBytes)
-            mstore(
-                add(clone, 0x28),
-                0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000
-            )
-            result := create(0, clone, 0x37)
-        }
-    }
-
+    /**
+     * @notice Sets address of Bet mastercopy
+     * @param _address Address of deployed Bet instance
+     */
     function setBetAddress(address _address) external onlyOwner {
         betAddress = _address;
     }
 
+    /**
+     * @notice Sets address of BetMapper instance
+     * @param _address Address of deployed BetMapper instance
+     */
     function setMapperAddress(address _address) external onlyOwner {
         mapperAddress = _address;
     }
 
+    /**
+     * @notice Sets address of Exchange instance
+     * @param _address Address of deployed Exchange instance
+     */
     function setExchangeAddress(address _address) external onlyOwner {
         exchangeAddress = _address;
     }
@@ -95,5 +91,29 @@ contract BetFactory is Ownable {
      */
     function isBetDeployed(address _address) external view returns (bool) {
         return deployed[_address];
+    }
+
+    //----------------------------------------
+    // Internal functions
+    //----------------------------------------
+    /**
+     * @notice Creates a new bet proxy
+     * @param target Mastercopy address
+     */
+    function createClone(address target) internal returns (address result) {
+        bytes20 targetBytes = bytes20(target);
+        assembly {
+            let clone := mload(0x40)
+            mstore(
+                clone,
+                0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000
+            )
+            mstore(add(clone, 0x14), targetBytes)
+            mstore(
+                add(clone, 0x28),
+                0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000
+            )
+            result := create(0, clone, 0x37)
+        }
     }
 }
