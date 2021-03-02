@@ -317,7 +317,7 @@ contract Bet is ReentrancyGuard {
         } else {
             _assignRole(msg.sender, COUNTER_BETTOR_ROLE, "COUNTER BETTOR");
         }
-        betMapper.registerBettor(msg.sender);
+        betMapper.register(msg.sender);
         if (
             betStorage.roleParticipants[BETTOR_ROLE] != address(0) &&
             betStorage.roleParticipants[COUNTER_BETTOR_ROLE] != address(0)
@@ -347,7 +347,7 @@ contract Bet is ReentrancyGuard {
                 "COUNTER BETTOR JUDGE"
             );
         }
-        betMapper.registerJudge(msg.sender);
+        betMapper.register(msg.sender);
         if (
             betStorage.roleParticipants[BETTOR_JUDGE] != address(0) &&
             betStorage.roleParticipants[COUNTER_BETTOR_JUDGE] != address(0)
