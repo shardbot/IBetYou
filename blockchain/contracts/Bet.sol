@@ -28,7 +28,6 @@ contract Bet is ReentrancyGuard {
     //----------------------------------------
     uint256 internal constant MAX_JUDGES = 2;
     uint256 internal constant JUDGE_PER_SIDE = 1;
-    uint256 internal constant MAX_INT = type(uint256).max;
     address public constant maUSDC =
         address(0x9719d867A500Ef117cC201206B8ab51e794d3F82);
 
@@ -232,7 +231,6 @@ contract Bet is ReentrancyGuard {
 
     /**
      * @notice Assigns caller as a bettor's judge
-     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
     function addBettorJudge(uint256 _txExpirationTime) external {
         _addJudge(true, _txExpirationTime);
@@ -240,7 +238,6 @@ contract Bet is ReentrancyGuard {
 
     /**
      * @notice Assigns caller as a counter bettor's judge
-     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
     function addCounterBettorJudge(uint256 _txExpirationTime) external {
         _addJudge(false, _txExpirationTime);
@@ -248,7 +245,6 @@ contract Bet is ReentrancyGuard {
 
     /**
      * @notice Judge or admin can call this function to vote for bettor
-     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
     function voteForBettor(uint256 _txExpirationTime) external {
         _giveVote(true, _txExpirationTime);
@@ -256,7 +252,6 @@ contract Bet is ReentrancyGuard {
 
     /**
      * @notice Judge or admin can call this function to vote for counter bettor
-     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
     function voteForCounterBettor(uint256 _txExpirationTime) external {
         _giveVote(false, _txExpirationTime);
@@ -311,9 +306,9 @@ contract Bet is ReentrancyGuard {
      */
     function _bet(bool _choice, uint256 _value)
         internal
-        atState(BetState.ASSIGNING_BETTORS)
         matchDeposit(_value)
         uniqueBettors(msg.sender)
+        atState(BetState.ASSIGNING_BETTORS)
         returns (BetState)
     {
         if (_choice) {
@@ -337,9 +332,9 @@ contract Bet is ReentrancyGuard {
      */
     function _addJudge(bool _choice, uint256 _txExpirationTime)
         internal
-        atState(BetState.ASSIGNING_JUDGES)
         excludeBettors(msg.sender)
         uniqueJudges(msg.sender)
+        atState(BetState.ASSIGNING_JUDGES)
         returns (BetState)
     {
         if (_choice) {
@@ -372,9 +367,9 @@ contract Bet is ReentrancyGuard {
     function _giveVote(bool _vote, uint256 _txExpirationTime)
         internal
         timedTransition(BetState.BET_WAITING)
-        atState(BetState.VOTING_STAGE)
         onlyJudgeOrDisputer(msg.sender)
         didNotVote(msg.sender)
+        atState(BetState.VOTING_STAGE)
         returns (BetState)
     {
         betStorage.didVote[msg.sender] = true;
