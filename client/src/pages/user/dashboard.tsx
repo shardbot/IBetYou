@@ -6,13 +6,20 @@ import { InformationCard } from '../../components/dashboard/card/InformationCard
 import { Loader } from '../../components/global';
 import { SecondaryLayout } from '../../components/layouts';
 import { EMPTY_IMG_SRC } from '../../constants';
+import { useAuth } from '../../hooks/useAuth';
 import { useBets } from '../../hooks/useBets';
 import { Bet, PageWithLayout } from '../../types';
 
 const Dashboard: FC = () => {
   const [activeTab, setActiveTab] = useState(1);
   const [filteredBets, setFilteredBets] = useState<Bet[]>([]);
-  const { isLoading, totalStake, fetchBets, bets } = useBets();
+  const { isLoading, totalStake, fetchUserBets, bets } = useBets();
+  const { getAccount } = useAuth();
+  const { address } = getAccount();
+
+  const fetchBets = async () => {
+    await fetchUserBets(address);
+  };
 
   useEffect(() => {
     fetchBets();

@@ -62,7 +62,7 @@ export const SecondaryLayout: FC<MainLayoutProps> = ({ children }) => {
         </div>
         <SideNavigation isActive={isMenuOpen} onClose={closeMenu} />
         <div className="flex h-full">
-          <aside className="hidden fixed h-full xl:flex flex-col bg-real-dark overflow-hidden w-72 xl:w-80">
+          <aside className="hidden fixed z-0 h-full xl:flex flex-col bg-real-dark overflow-hidden w-72 xl:w-80">
             <img src={LOGO_IMG_SRC} alt="IBetYou logo" className="h-24 w-24 mx-auto mt-8" />
             <SideNavigation isDesktop={true} />
           </aside>

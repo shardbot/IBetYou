@@ -21,21 +21,35 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface Migrations extends BaseContract {
+export interface IBPool extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Migrations;
-  clone(): Migrations;
+  ): IBPool;
+  clone(): IBPool;
   methods: {
-    last_completed_migration(): NonPayableTransactionObject<string>;
+    swapExactAmountIn(
+      arg0: string,
+      arg1: number | string | BN,
+      arg2: string,
+      arg3: number | string | BN,
+      arg4: number | string | BN
+    ): NonPayableTransactionObject<{
+      0: string;
+      1: string;
+    }>;
 
-    owner(): NonPayableTransactionObject<string>;
-
-    setCompleted(
-      completed: number | string | BN
-    ): NonPayableTransactionObject<void>;
+    swapExactAmountOut(
+      arg0: string,
+      arg1: number | string | BN,
+      arg2: string,
+      arg3: number | string | BN,
+      arg4: number | string | BN
+    ): NonPayableTransactionObject<{
+      0: string;
+      1: string;
+    }>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

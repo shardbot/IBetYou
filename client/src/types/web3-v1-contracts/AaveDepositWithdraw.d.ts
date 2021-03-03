@@ -21,21 +21,21 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface Migrations extends BaseContract {
+export interface AaveDepositWithdraw extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Migrations;
-  clone(): Migrations;
+  ): AaveDepositWithdraw;
+  clone(): AaveDepositWithdraw;
   methods: {
-    last_completed_migration(): NonPayableTransactionObject<string>;
+    depositETH(): NonPayableTransactionObject<void>;
 
-    owner(): NonPayableTransactionObject<string>;
+    withdrawETH(): NonPayableTransactionObject<void>;
 
-    setCompleted(
-      completed: number | string | BN
-    ): NonPayableTransactionObject<void>;
+    getETHBalance(): NonPayableTransactionObject<string>;
+
+    getAWETHBalance(): NonPayableTransactionObject<string>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

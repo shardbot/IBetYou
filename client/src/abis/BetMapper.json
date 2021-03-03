@@ -1,23 +1,5 @@
 [
 	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "_deployedBet",
-				"type": "address"
-			}
-		],
-		"name": "BetDeployed",
-		"type": "event"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -39,38 +21,15 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "deposit",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "description",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "expirationTime",
-				"type": "uint256"
-			}
-		],
-		"name": "createBet",
-		"outputs": [
-			{
-				"internalType": "contract IBet",
-				"name": "",
+				"internalType": "address",
+				"name": "_address",
 				"type": "address"
 			}
 		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getBets",
+		"name": "getBettorBets",
 		"outputs": [
 			{
-				"internalType": "contract IBet[]",
+				"internalType": "address[]",
 				"name": "",
 				"type": "address[]"
 			}
@@ -86,12 +45,12 @@
 				"type": "address"
 			}
 		],
-		"name": "isBetDeployed",
+		"name": "getJudgeBets",
 		"outputs": [
 			{
-				"internalType": "bool",
+				"internalType": "address[]",
 				"name": "",
-				"type": "bool"
+				"type": "address[]"
 			}
 		],
 		"stateMutability": "view",
@@ -111,6 +70,24 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_address",
+				"type": "address"
+			},
+			{
+				"internalType": "enum BetMapper.Role",
+				"name": "_role",
+				"type": "uint8"
+			}
+		],
+		"name": "register",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "renounceOwnership",
 		"outputs": [],
@@ -125,33 +102,7 @@
 				"type": "address"
 			}
 		],
-		"name": "setBetAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "setExchangeAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_address",
-				"type": "address"
-			}
-		],
-		"name": "setMapperAddress",
+		"name": "setFactory",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

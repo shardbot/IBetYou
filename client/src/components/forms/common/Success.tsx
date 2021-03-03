@@ -1,8 +1,8 @@
 import { FC } from 'react';
 
 import { GAME_DAY_IMG_SRC } from '../../../constants';
-import { Button, LinkButton } from '../../global';
 import { useAuth } from '../../../hooks/useAuth';
+import { Button, LinkButton } from '../../global';
 
 interface SuccessProps {
   message: string;

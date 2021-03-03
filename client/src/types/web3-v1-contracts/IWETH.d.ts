@@ -21,21 +21,28 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface Migrations extends BaseContract {
+export interface IWETH extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Migrations;
-  clone(): Migrations;
+  ): IWETH;
+  clone(): IWETH;
   methods: {
-    last_completed_migration(): NonPayableTransactionObject<string>;
+    deposit(): PayableTransactionObject<void>;
 
-    owner(): NonPayableTransactionObject<string>;
+    withdraw(arg0: number | string | BN): NonPayableTransactionObject<void>;
 
-    setCompleted(
-      completed: number | string | BN
-    ): NonPayableTransactionObject<void>;
+    approve(
+      guy: string,
+      wad: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
+
+    transferFrom(
+      src: string,
+      dst: string,
+      wad: number | string | BN
+    ): NonPayableTransactionObject<boolean>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;

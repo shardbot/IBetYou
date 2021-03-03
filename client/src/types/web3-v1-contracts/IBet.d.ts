@@ -21,30 +21,14 @@ interface EventOptions {
   topics?: string[];
 }
 
-export type Action = ContractEventLog<{
-  _sender: string;
-  _roleName: string;
-  _action: string;
-  0: string;
-  1: string;
-  2: string;
-}>;
-export type CurrentState = ContractEventLog<{
-  _betState: string;
-  0: string;
-}>;
-export type Dispute = ContractEventLog<{}>;
-
-export interface Bet extends BaseContract {
+export interface IBet extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Bet;
-  clone(): Bet;
+  ): IBet;
+  clone(): IBet;
   methods: {
-    maUSDC(): NonPayableTransactionObject<string>;
-
     /**
      * Constructor replacement
      */
@@ -70,30 +54,22 @@ export interface Bet extends BaseContract {
     /**
      * Assigns caller as a bettor's judge
      */
-    addBettorJudge(
-      _txExpirationTime: number | string | BN
-    ): NonPayableTransactionObject<void>;
+    addBettorJudge(): NonPayableTransactionObject<void>;
 
     /**
      * Assigns caller as a counter bettor's judge
      */
-    addCounterBettorJudge(
-      _txExpirationTime: number | string | BN
-    ): NonPayableTransactionObject<void>;
+    addCounterBettorJudge(): NonPayableTransactionObject<void>;
 
     /**
      * Judge or admin can call this function to vote for bettor
      */
-    voteForBettor(
-      _txExpirationTime: number | string | BN
-    ): NonPayableTransactionObject<void>;
+    voteForBettor(): NonPayableTransactionObject<void>;
 
     /**
      * Judge or admin can call this function to vote for counter bettor
      */
-    voteForCounterBettor(
-      _txExpirationTime: number | string | BN
-    ): NonPayableTransactionObject<void>;
+    voteForCounterBettor(): NonPayableTransactionObject<void>;
 
     /**
      * Transfers this contract's balance to caller if he won this bet
@@ -117,31 +93,6 @@ export interface Bet extends BaseContract {
     }>;
   };
   events: {
-    Action(cb?: Callback<Action>): EventEmitter;
-    Action(options?: EventOptions, cb?: Callback<Action>): EventEmitter;
-
-    CurrentState(cb?: Callback<CurrentState>): EventEmitter;
-    CurrentState(
-      options?: EventOptions,
-      cb?: Callback<CurrentState>
-    ): EventEmitter;
-
-    Dispute(cb?: Callback<Dispute>): EventEmitter;
-    Dispute(options?: EventOptions, cb?: Callback<Dispute>): EventEmitter;
-
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
-
-  once(event: "Action", cb: Callback<Action>): void;
-  once(event: "Action", options: EventOptions, cb: Callback<Action>): void;
-
-  once(event: "CurrentState", cb: Callback<CurrentState>): void;
-  once(
-    event: "CurrentState",
-    options: EventOptions,
-    cb: Callback<CurrentState>
-  ): void;
-
-  once(event: "Dispute", cb: Callback<Dispute>): void;
-  once(event: "Dispute", options: EventOptions, cb: Callback<Dispute>): void;
 }

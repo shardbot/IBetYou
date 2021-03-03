@@ -60,6 +60,8 @@ export const useAuth = () => {
       }
     });
 
+    logIn();
+
     return true;
   };
 

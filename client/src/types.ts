@@ -42,4 +42,5 @@ export interface Bet {
   betState?: string;
   betAddress?: string;
   deposit: string;
+  isJudge?: boolean;
 }

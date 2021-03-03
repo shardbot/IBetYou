@@ -9,11 +9,12 @@ export const useNotification = () => {
     return state.notification;
   };
 
-  const showNotification = (text: string) => {
+  const showNotification = (text: string, type = 'default') => {
     dispatch({
       type: 'SHOW_NOTIFICATION',
       payload: {
-        text: text
+        content: text,
+        type
       }
     });
   };

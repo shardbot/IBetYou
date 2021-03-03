@@ -21,20 +21,34 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface Migrations extends BaseContract {
+export interface Exchange extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Migrations;
-  clone(): Migrations;
+  ): Exchange;
+  clone(): Exchange;
   methods: {
-    last_completed_migration(): NonPayableTransactionObject<string>;
+    MATIC(): NonPayableTransactionObject<string>;
 
-    owner(): NonPayableTransactionObject<string>;
+    USDC(): NonPayableTransactionObject<string>;
 
-    setCompleted(
-      completed: number | string | BN
+    maUSDC(): NonPayableTransactionObject<string>;
+
+    /**
+     * Swaps MATIC(ETH) tokens for maUSDC tokens
+     * @param _unixTime If transaction is not mined and unixTime has expire, transaction will revert
+     */
+    swapMaticForMaUSDC(
+      _unixTime: number | string | BN
+    ): PayableTransactionObject<void>;
+
+    /**
+     * Swaps maUSDC tokens for MATIC(ETH) tokens
+     * @param _unixTime If transaction is not mined and unixTime has expire, transaction will revert
+     */
+    swapMaUSDCForMatic(
+      _unixTime: number | string | BN
     ): NonPayableTransactionObject<void>;
   };
   events: {

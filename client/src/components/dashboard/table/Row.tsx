@@ -1,8 +1,6 @@
-import { FC, useContext, useState } from 'react';
+import { FC } from 'react';
 
-import { useAuth } from '../../../hooks/useAuth';
-import { Web3Context } from '../../../pages/_app';
-import { claimReward, vote } from '../../../services/contract';
+import { useBet, useWeb3 } from '../../../hooks';
 import { Bet } from '../../../types';
 import { convertWeiToEth, formatDate, getStatus } from '../../../utils';
 import { Button, Loader, StatusBadge } from '../../global';
@@ -19,38 +17,19 @@ const map = {
   5: 'Claim'
 };
 
+const ActionButton: FC<{ handleAction: any }> = ({ handleAction, ...rest }) => {
+  return (
+    <Button
+      className="btn-primary block text-sm font-bold py-2 px-8 h-auto w-max sticky"
+      onClick={handleAction}>
+      {rest.children}
+    </Button>
+  );
+};
+
 export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
-  const web3 = useContext(Web3Context);
-  const { getAccount } = useAuth();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const handleAction = async () => {
-    setIsLoading(true);
-    if (+bet.betState === 5) {
-      try {
-        await claimReward(web3, bet.betAddress, getAccount().address);
-        handleFetch();
-        setIsLoading(false);
-        return;
-      } catch (e) {
-        console.log('Here')
-        console.log(e);
-        setIsLoading(false);
-      }
-    }
-
-    if (+bet.betState === 3 || +bet.betState === 4) {
-      try {
-        await vote(web3, 'for-bettor', bet.betAddress, getAccount().address);
-        handleFetch();
-        setIsLoading(false);
-        return;
-      } catch (e) {
-        console.log(e);
-        setIsLoading(false);
-      }
-    }
-  };
+  const { web3 } = useWeb3();
+  const { handleAction, isLoading } = useBet(bet, handleFetch);
 
   return (
     <tr className="bg-real-dark shadow-lg">
@@ -62,16 +41,18 @@ export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
       </td>
       <td className="pr-8 font-bold">{convertWeiToEth(web3, bet.deposit)}</td>
       <td className="text-right pr-8 rounded-tr-lg rounded-br-lg font-bold">
-        {+bet.betState > 2 && +bet.betState < 6 ? (
+        {+bet.betState > 3 && +bet.betState < 6 ? (
           <>
             {isLoading ? (
               <Loader classes="w-8 h-8 ml-auto" />
             ) : (
-              <Button
-                className="btn-primary block text-sm font-bold py-2 px-8 h-auto w-max sticky"
-                onClick={handleAction}>
-                {map[+bet.betState]}
-              </Button>
+              <>
+                {bet.isJudge ? (
+                  <ActionButton handleAction={handleAction}>{map[+bet.betState]}</ActionButton>
+                ) : (
+                  <ActionButton handleAction={handleAction}>Claim</ActionButton>
+                )}
+              </>
             )}
           </>
         ) : (

@@ -21,21 +21,24 @@ interface EventOptions {
   topics?: string[];
 }
 
-export interface Migrations extends BaseContract {
+export interface IBetMapper extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): Migrations;
-  clone(): Migrations;
+  ): IBetMapper;
+  clone(): IBetMapper;
   methods: {
-    last_completed_migration(): NonPayableTransactionObject<string>;
-
-    owner(): NonPayableTransactionObject<string>;
-
-    setCompleted(
-      completed: number | string | BN
+    register(
+      _address: string,
+      _role: number | string | BN
     ): NonPayableTransactionObject<void>;
+
+    getBettorBets(_address: string): NonPayableTransactionObject<string[]>;
+
+    getJudgeBets(_address: string): NonPayableTransactionObject<string[]>;
+
+    setFactory(_address: string): NonPayableTransactionObject<void>;
   };
   events: {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
