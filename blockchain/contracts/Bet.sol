@@ -61,10 +61,6 @@ contract Bet is ReentrancyGuard {
         BET_OVER
     }
 
-    struct Participant {
-        bytes32 role;
-    }
-
     struct Storage {
         mapping(address => bytes32) participantRoles;
         mapping(bytes32 => address) roleParticipants;
@@ -316,7 +312,7 @@ contract Bet is ReentrancyGuard {
         } else {
             _assignRole(msg.sender, COUNTER_BETTOR_ROLE, "COUNTER BETTOR");
         }
-        betMapper.register(msg.sender);
+        betMapper.register(msg.sender, IBetMapper.Role.Bettor);
         if (
             betStorage.roleParticipants[BETTOR_ROLE] != address(0) &&
             betStorage.roleParticipants[COUNTER_BETTOR_ROLE] != address(0)
@@ -346,7 +342,7 @@ contract Bet is ReentrancyGuard {
                 "COUNTER BETTOR JUDGE"
             );
         }
-        betMapper.register(msg.sender);
+        betMapper.register(msg.sender, IBetMapper.Role.Judge);
         if (
             betStorage.roleParticipants[BETTOR_JUDGE] != address(0) &&
             betStorage.roleParticipants[COUNTER_BETTOR_JUDGE] != address(0)

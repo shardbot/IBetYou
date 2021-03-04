@@ -13,38 +13,35 @@ contract BetMapper is Ownable {
         _;
     }
 
+    enum Role {Bettor, Judge}
+
     IBetFactory private factory;
 
-    mapping(address => address[]) addressBets;
+    mapping(address => mapping(Role => address[])) addressRoleBets;
 
-    //----------------------------------------
-    // External functions
-    //----------------------------------------
-
-    /**
-     * @notice Associate participant with a Bet instance
-     * @param _address Participant's address
-     */
-    function register(address _address) external onlyBetContract(msg.sender) {
-        addressBets[_address].push(msg.sender);
+    function register(address _address, Role _role)
+        external
+        onlyBetContract(msg.sender)
+    {
+        addressRoleBets[_address][_role].push(msg.sender);
     }
 
-    /**
-     * @notice Returns all bet instances associated with participant's address
-     * @param _address Participant's address
-     */
-    function getBets(address _address)
+    function getBettorBets(address _address)
         external
         view
         returns (address[] memory)
     {
-        return addressBets[_address];
+        return addressRoleBets[_address][Role.Bettor];
     }
 
-    /**
-     * @notice Sets BetFactory address
-     * @param _address BetFactory address
-     */
+    function getJudgeBets(address _address)
+        external
+        view
+        returns (address[] memory)
+    {
+        return addressRoleBets[_address][Role.Judge];
+    }
+
     function setFactory(address _address) external onlyOwner {
         factory = IBetFactory(_address);
     }
