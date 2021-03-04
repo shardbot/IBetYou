@@ -66,10 +66,22 @@ export interface BetFactory extends BaseContract {
       expirationTime: number | string | BN
     ): NonPayableTransactionObject<string>;
 
+    /**
+     * Sets address of Bet mastercopy
+     * @param _address Address of deployed Bet instance
+     */
     setBetAddress(_address: string): NonPayableTransactionObject<void>;
 
+    /**
+     * Sets address of BetMapper instance
+     * @param _address Address of deployed BetMapper instance
+     */
     setMapperAddress(_address: string): NonPayableTransactionObject<void>;
 
+    /**
+     * Sets address of Exchange instance
+     * @param _address Address of deployed Exchange instance
+     */
     setExchangeAddress(_address: string): NonPayableTransactionObject<void>;
 
     /**

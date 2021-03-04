@@ -69,6 +69,7 @@ export interface Bet extends BaseContract {
 
     /**
      * Assigns caller as a bettor's judge
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
     addBettorJudge(
       _txExpirationTime: number | string | BN
@@ -76,6 +77,7 @@ export interface Bet extends BaseContract {
 
     /**
      * Assigns caller as a counter bettor's judge
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
     addCounterBettorJudge(
       _txExpirationTime: number | string | BN
@@ -83,6 +85,7 @@ export interface Bet extends BaseContract {
 
     /**
      * Judge or admin can call this function to vote for bettor
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
     voteForBettor(
       _txExpirationTime: number | string | BN
@@ -90,6 +93,7 @@ export interface Bet extends BaseContract {
 
     /**
      * Judge or admin can call this function to vote for counter bettor
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
     voteForCounterBettor(
       _txExpirationTime: number | string | BN
