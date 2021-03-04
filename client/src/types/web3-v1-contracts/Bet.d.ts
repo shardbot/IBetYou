@@ -2,18 +2,18 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import BN from 'bn.js';
-import { ContractOptions } from 'web3-eth-contract';
-import { EventLog } from 'web3-core';
-import { EventEmitter } from 'events';
+import BN from "bn.js";
+import { ContractOptions } from "web3-eth-contract";
+import { EventLog } from "web3-core";
+import { EventEmitter } from "events";
 import {
   Callback,
   PayableTransactionObject,
   NonPayableTransactionObject,
   BlockType,
   ContractEventLog,
-  BaseContract
-} from './types';
+  BaseContract,
+} from "./types";
 
 interface EventOptions {
   filter?: object;
@@ -36,7 +36,11 @@ export type CurrentState = ContractEventLog<{
 export type Dispute = ContractEventLog<{}>;
 
 export interface Bet extends BaseContract {
-  constructor(jsonInterface: any[], address?: string, options?: ContractOptions): Bet;
+  constructor(
+    jsonInterface: any[],
+    address?: string,
+    options?: ContractOptions
+  ): Bet;
   clone(): Bet;
   methods: {
     maUSDC(): NonPayableTransactionObject<string>;
@@ -65,11 +69,15 @@ export interface Bet extends BaseContract {
 
     /**
      * Assigns caller as a bettor's judge
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
-    addBettorJudge(_txExpirationTime: number | string | BN): NonPayableTransactionObject<void>;
+    addBettorJudge(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Assigns caller as a counter bettor's judge
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
     addCounterBettorJudge(
       _txExpirationTime: number | string | BN
@@ -77,11 +85,15 @@ export interface Bet extends BaseContract {
 
     /**
      * Judge or admin can call this function to vote for bettor
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
-    voteForBettor(_txExpirationTime: number | string | BN): NonPayableTransactionObject<void>;
+    voteForBettor(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Judge or admin can call this function to vote for counter bettor
+     * @param _txExpirationTime Transaction deadline, quickswap secrity reasons
      */
     voteForCounterBettor(
       _txExpirationTime: number | string | BN
@@ -113,7 +125,10 @@ export interface Bet extends BaseContract {
     Action(options?: EventOptions, cb?: Callback<Action>): EventEmitter;
 
     CurrentState(cb?: Callback<CurrentState>): EventEmitter;
-    CurrentState(options?: EventOptions, cb?: Callback<CurrentState>): EventEmitter;
+    CurrentState(
+      options?: EventOptions,
+      cb?: Callback<CurrentState>
+    ): EventEmitter;
 
     Dispute(cb?: Callback<Dispute>): EventEmitter;
     Dispute(options?: EventOptions, cb?: Callback<Dispute>): EventEmitter;
@@ -121,12 +136,16 @@ export interface Bet extends BaseContract {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
 
-  once(event: 'Action', cb: Callback<Action>): void;
-  once(event: 'Action', options: EventOptions, cb: Callback<Action>): void;
+  once(event: "Action", cb: Callback<Action>): void;
+  once(event: "Action", options: EventOptions, cb: Callback<Action>): void;
 
-  once(event: 'CurrentState', cb: Callback<CurrentState>): void;
-  once(event: 'CurrentState', options: EventOptions, cb: Callback<CurrentState>): void;
+  once(event: "CurrentState", cb: Callback<CurrentState>): void;
+  once(
+    event: "CurrentState",
+    options: EventOptions,
+    cb: Callback<CurrentState>
+  ): void;
 
-  once(event: 'Dispute', cb: Callback<Dispute>): void;
-  once(event: 'Dispute', options: EventOptions, cb: Callback<Dispute>): void;
+  once(event: "Dispute", cb: Callback<Dispute>): void;
+  once(event: "Dispute", options: EventOptions, cb: Callback<Dispute>): void;
 }

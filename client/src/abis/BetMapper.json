@@ -26,7 +26,26 @@
 				"type": "address"
 			}
 		],
-		"name": "getBets",
+		"name": "getBettorBets",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "getJudgeBets",
 		"outputs": [
 			{
 				"internalType": "address[]",
@@ -56,6 +75,11 @@
 				"internalType": "address",
 				"name": "_address",
 				"type": "address"
+			},
+			{
+				"internalType": "enum BetMapper.Role",
+				"name": "_role",
+				"type": "uint8"
 			}
 		],
 		"name": "register",
