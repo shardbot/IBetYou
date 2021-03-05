@@ -49,6 +49,7 @@ export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
         return;
       }
 
+      hideNotification();
       setIsLoading(false);
       setStep(step + 1);
     } else return;

@@ -41,7 +41,7 @@ export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
       </td>
       <td className="pr-8 font-bold">{convertWeiToEth(web3, bet.deposit)}</td>
       <td className="text-right pr-8 rounded-tr-lg rounded-br-lg font-bold">
-        {+bet.betState > 3 && +bet.betState < 6 ? (
+        {+bet.betState > 2 && +bet.betState < 6 ? (
           <>
             {isLoading ? (
               <Loader classes="w-8 h-8 ml-auto" />
@@ -50,7 +50,13 @@ export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
                 {bet.isJudge ? (
                   <ActionButton handleAction={handleAction}>{map[+bet.betState]}</ActionButton>
                 ) : (
-                  <ActionButton handleAction={handleAction}>Claim</ActionButton>
+                  <>
+                    {+bet.betState === 5 ? (
+                      <ActionButton handleAction={handleAction}>Claim</ActionButton>
+                    ) : (
+                      <span>-</span>
+                    )}
+                  </>
                 )}
               </>
             )}

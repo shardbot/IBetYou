@@ -31,7 +31,10 @@ export const getRevertMessage = async (web3: Web3, error: any) => {
 
   const pattern = /(?<=execution reverted: )(.*)(?=")/g;
   const receiptJSON = JSON.parse(JSON.stringify(error));
+  if (!receiptJSON.receipt) return 'Transaction rejected. Please confirm your transaction.';
+
   const txHash = receiptJSON.receipt.transactionHash;
+
   const tx = await web3.eth.getTransaction(txHash);
 
   await web3.eth.call(tx).catch((e) => (result = String(e).match(pattern)[0]));

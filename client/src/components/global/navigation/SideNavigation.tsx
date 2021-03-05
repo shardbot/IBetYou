@@ -37,7 +37,7 @@ const LogOutButton: FC = () => {
   const { logOut } = useAuth();
 
   return (
-    <Button className="mt-auto mb-16 flex self-center p-6" onClick={logOut}>
+    <Button className="mt-auto mb-8 flex self-center p-6" onClick={logOut}>
       <LogOutIcon />
       <span className="ml-4">Log Out</span>
     </Button>

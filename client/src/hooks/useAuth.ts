@@ -14,6 +14,7 @@ export const useAuth = () => {
   };
 
   const redirectToDashboard = () => {
+    logIn();
     router.push('/user/dashboard');
   };
 
@@ -59,8 +60,6 @@ export const useAuth = () => {
         wallet: onboard.getState()
       }
     });
-
-    logIn();
 
     return true;
   };

@@ -20,7 +20,7 @@ export const useBet = (bet: Bet, handleFetch: () => any) => {
         await claimReward(web3, bet.betAddress, getAccount().address);
         handleFetch();
         setIsLoading(false);
-        showNotification('You successfully claimed your reward!');
+        showNotification('You successfully claimed your reward!', 'success');
         return;
       } catch (e) {
         getRevertMessage(web3, e).then((message) => {
@@ -36,7 +36,7 @@ export const useBet = (bet: Bet, handleFetch: () => any) => {
         await vote(web3, 'for-bettor', bet.betAddress, getAccount().address);
         handleFetch();
         setIsLoading(false);
-        showNotification('You successfully voted');
+        showNotification('You successfully voted', 'success');
         return;
       } catch (e) {
         getRevertMessage(web3, e).then((message) => {
