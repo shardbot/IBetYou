@@ -51,22 +51,15 @@ export interface BetMapper extends BaseContract {
      */
     transferOwnership(newOwner: string): NonPayableTransactionObject<void>;
 
-    /**
-     * Associate participant with a Bet instance
-     * @param _address Participant's address
-     */
-    register(_address: string): NonPayableTransactionObject<void>;
+    register(
+      _address: string,
+      _role: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
-    /**
-     * Returns all bet instances associated with participant's address
-     * @param _address Participant's address
-     */
-    getBets(_address: string): NonPayableTransactionObject<string[]>;
+    getBettorBets(_address: string): NonPayableTransactionObject<string[]>;
 
-    /**
-     * Sets BetFactory address
-     * @param _address BetFactory address
-     */
+    getJudgeBets(_address: string): NonPayableTransactionObject<string[]>;
+
     setFactory(_address: string): NonPayableTransactionObject<void>;
   };
   events: {
