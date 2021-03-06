@@ -64,7 +64,6 @@ contract Bet is ReentrancyGuard {
     struct Storage {
         mapping(address => bytes32) participantRoles;
         mapping(bytes32 => address) roleParticipants;
-        mapping(address => bool) didVote;
         mapping(address => uint256) votes;
         address admin;
         string description;
@@ -128,7 +127,7 @@ contract Bet is ReentrancyGuard {
     }
 
     modifier didNotVote(address _sender) {
-        require(betStorage.didVote[_sender] != true, "You have already voted");
+        require(betMapper.didVote(_sender) != true, "You have already voted");
         _;
     }
 
@@ -368,7 +367,7 @@ contract Bet is ReentrancyGuard {
         atState(BetState.VOTING_STAGE)
         returns (BetState)
     {
-        betStorage.didVote[msg.sender] = true;
+        betMapper.registerVote(msg.sender);
         if (_vote) {
             betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]] =
                 betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]] +

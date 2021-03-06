@@ -17,4 +17,8 @@ interface IBetMapper {
         returns (address[] memory);
 
     function setFactory(address _address) external;
+
+    function didVote(address _address) external view returns (bool);
+
+    function registerVote(address _address) external;
 }
