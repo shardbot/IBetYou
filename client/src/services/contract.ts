@@ -145,6 +145,17 @@ export const vote = async (
   }
 };
 
+export const checkVote = async (
+  web3: Web3,
+  betContractAddress: string | any,
+  accountAddress: string | any
+) => {
+  const contract = createBetContract(web3, betContractAddress);
+  return contract.methods.didVote(accountAddress).call({
+    from: accountAddress
+  });
+};
+
 export const claimReward = async (
   web3: Web3,
   betContractAddress: string | any,

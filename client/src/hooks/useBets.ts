@@ -35,9 +35,9 @@ export const useBets = () => {
       }
     );
 
-    // get bets where user is bettor
+    // get bets where user is judge
     const judgeBetsAddresses = await getJudgeBets(web3, accountAddress);
-    console.log(bettorBetsAddresses);
+    console.log(judgeBetsAddresses);
     await Promise.all(judgeBetsAddresses.map((address) => getBet(web3, address))).then(
       (results) => {
         console.log('Bettor bets');
