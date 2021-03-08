@@ -72,7 +72,7 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
             <Loader classes="w-8 h-8 mt-4" />
           ) : (
             <>
-              {bet.isJudge ? (
+              {bet.isJudge && bet.didVote === false ? (
                 <ActionButton handleAction={handleAction} bet={bet}>
                   {map[+bet.betState]}
                 </ActionButton>

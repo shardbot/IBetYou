@@ -47,7 +47,7 @@ export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
               <Loader classes="w-8 h-8 ml-auto" />
             ) : (
               <>
-                {bet.isJudge ? (
+                {bet.isJudge && bet.didVote === false ? (
                   <ActionButton handleAction={handleAction}>{map[+bet.betState]}</ActionButton>
                 ) : (
                   <>

@@ -53,7 +53,7 @@ export const useBets = () => {
               address: judgeBetsAddresses[i],
               expirationDate: item.expirationTime,
               isJudge: true,
-              didVote: vote[0]
+              didVote: vote[i]
             };
           });
           console.log(transformedResults);

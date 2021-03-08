@@ -43,4 +43,5 @@ export interface Bet {
   betAddress?: string;
   deposit: string;
   isJudge?: boolean;
+  didVote?: boolean;
 }
