@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { getBet, getBettorBets, getJudgeBets } from '../services/contract';
+import { checkVote, getBet, getBettorBets, getJudgeBets } from '../services/contract';
 import { Bet } from '../types';
 import { convertWeiToEth } from '../utils';
 import { useWeb3 } from './useWeb3';
@@ -37,20 +37,28 @@ export const useBets = () => {
 
     // get bets where user is judge
     const judgeBetsAddresses = await getJudgeBets(web3, accountAddress);
+
     console.log(judgeBetsAddresses);
     await Promise.all(judgeBetsAddresses.map((address) => getBet(web3, address))).then(
-      (results) => {
-        console.log('Bettor bets');
+      async (results) => {
+        console.log('Judge bets');
         console.log(results);
-        const transformedResults = results.map((item, i) => {
-          return {
-            ...item,
-            address: judgeBetsAddresses[i],
-            expirationDate: item.expirationTime,
-            isJudge: true
-          };
+        const votes = results.map(async (result) => {
+          return checkVote(web3, result.betAddress, accountAddress);
         });
-        allBets = [...allBets, ...transformedResults];
+        await Promise.all(votes).then((vote) => {
+          const transformedResults = results.map((item, i) => {
+            return {
+              ...item,
+              address: judgeBetsAddresses[i],
+              expirationDate: item.expirationTime,
+              isJudge: true,
+              didVote: vote[0]
+            };
+          });
+          console.log(transformedResults);
+          allBets = [...allBets, ...transformedResults];
+        });
       }
     );
 
