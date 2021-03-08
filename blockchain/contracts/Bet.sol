@@ -65,6 +65,7 @@ contract Bet is ReentrancyGuard {
         mapping(address => bytes32) participantRoles;
         mapping(bytes32 => address) roleParticipants;
         mapping(address => uint256) votes;
+        mapping(address => bool) didVote;
         address admin;
         string description;
         BetState betState;
@@ -127,7 +128,7 @@ contract Bet is ReentrancyGuard {
     }
 
     modifier didNotVote(address _sender) {
-        require(betMapper.didVote(_sender) != true, "You have already voted");
+        require(betStorage.didVote[_sender] != true, "You have already voted");
         _;
     }
 
@@ -256,7 +257,7 @@ contract Bet is ReentrancyGuard {
      * @notice Transfers this contract's balance to caller if he won this bet
      */
     function claimReward()
-        public
+        external
         nonReentrant
         atState(BetState.FUNDS_WITHDRAWAL)
     {
@@ -265,6 +266,14 @@ contract Bet is ReentrancyGuard {
             address(splitter).balance < betStorage.judgeShare ||
             betStorage.judgeShare == 0
         ) _nextState();
+    }
+
+    /**
+     * @notice Returns if _address voted
+     * @param _address address to be checked
+     */
+    function didVote(address _address) external view returns (bool) {
+        return betStorage.didVote[_address];
     }
 
     /**
@@ -367,7 +376,7 @@ contract Bet is ReentrancyGuard {
         atState(BetState.VOTING_STAGE)
         returns (BetState)
     {
-        betMapper.registerVote(msg.sender);
+        betStorage.didVote[msg.sender] = true;
         if (_vote) {
             betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]] =
                 betStorage.votes[betStorage.roleParticipants[BETTOR_ROLE]] +

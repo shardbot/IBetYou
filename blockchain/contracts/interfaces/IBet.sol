@@ -59,6 +59,12 @@ interface IBet {
     function claimReward() external;
 
     /**
+     * @notice Returns if _address voted
+     * @param _address address to be checked
+     */
+    function didVote(address _address) external view returns (bool);
+
+    /**
      * @notice Returns bet description
      */
     function getBet()
