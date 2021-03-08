@@ -75,6 +75,8 @@ interface IBet {
             string memory description,
             BetState betState,
             uint256 expirationTime,
-            uint256 deposit
+            uint256 deposit,
+            address winner,
+            bool yieldFarmed
         );
 }

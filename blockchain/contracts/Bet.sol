@@ -21,7 +21,8 @@ contract Bet is ReentrancyGuard {
     //----------------------------------------
     PaymentSplitter private splitter;
     IBetMapper private betMapper;
-    IExchange internal exchange;
+    IExchange private exchange;
+    bool private yieldFarmed;
 
     //----------------------------------------
     // Constants
@@ -267,12 +268,12 @@ contract Bet is ReentrancyGuard {
             betStorage.judgeShare == 0
         ) _nextState();
     }
-
+    
     /**
      * @notice Returns if _address voted
      * @param _address address to be checked
      */
-    function didVote(address _address) external view returns (bool) {
+    function didVote(address _address) external view returns(bool) {
         return betStorage.didVote[_address];
     }
 
@@ -287,7 +288,9 @@ contract Bet is ReentrancyGuard {
             string memory description,
             BetState betState,
             uint256 expirationTime,
-            uint256 deposit
+            uint256 deposit,
+            address winner,
+            bool didFarmYield
         )
     {
         return (
@@ -295,7 +298,9 @@ contract Bet is ReentrancyGuard {
             betStorage.description,
             betStorage.betState,
             betStorage.expirationTime,
-            betStorage.deposit
+            betStorage.deposit,
+            betStorage.winner,
+            yieldFarmed
         );
     }
 
@@ -484,6 +489,7 @@ contract Bet is ReentrancyGuard {
         uint256 yieldPercentage;
 
         if (address(this).balance > 2 * betStorage.deposit) {
+            yieldFarmed = true;
             yieldPercentage =
                 ((address(this).balance - 2 * betStorage.deposit) * 100) /
                 address(this).balance;
