@@ -18,19 +18,22 @@ export const useBets = () => {
 
     // get bets where user is bettor
     const bettorBetsAddresses = await getBettorBets(web3, accountAddress);
-    console.log(bettorBetsAddresses);
     await Promise.all(bettorBetsAddresses.map((address) => getBet(web3, address))).then(
       (results) => {
         console.log('Bettor bets');
         console.log(results);
         const transformedResults = results.map((item, i) => {
+          const isWinner = item.winner.toUpperCase() === accountAddress.toUpperCase();
           return {
             ...item,
             address: bettorBetsAddresses[i],
             expirationDate: item.expirationTime,
-            isJudge: false
+            isJudge: false,
+            didFarmYield: item.didFarmYield,
+            isWinner: isWinner
           };
         });
+        console.log(transformedResults);
         allBets = [...allBets, ...transformedResults];
       }
     );
@@ -38,7 +41,6 @@ export const useBets = () => {
     // get bets where user is judge
     const judgeBetsAddresses = await getJudgeBets(web3, accountAddress);
 
-    console.log(judgeBetsAddresses);
     await Promise.all(judgeBetsAddresses.map((address) => getBet(web3, address))).then(
       async (results) => {
         console.log('Judge bets');
@@ -48,12 +50,15 @@ export const useBets = () => {
         });
         await Promise.all(votes).then((vote) => {
           const transformedResults = results.map((item, i) => {
+            const isWinner = item.winner.toUpperCase() === accountAddress.toUpperCase();
             return {
               ...item,
               address: judgeBetsAddresses[i],
               expirationDate: item.expirationTime,
               isJudge: true,
-              didVote: vote[i]
+              didVote: vote[i],
+              didFarmYield: item.didFarmYield,
+              isWinner: isWinner
             };
           });
           console.log(transformedResults);
@@ -61,8 +66,6 @@ export const useBets = () => {
         });
       }
     );
-
-    console.log(allBets);
 
     // Total stake
     const totalStake = getTotalStake(allBets);

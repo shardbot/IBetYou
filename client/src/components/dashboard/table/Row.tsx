@@ -51,7 +51,7 @@ export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
                   <ActionButton handleAction={handleAction}>{map[+bet.betState]}</ActionButton>
                 ) : (
                   <>
-                    {+bet.betState === 5 ? (
+                    {+bet.betState === 5 && ((bet.didFarmYield && bet.isJudge) || bet.isWinner) ? (
                       <ActionButton handleAction={handleAction}>Claim</ActionButton>
                     ) : (
                       <span>-</span>
