@@ -6,13 +6,17 @@ module.exports = {
 	networks: {
 		rinkeby: {
 			provider: new HDWalletProvider(
-				process.env.PRIVATE_KEY,
+				process.env.MATIC_TEST_PRIVATE_KEY,
 				`https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`
 			),
 			network_id: 4
 		},
 		matic: {
-			provider: () => new HDWalletProvider(process.env.MATIC_TEST_PRIVATE_KEY, process.env.MATIC_TEST_RPC),
+			provider: () =>
+				new HDWalletProvider(
+					process.env.MATIC_TEST_PRIVATE_KEY,
+					process.env.MATIC_TEST_RPC
+				),
 			network_id: 80001,
 			gas: 4500000,
 			gasPrice: 10000000000,
