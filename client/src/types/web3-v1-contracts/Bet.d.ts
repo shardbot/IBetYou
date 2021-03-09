@@ -102,9 +102,15 @@ export interface Bet extends BaseContract {
 
     /**
      * Returns if _address voted
-     * @param _address address to be checked
+     * @param _address address to check
      */
     didVote(_address: string): NonPayableTransactionObject<boolean>;
+
+    /**
+     * Returns if _address claimed reward
+     * @param _address address to check
+     */
+    didClaim(_address: string): NonPayableTransactionObject<boolean>;
 
     /**
      * Returns bet description
