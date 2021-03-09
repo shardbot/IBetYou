@@ -54,22 +54,30 @@ export interface IBet extends BaseContract {
     /**
      * Assigns caller as a bettor's judge
      */
-    addBettorJudge(): NonPayableTransactionObject<void>;
+    addBettorJudge(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Assigns caller as a counter bettor's judge
      */
-    addCounterBettorJudge(): NonPayableTransactionObject<void>;
+    addCounterBettorJudge(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Judge or admin can call this function to vote for bettor
      */
-    voteForBettor(): NonPayableTransactionObject<void>;
+    voteForBettor(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Judge or admin can call this function to vote for counter bettor
      */
-    voteForCounterBettor(): NonPayableTransactionObject<void>;
+    voteForCounterBettor(
+      _txExpirationTime: number | string | BN
+    ): NonPayableTransactionObject<void>;
 
     /**
      * Transfers this contract's balance to caller if he won this bet
@@ -91,11 +99,15 @@ export interface IBet extends BaseContract {
       betState: string;
       expirationTime: string;
       deposit: string;
+      winner: string;
+      yieldFarmed: boolean;
       0: string;
       1: string;
       2: string;
       3: string;
       4: string;
+      5: string;
+      6: boolean;
     }>;
   };
   events: {
