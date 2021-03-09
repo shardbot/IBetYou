@@ -8,431 +8,278 @@ import { EventData, PastEventOptions } from "web3-eth-contract";
 export interface BetContract extends Truffle.Contract<BetInstance> {
   "new"(
     _admin: string,
-    _betCreator: string,
-    _minimumDeposit: number | BN | string,
+    _deposit: number | BN | string,
     _description: string,
     _expirationTime: number | BN | string,
     meta?: Truffle.TransactionDetails
   ): Promise<BetInstance>;
 }
 
-export interface RoleAdminChanged {
-  name: "RoleAdminChanged";
+export interface Action {
+  name: "Action";
   args: {
-    role: string;
-    previousAdminRole: string;
-    newAdminRole: string;
+    _sender: string;
+    _roleName: string;
+    _action: string;
     0: string;
     1: string;
     2: string;
   };
 }
 
-export interface RoleGranted {
-  name: "RoleGranted";
+export interface CurrentState {
+  name: "CurrentState";
   args: {
-    role: string;
-    account: string;
-    sender: string;
-    0: string;
-    1: string;
-    2: string;
+    _betState: BN;
+    0: BN;
   };
 }
 
-export interface RoleRevoked {
-  name: "RoleRevoked";
-  args: {
-    role: string;
-    account: string;
-    sender: string;
-    0: string;
-    1: string;
-    2: string;
-  };
+export interface Dispute {
+  name: "Dispute";
+  args: {};
 }
 
-type AllEvents = RoleAdminChanged | RoleGranted | RoleRevoked;
+type AllEvents = Action | CurrentState | Dispute;
 
 export interface BetInstance extends Truffle.ContractInstance {
-  BETTOR_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  DEFAULT_ADMIN_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  JUDGE_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  description(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  didVote(
-    arg0: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
-  expirationTime(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+  /**
+   * Returns the payments owed to an address.
+   * @param dest The creditor's address.
+   */
+  payments(dest: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   /**
-   * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+   * Withdraw accumulated payments, forwarding all gas to the recipient. Note that _any_ account can call this function, not just the `payee`. This means that contracts unaware of the `PullPayment` protocol can still receive funds this way, by having a separate account call {withdrawPayments}. WARNING: Forwarding all gas opens the door to reentrancy vulnerabilities. Make sure you trust the recipient, or are either following the checks-effects-interactions pattern or using {ReentrancyGuard}.
+   * @param payee Whose payments will be withdrawn.
    */
-  getRoleAdmin(
-    role: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
-
-  /**
-   * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
-   */
-  getRoleMember(
-    role: string,
-    index: number | BN | string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<string>;
-
-  /**
-   * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
-   */
-  getRoleMemberCount(
-    role: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<BN>;
-
-  /**
-   * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
-   */
-  grantRole: {
-    (
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
+  withdrawPayments: {
+    (payee: string, txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(payee: string, txDetails?: Truffle.TransactionDetails): Promise<void>;
     sendTransaction(
-      role: string,
-      account: string,
+      payee: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      role: string,
-      account: string,
+      payee: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
 
   /**
-   * Returns `true` if `account` has been granted `role`.
+   * Assigns caller as bettor
    */
-  hasRole(
-    role: string,
-    account: string,
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<boolean>;
-
-  judgesCount(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-  minimumDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-  numVotes(arg0: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-  /**
-   * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
-   */
-  renounceRole: {
-    (
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
+  addBettor: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
   /**
-   * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
+   * Assigns caller as counter bettor
    */
-  revokeRole: {
-    (
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      role: string,
-      account: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
+  addCounterBettor: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
+
+  /**
+   * Assigns caller as a bettor's judge
+   */
+  addBettorJudge: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+  };
+
+  /**
+   * Assigns caller as a counter bettor's judge
+   */
+  addCounterBettorJudge: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+  };
+
+  /**
+   * Judge or admin can call this function to vote for bettor
+   */
+  voteForBettor: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+  };
+
+  /**
+   * Judge or admin can call this function to vote for counter bettor
+   */
+  voteForCounterBettor: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+  };
+
+  /**
+   * Transfers this contract's balance to caller if he won this bet
+   */
+  claimReward: {
+    (txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+  };
+
+  /**
+   * Returns bet description
+   */
+  getBet(txDetails?: Truffle.TransactionDetails): Promise<[string, BN, BN, BN]>;
 
   getBalance(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
-  acceptBet: {
-    (txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-  };
-
-  addJudge: {
-    (txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-  };
-
-  judgeVote: {
-    (_candidate: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      _candidate: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _candidate: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _candidate: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  adminDecide: {
-    (_candidate: string, txDetails?: Truffle.TransactionDetails): Promise<
-      Truffle.TransactionResponse<AllEvents>
-    >;
-    call(
-      _candidate: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      _candidate: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _candidate: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
   methods: {
-    BETTOR_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-    DEFAULT_ADMIN_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-    JUDGE_ROLE(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-    description(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-    didVote(
-      arg0: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<boolean>;
-
-    expirationTime(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+    /**
+     * Returns the payments owed to an address.
+     * @param dest The creditor's address.
+     */
+    payments(dest: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     /**
-     * Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.
+     * Withdraw accumulated payments, forwarding all gas to the recipient. Note that _any_ account can call this function, not just the `payee`. This means that contracts unaware of the `PullPayment` protocol can still receive funds this way, by having a separate account call {withdrawPayments}. WARNING: Forwarding all gas opens the door to reentrancy vulnerabilities. Make sure you trust the recipient, or are either following the checks-effects-interactions pattern or using {ReentrancyGuard}.
+     * @param payee Whose payments will be withdrawn.
      */
-    getRoleAdmin(
-      role: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-
-    /**
-     * Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.
-     */
-    getRoleMember(
-      role: string,
-      index: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-
-    /**
-     * Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.
-     */
-    getRoleMemberCount(
-      role: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<BN>;
-
-    /**
-     * Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.
-     */
-    grantRole: {
-      (
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    withdrawPayments: {
+      (payee: string, txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
       call(
-        role: string,
-        account: string,
+        payee: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        role: string,
-        account: string,
+        payee: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        role: string,
-        account: string,
+        payee: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
 
     /**
-     * Returns `true` if `account` has been granted `role`.
+     * Assigns caller as bettor
      */
-    hasRole(
-      role: string,
-      account: string,
+    addBettor: {
+      (txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    };
+
+    /**
+     * Assigns caller as counter bettor
+     */
+    addCounterBettor: {
+      (txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    };
+
+    /**
+     * Assigns caller as a bettor's judge
+     */
+    addBettorJudge: {
+      (txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    };
+
+    /**
+     * Assigns caller as a counter bettor's judge
+     */
+    addCounterBettorJudge: {
+      (txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    };
+
+    /**
+     * Judge or admin can call this function to vote for bettor
+     */
+    voteForBettor: {
+      (txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    };
+
+    /**
+     * Judge or admin can call this function to vote for counter bettor
+     */
+    voteForCounterBettor: {
+      (txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    };
+
+    /**
+     * Transfers this contract's balance to caller if he won this bet
+     */
+    claimReward: {
+      (txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    };
+
+    /**
+     * Returns bet description
+     */
+    getBet(
       txDetails?: Truffle.TransactionDetails
-    ): Promise<boolean>;
-
-    judgesCount(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-    minimumDeposit(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-    numVotes(arg0: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-    /**
-     * Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.
-     */
-    renounceRole: {
-      (
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    /**
-     * Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.
-     */
-    revokeRole: {
-      (
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        role: string,
-        account: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
+    ): Promise<[string, BN, BN, BN]>;
 
     getBalance(txDetails?: Truffle.TransactionDetails): Promise<BN>;
-
-    acceptBet: {
-      (txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-    };
-
-    addJudge: {
-      (txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
-    };
-
-    judgeVote: {
-      (_candidate: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        _candidate: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _candidate: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _candidate: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    adminDecide: {
-      (_candidate: string, txDetails?: Truffle.TransactionDetails): Promise<
-        Truffle.TransactionResponse<AllEvents>
-      >;
-      call(
-        _candidate: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _candidate: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _candidate: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
   };
 
   getPastEvents(event: string): Promise<EventData[]>;

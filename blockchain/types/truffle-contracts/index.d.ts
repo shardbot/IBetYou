@@ -2,8 +2,53 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import { AaveDepositWithdrawContract } from "./AaveDepositWithdraw";
+import { BalancerDepositWithdrawContract } from "./BalancerDepositWithdraw";
+import { BetContract } from "./Bet";
+import { BetFactoryContract } from "./BetFactory";
+import { EscrowContract } from "./Escrow";
+import { IBPoolContract } from "./IBPool";
+import { IERC20Contract } from "./IERC20";
+import { IWETHContract } from "./IWETH";
+import { IWETHGatewayContract } from "./IWETHGateway";
+import { MigrationsContract } from "./Migrations";
+import { OwnableContract } from "./Ownable";
+import { PullPaymentContract } from "./PullPayment";
+
 declare global {
   namespace Truffle {
-    interface Artifacts {}
+    interface Artifacts {
+      require(name: "AaveDepositWithdraw"): AaveDepositWithdrawContract;
+      require(name: "BalancerDepositWithdraw"): BalancerDepositWithdrawContract;
+      require(name: "Bet"): BetContract;
+      require(name: "BetFactory"): BetFactoryContract;
+      require(name: "Escrow"): EscrowContract;
+      require(name: "IBPool"): IBPoolContract;
+      require(name: "IERC20"): IERC20Contract;
+      require(name: "IWETH"): IWETHContract;
+      require(name: "IWETHGateway"): IWETHGatewayContract;
+      require(name: "Migrations"): MigrationsContract;
+      require(name: "Ownable"): OwnableContract;
+      require(name: "PullPayment"): PullPaymentContract;
+    }
   }
 }
+
+export {
+  AaveDepositWithdrawContract,
+  AaveDepositWithdrawInstance,
+} from "./AaveDepositWithdraw";
+export {
+  BalancerDepositWithdrawContract,
+  BalancerDepositWithdrawInstance,
+} from "./BalancerDepositWithdraw";
+export { BetContract, BetInstance } from "./Bet";
+export { BetFactoryContract, BetFactoryInstance } from "./BetFactory";
+export { EscrowContract, EscrowInstance } from "./Escrow";
+export { IBPoolContract, IBPoolInstance } from "./IBPool";
+export { IERC20Contract, IERC20Instance } from "./IERC20";
+export { IWETHContract, IWETHInstance } from "./IWETH";
+export { IWETHGatewayContract, IWETHGatewayInstance } from "./IWETHGateway";
+export { MigrationsContract, MigrationsInstance } from "./Migrations";
+export { OwnableContract, OwnableInstance } from "./Ownable";
+export { PullPaymentContract, PullPaymentInstance } from "./PullPayment";
