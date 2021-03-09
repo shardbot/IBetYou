@@ -36,22 +36,22 @@ interface IBet {
     /**
      * @notice Assigns caller as a bettor's judge
      */
-    function addBettorJudge() external;
+    function addBettorJudge(uint256 _txExpirationTime) external;
 
     /**
      * @notice Assigns caller as a counter bettor's judge
      */
-    function addCounterBettorJudge() external;
+    function addCounterBettorJudge(uint256 _txExpirationTime) external;
 
     /**
      * @notice Judge or admin can call this function to vote for bettor
      */
-    function voteForBettor() external;
+    function voteForBettor(uint256 _txExpirationTime) external;
 
     /**
      * @notice Judge or admin can call this function to vote for counter bettor
      */
-    function voteForCounterBettor() external;
+    function voteForCounterBettor(uint256 _txExpirationTime) external;
 
     /**
      * @notice Transfers this contract's balance to caller if he won this bet
