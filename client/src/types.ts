@@ -47,4 +47,5 @@ export interface Bet {
   didFarmYield?: boolean;
   winner?: string;
   isWinner?: boolean;
+  didClaim?: boolean;
 }

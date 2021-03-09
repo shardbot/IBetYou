@@ -156,6 +156,17 @@ export const checkVote = async (
   });
 };
 
+export const checkClaim = async (
+  web3: Web3,
+  betContractAddress: string | any,
+  accountAddress: string | any
+) => {
+  const contract = createBetContract(web3, betContractAddress);
+  return contract.methods.didClaim(accountAddress).call({
+    from: accountAddress
+  });
+};
+
 export const claimReward = async (
   web3: Web3,
   betContractAddress: string | any,

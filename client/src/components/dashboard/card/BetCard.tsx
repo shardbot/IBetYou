@@ -78,7 +78,9 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
                 </ActionButton>
               ) : (
                 <>
-                  {+bet.betState === 5 ? (
+                  {+bet.betState === 5 &&
+                  !bet.didClaim &&
+                  ((bet.didFarmYield && bet.isJudge) || bet.isWinner) ? (
                     <ActionButton bet={bet} handleAction={handleAction}>
                       Claim
                     </ActionButton>
