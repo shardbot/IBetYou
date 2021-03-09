@@ -21,7 +21,8 @@ export const useNotification = () => {
 
   const hideNotification = () => {
     dispatch({
-      type: 'REMOVE_NOTIFICATION'
+      type: 'REMOVE_NOTIFICATION',
+      payload: null
     });
   };
 

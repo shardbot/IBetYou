@@ -22,6 +22,22 @@ export const globalReducer = (state: GlobalState, action: GlobalStateActions) =>
           type: ''
         }
       };
+    case 'SHOW_MODAL':
+      return {
+        ...state,
+        modal: {
+          isVisible: true,
+          content: action.payload.content
+        }
+      };
+    case 'HIDE_MODAL':
+      return {
+        ...state,
+        modal: {
+          isVisible: false,
+          content: null
+        }
+      };
     default:
       return state;
   }

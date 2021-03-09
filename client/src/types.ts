@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 declare global {
   interface Window {
@@ -17,12 +17,19 @@ export type GlobalState = {
     content: any;
     type?: 'default' | 'error' | 'success';
   };
+  modal: {
+    isVisible: boolean;
+    content: ReactNode;
+  };
 };
 
-export type GlobalStateActions = {
-  type: 'SHOW_NOTIFICATION' | 'REMOVE_NOTIFICATION';
-  payload?: any;
-};
+type NotificationActions =
+  | { type: 'SHOW_NOTIFICATION'; payload: any }
+  | { type: 'REMOVE_NOTIFICATION'; payload: any };
+
+type ModalActions = { type: 'SHOW_MODAL'; payload: any } | { type: 'HIDE_MODAL'; payload: any };
+
+export type GlobalStateActions = NotificationActions | ModalActions;
 
 export interface AuthState {
   isConnected: boolean;

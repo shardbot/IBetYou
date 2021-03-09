@@ -10,7 +10,66 @@ export const useBet = (bet: Bet, handleFetch: () => any) => {
   const { showNotification, hideNotification } = useNotification();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleAction = async () => {
+  // const handleAction = async () => {
+  //   hideNotification();
+  //   setIsLoading(true);
+  //
+  //   if (+bet.betState === 5) {
+  //     try {
+  //       showNotification('Please wait until transaction is completed.');
+  //       await claimReward(web3, bet.betAddress, getAccount().address);
+  //       handleFetch();
+  //       setIsLoading(false);
+  //       showNotification('You successfully claimed your reward!', 'success');
+  //       return;
+  //     } catch (e) {
+  //       getRevertMessage(web3, e).then((message) => {
+  //         showNotification(message, 'error');
+  //       });
+  //       setIsLoading(false);
+  //     }
+  //   }
+  //
+  //   if ((+bet.betState === 3 || +bet.betState === 4) && bet.isJudge) {
+  //     try {
+  //       showNotification('Please wait until transaction is completed.');
+  //       await vote(web3, 'for-bettor', bet.betAddress, getAccount().address);
+  //       handleFetch();
+  //       setIsLoading(false);
+  //       showNotification('You successfully voted', 'success');
+  //       return;
+  //     } catch (e) {
+  //       getRevertMessage(web3, e).then((message) => {
+  //         showNotification(message, 'error');
+  //       });
+  //       setIsLoading(false);
+  //     }
+  //   }
+  // };
+
+  const handleVote = async (voteFor: 'for-bettor' | 'for-counter-bettor') => {
+    hideNotification();
+    setIsLoading(true);
+
+    if ((+bet.betState === 3 || +bet.betState === 4) && bet.isJudge) {
+      try {
+        console.log(voteFor);
+        showNotification('Please wait until transaction is completed.');
+        await vote(web3, voteFor, bet.betAddress, getAccount().address);
+        handleFetch();
+        setIsLoading(false);
+        showNotification('You successfully voted', 'success');
+        return;
+      } catch (e) {
+        getRevertMessage(web3, e).then((message) => {
+          showNotification(message, 'error');
+        });
+        setIsLoading(false);
+      }
+    } else return;
+  };
+
+  const handleClaim = async () => {
     hideNotification();
     setIsLoading(true);
 
@@ -28,27 +87,12 @@ export const useBet = (bet: Bet, handleFetch: () => any) => {
         });
         setIsLoading(false);
       }
-    }
-
-    if ((+bet.betState === 3 || +bet.betState === 4) && bet.isJudge) {
-      try {
-        showNotification('Please wait until transaction is completed.');
-        await vote(web3, 'for-bettor', bet.betAddress, getAccount().address);
-        handleFetch();
-        setIsLoading(false);
-        showNotification('You successfully voted', 'success');
-        return;
-      } catch (e) {
-        getRevertMessage(web3, e).then((message) => {
-          showNotification(message, 'error');
-        });
-        setIsLoading(false);
-      }
-    }
+    } else return;
   };
 
   return {
-    handleAction,
+    handleVote,
+    handleClaim,
     isLoading
   };
 };

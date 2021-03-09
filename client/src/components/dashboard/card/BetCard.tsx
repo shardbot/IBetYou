@@ -2,9 +2,10 @@ import classNames from 'classnames';
 import { FC, useState } from 'react';
 
 import ChevronDownIcon from '../../../assets/icons/chevron-down.svg';
-import { useBet, useWeb3 } from '../../../hooks';
+import { useBet, useModal, useWeb3 } from '../../../hooks';
 import { Bet } from '../../../types';
 import { convertWeiToEth, formatDate, getStatus } from '../../../utils';
+import { VoteForm } from '../../forms/modal';
 import { Button, Loader, StatusBadge } from '../../global';
 
 interface BetCardProps {
@@ -46,11 +47,26 @@ const ActionButton: FC<{ handleAction: any; bet: Bet }> = ({ handleAction, bet, 
 
 export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const { handleAction, isLoading } = useBet(bet, handleFetch);
+  const { isLoading, handleClaim } = useBet(bet, handleFetch);
   const { web3 } = useWeb3();
+  const { showModal } = useModal();
 
   const handleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleOpenModal = () => {
+    showModal(<VoteForm bet={bet} handleFetch={handleFetch} />);
+  };
+
+  const handleAction = async () => {
+    if (+bet.betState === 4) {
+      handleOpenModal();
+      return;
+    } else if (+bet.betState === 5) {
+      await handleClaim();
+      return;
+    }
   };
 
   return (
@@ -81,7 +97,7 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
                   {+bet.betState === 5 &&
                   !bet.didClaim &&
                   ((bet.didFarmYield && bet.isJudge) || bet.isWinner) ? (
-                    <ActionButton bet={bet} handleAction={handleAction}>
+                    <ActionButton bet={bet} handleAction={handleClaim}>
                       Claim
                     </ActionButton>
                   ) : (
