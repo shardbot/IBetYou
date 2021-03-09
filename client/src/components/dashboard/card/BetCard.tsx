@@ -67,7 +67,7 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
               </>
             )}
           </div>
-          <span className="font-bold mt-1">{convertWeiToEth(web3, bet.deposit)} ETH</span>
+          <span className="font-bold mt-1">{convertWeiToEth(web3, bet.deposit)} MATIC</span>
           {isLoading ? (
             <Loader classes="w-8 h-8 mt-4" />
           ) : (

@@ -112,7 +112,7 @@ export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
 
       <div className="mb-12 sm:mb-24 text-center">
         <span className="mr-4 font-bold text-slate-gray text-sm">Stake of the bet</span>
-        <span className="font-bold text-5xl">{convertWeiToEth(web3, bet.deposit)} ETH</span>
+        <span className="font-bold text-5xl">{convertWeiToEth(web3, bet.deposit)} MATIC</span>
       </div>
       <div className="mb-8 text-center">
         <p className="text-slate-gray">

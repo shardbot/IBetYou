@@ -51,7 +51,7 @@ const Dashboard: FC = () => {
             {/* TOTAL */}
             <InformationCard
               iconBackground="bg-green-100"
-              accentText={`${totalStake} ETH`}
+              accentText={`${totalStake} MATIC`}
               subText="Total stake">
               <DollarSignIcon className="w-8 h-8 text-green-cyan" />
             </InformationCard>
