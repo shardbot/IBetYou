@@ -67,6 +67,7 @@ contract Bet is ReentrancyGuard {
         mapping(bytes32 => address) roleParticipants;
         mapping(address => uint256) votes;
         mapping(address => bool) didVote;
+        mapping(address => bool) didClaim;
         address admin;
         string description;
         BetState betState;
@@ -263,18 +264,27 @@ contract Bet is ReentrancyGuard {
         atState(BetState.FUNDS_WITHDRAWAL)
     {
         splitter.release(payable(msg.sender));
+        betStorage.didClaim[msg.sender] = true;
         if (
             address(splitter).balance < betStorage.judgeShare ||
             betStorage.judgeShare == 0
         ) _nextState();
     }
-    
+
     /**
      * @notice Returns if _address voted
-     * @param _address address to be checked
+     * @param _address address to check
      */
-    function didVote(address _address) external view returns(bool) {
+    function didVote(address _address) external view returns (bool) {
         return betStorage.didVote[_address];
+    }
+
+    /**
+     * @notice Returns if _address claimed reward
+     * @param _address address to check
+     */
+    function didClaim(address _address) external view returns (bool) {
+        return betStorage.didClaim[_address];
     }
 
     /**

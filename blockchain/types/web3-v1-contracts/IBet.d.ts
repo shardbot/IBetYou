@@ -91,6 +91,12 @@ export interface IBet extends BaseContract {
     didVote(_address: string): NonPayableTransactionObject<boolean>;
 
     /**
+     * Returns if _address claimed reward
+     * @param _address address to check
+     */
+    didClaim(_address: string): NonPayableTransactionObject<boolean>;
+
+    /**
      * Returns bet description
      */
     getBet(): NonPayableTransactionObject<{
