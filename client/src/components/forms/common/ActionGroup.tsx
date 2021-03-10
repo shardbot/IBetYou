@@ -19,7 +19,7 @@ export const ActionGroup: FC<ActionGroupProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <Button className="btn-primary w-1/3 disabled:opacity-50 " disabled onClick={handleContinue}>
+      <Button className="btn-primary w-1/3 disabled:opacity-50" disabled onClick={handleContinue}>
         Please wait...
       </Button>
     );

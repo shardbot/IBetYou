@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, SyntheticEvent, useState } from 'react';
 
-import { useBet } from '../../../hooks';
+import { useBet, useModal } from '../../../hooks';
 import { Bet } from '../../../types';
 import { Button } from '../../global';
 
@@ -14,6 +14,7 @@ interface VoteFormProps {
 export const VoteForm: FC<VoteFormProps> = ({ bet, handleFetch }) => {
   const [checkBox, setCheckBox] = useState<CheckBoxChoices>('for-bettor');
   const { isLoading, handleVote } = useBet(bet, handleFetch);
+  const { hideModal } = useModal();
 
   const handleCheck = (e: ChangeEvent<HTMLInputElement>) => {
     setCheckBox(e.target.value as CheckBoxChoices);
@@ -22,6 +23,7 @@ export const VoteForm: FC<VoteFormProps> = ({ bet, handleFetch }) => {
   const vote = async (e: SyntheticEvent) => {
     e.preventDefault();
     await handleVote(checkBox);
+    hideModal();
   };
 
   return (
@@ -64,7 +66,10 @@ export const VoteForm: FC<VoteFormProps> = ({ bet, handleFetch }) => {
           </label>
         </div>
       </div>
-      <Button className="btn-primary text-white mt-8" disabled={isLoading} onClick={vote}>
+      <Button
+        className="btn-primary text-white mt-8 disabled:opacity-50"
+        disabled={isLoading}
+        onClick={vote}>
         {isLoading ? 'Please wait...' : 'Vote'}
       </Button>
     </form>

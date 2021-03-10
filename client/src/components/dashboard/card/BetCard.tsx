@@ -60,7 +60,7 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
   };
 
   const handleAction = async () => {
-    if (+bet.betState === 4) {
+    if (+bet.betState === 3 || +bet.betState === 4) {
       handleOpenModal();
       return;
     } else if (+bet.betState === 5) {
@@ -101,7 +101,11 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
                       Claim
                     </ActionButton>
                   ) : (
-                    <span>-</span>
+                    <Button
+                      className="btn-primary text-white disabled:opacity-50 block text-sm font-bold mt-4 py-2 px-8 h-auto w-max sticky"
+                      disabled>
+                      {+bet.betState === 6 ? 'Finished' : 'In progress...'}
+                    </Button>
                   )}
                 </>
               )}

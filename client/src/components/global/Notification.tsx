@@ -1,10 +1,9 @@
 import classNames from 'classnames';
-import React, { useContext } from 'react';
+import React from 'react';
 
 import XIcon from '../../assets/icons/x.svg';
 import { useAuth, useModal, useNotification } from '../../hooks';
 import { Button } from './Button';
-import { GlobalStateContext } from '../providers/Global';
 
 const styleMap = {
   default: 'bg-light-blue',
@@ -25,7 +24,7 @@ const Notification: React.FC = () => {
         'flex w-3/4 lg:max-w-4xl z-40 shadow-lg opacity-95 p-5 fixed left-1/2 transform -translate-x-1/2 top-8 rounded-lg',
         styleMap[type],
         {
-          'xl:ml-40': isLoggedIn() && !isVisible
+          'xl:ml-40': isLoggedIn() && !isVisible()
         }
       )}>
       <p className="text-white flex-1">{content}</p>

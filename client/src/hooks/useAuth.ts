@@ -43,7 +43,6 @@ export const useAuth = () => {
 
   const connectWallet = async () => {
     const select = await onboard.walletSelect();
-    console.log(select);
     // return if exited - function return false
     if (!select) {
       return false;

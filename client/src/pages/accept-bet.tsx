@@ -66,7 +66,6 @@ const AcceptBet: FC = () => {
         })
         .catch((e) => {
           setError(`You are trying to accept the bet that doesn't exist!`);
-          console.log(e);
         });
     }
   }, [router, web3.eth.Contract]);

@@ -23,7 +23,6 @@ const Protected: FC = ({ ...props }) => {
       window.location.pathname !== '/accept-bet' &&
       window.location.pathname !== '/judge'
     ) {
-      console.log(window.location.href);
       router.push('/');
     } else {
       setIsLoading(false);

@@ -59,7 +59,6 @@ const Judge: FC = () => {
         })
         .catch((e) => {
           setError(`You are trying to be a judge on the bet that doesn't exist!`);
-          console.log(e);
         });
     }
   }, [router, web3.eth.Contract]);

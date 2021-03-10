@@ -28,8 +28,6 @@ export const useBets = () => {
         await Promise.all(claimsPromise).then((results) => {
           claims = results;
         });
-        console.log('Bettor bets');
-        console.log(results);
 
         const transformedResults = results.map((item, i) => {
           const isWinner = item.winner.toUpperCase() === accountAddress.toUpperCase();
@@ -43,7 +41,6 @@ export const useBets = () => {
             didClaim: claims[i]
           };
         });
-        console.log(transformedResults);
         allBets = [...allBets, ...transformedResults];
       }
     );
@@ -56,8 +53,6 @@ export const useBets = () => {
         let claims: boolean[];
         let votes: boolean[];
 
-        console.log('Judge bets');
-        console.log(results);
         const votesPromise = results.map(async (result) => {
           return checkVote(web3, result.betAddress, accountAddress);
         });
@@ -83,7 +78,6 @@ export const useBets = () => {
             didClaim: claims[i]
           };
         });
-        console.log(transformedResults);
         allBets = [...allBets, ...transformedResults];
       }
     );

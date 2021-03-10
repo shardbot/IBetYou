@@ -6,7 +6,8 @@ import { convertEthToWei, getDateInMs } from '../utils';
 
 const BET_FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 const BET_MAPPER_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_BET_MAPPER_ADDRESS;
-const TX_EXPIRATION = Math.floor(Date.now() / 1000) + 300;
+
+const getExpirationTime = () => Math.floor(Date.now() / 1000) + 300;
 
 const createBetFactoryContract = (web3: Web3) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -116,11 +117,11 @@ export const addJudge = async (
   const contract = createBetContract(web3, betContractAddress);
 
   if (judgeType === 'bettor-judge') {
-    return contract.methods.addBettorJudge(TX_EXPIRATION).send({
+    return contract.methods.addBettorJudge(getExpirationTime()).send({
       from: accountAddress
     });
   } else {
-    return contract.methods.addCounterBettorJudge(TX_EXPIRATION).send({
+    return contract.methods.addCounterBettorJudge(getExpirationTime()).send({
       from: accountAddress
     });
   }
@@ -135,11 +136,11 @@ export const vote = async (
   const contract = createBetContract(web3, betContractAddress);
 
   if (voteType === 'for-bettor') {
-    return contract.methods.voteForBettor(TX_EXPIRATION).send({
+    return contract.methods.voteForBettor(getExpirationTime()).send({
       from: accountAddress
     });
   } else {
-    return contract.methods.voteForCounterBettor(TX_EXPIRATION).send({
+    return contract.methods.voteForCounterBettor(getExpirationTime()).send({
       from: accountAddress
     });
   }

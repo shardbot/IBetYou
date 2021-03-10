@@ -56,7 +56,6 @@ export const SummaryForm: FC<FormProps> = ({ setStep, step, bet }) => {
         // send mail to judge
         await sendEmail(bet.judgeEmail, address, 'judge', 'counter-bettor-judge');
       } catch (e) {
-        console.log(e);
         showNotification('Oops! Mail could not be delivered to the appointed judge!', 'error');
         setIsLoading(false);
         return;

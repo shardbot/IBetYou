@@ -38,7 +38,7 @@ export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
   };
 
   const handleAction = async () => {
-    if (+bet.betState === 4) {
+    if (+bet.betState === 3 || +bet.betState === 4) {
       handleOpenModal();
       return;
     } else if (+bet.betState === 5) {
