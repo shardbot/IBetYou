@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 
 import {
     ReentrancyGuard
-} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./interfaces/IQuickSwapRouter02.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 

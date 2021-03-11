@@ -8,10 +8,10 @@ import {IQuickSwapRouter02} from "./interfaces/IQuickSwapRouter02.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {
     ReentrancyGuard
-} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import {
     PaymentSplitter
-} from "@openzeppelin/contracts/payment/PaymentSplitter.sol";
+} from "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 
 contract Bet is ReentrancyGuard {
     bool private masterCopy = true;
