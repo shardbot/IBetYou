@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { useContext } from 'react';
 
 import { AuthContext } from '../components/providers/Auth';
+import { MATIC_CHAIN_CONFIG } from '../constants';
 import { OnboardContext } from '../pages/_app';
 
 export const useAuth = () => {
@@ -42,6 +43,16 @@ export const useAuth = () => {
   };
 
   const connectWallet = async () => {
+    // if metamask is injected - ask user if he wants to add Matic network to his list of networks
+    if (typeof window.ethereum !== 'undefined') {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [MATIC_CHAIN_CONFIG]
+      });
+    }
+
     const select = await onboard.walletSelect();
     // return if exited - function return false
     if (!select) {
