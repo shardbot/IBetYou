@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <a href="https://ibetyou.me/"><img src="https://ibetyou.me/assets/images/ibetyou_logo.svg" alt="IBetYou" width="200"></a>
+  <a href="https://ibetyou.xyz/"><img src="https://ibetyou.xyz/assets/images/ibetyou_logo.svg" alt="IBetYou" width="200"></a>
   <br>
   IBetYou
   <br>
@@ -10,7 +10,7 @@
 
 ## How To Use Web App
 
-To use this application you'll need to install [MetaMask](https://metamask.io/) plugin and have some funds on your account. After that visit [IBetYou](https://ibetyou.me/), create a bet, invite a judge and challenge your opponent by sending him an email invitation. Good luck!
+To use this application you'll need to install [MetaMask](https://metamask.io/) plugin and have some funds on your account. After that visit [IBetYou](https://ibetyou.xyz/), create a bet, invite a judge and challenge your opponent by sending him an email invitation. Good luck!
 
 ## How To Test Locally
 

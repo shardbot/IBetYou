@@ -14,16 +14,16 @@ app.post("/api/invitation", (req, res) => {
 	let link, msg, btnText = null;
 
 	if (data.type === "counter-bettor") {
-		link = `https://ibetyou.me/accept-bet?address=${data.betAddress}`;
+		link = `https://ibetyou.xyz/accept-bet?address=${data.betAddress}`;
 		msg = "I invite you to bet me!";
 		btnText = "Accept the Bet";
 	} else {
-		link = `https://ibetyou.me/judge?address=${data.betAddress}${judgeParam}`;
+		link = `https://ibetyou.xyz/judge?address=${data.betAddress}${judgeParam}`;
 		msg = "I invite you to be a judge!";
 		btnText = "Accept to be a judge";
 	}
 	mailer.send({
-		from: "no-reply@ibetyou.me",
+		from: "no-reply@ibetyou.xyz",
 		to: `${data.email}`,
 		subject: `IBetYou Invitation`,
 		html: EmailTemplate(msg, link, btnText)
