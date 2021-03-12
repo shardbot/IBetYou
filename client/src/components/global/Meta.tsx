@@ -8,6 +8,9 @@ interface MetaProps {
 const GOOGLE_ANALYTICS_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
 const ENVIRONMENT = process.env.NEXT_PUBLIC_ENVIRONMENT;
 
+console.log('ENVIRONMENT variable');
+console.log(ENVIRONMENT);
+
 export const Meta: FC<MetaProps> = ({ title }) => {
   return (
     <Head>
