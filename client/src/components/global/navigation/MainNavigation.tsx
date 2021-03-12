@@ -45,7 +45,7 @@ export const MainNavigation: FC<MainNavigationProps> = ({ type, isActive, onClos
         {navigationItems.map((item) => (
           <div key={item.to} className="p-8 focus:outline-none">
             <LinkButton
-              className={`text-sm font-bold hover:text-green-cyan ${
+              className={`text-base font-bold hover:text-green-cyan ${
                 router.asPath === item.to ? 'text-green-cyan' : ''
               }`}
               key={item.id}

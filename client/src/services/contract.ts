@@ -1,12 +1,15 @@
-import { betAbi, betFactoryAbi } from '../abis';
+import { betAbi, betFactoryAbi, betMapperAbi } from '../abis';
 import { Bet } from '../types/web3-v1-contracts/Bet';
 import { BetFactory } from '../types/web3-v1-contracts/BetFactory';
+import { BetMapper } from '../types/web3-v1-contracts/BetMapper';
 import { convertEthToWei, getDateInMs } from '../utils';
 
 const BET_FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+const BET_MAPPER_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_BET_MAPPER_ADDRESS;
+
+const getExpirationTime = () => Math.floor(Date.now() / 1000) + 300;
 
 const createBetFactoryContract = (web3: Web3) => {
-  console.log(web3);
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return (new web3.eth.Contract(betFactoryAbi, BET_FACTORY_CONTRACT_ADDRESS) as any) as BetFactory;
@@ -16,6 +19,28 @@ const createBetContract = (web3: Web3, address: string) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return (new web3.eth.Contract(betAbi, address) as any) as Bet;
+};
+
+const createBetMapperContract = (web3: Web3) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return (new web3.eth.Contract(betMapperAbi, BET_MAPPER_CONTRACT_ADDRESS) as any) as BetMapper;
+};
+
+export const getRevertMessage = async (web3: Web3, error: any) => {
+  let result: string;
+
+  const pattern = /(?<=execution reverted: )(.*)(?=")/g;
+  const receiptJSON = JSON.parse(JSON.stringify(error));
+  if (!receiptJSON.receipt) return 'Transaction rejected. Please confirm your transaction.';
+
+  const txHash = receiptJSON.receipt.transactionHash;
+
+  const tx = await web3.eth.getTransaction(txHash);
+
+  await web3.eth.call(tx).catch((e) => (result = String(e).match(pattern)[0]));
+
+  return result;
 };
 
 interface BetParams {
@@ -33,10 +58,22 @@ export const getBet = async (web3: Web3, betContractAddress: string | any) => {
   return contract.methods.getBet().call();
 };
 
-export const getBets = async (web3: Web3) => {
-  const contract = createBetFactoryContract(web3);
+// export const getBets = async (web3: Web3) => {
+//   const contract = createBetFactoryContract(web3);
+//
+//   return contract.methods.getBets().call();
+// };
 
-  return contract.methods.getBets().call();
+export const getBettorBets = async (web3: Web3, accountAddress: string): Promise<string[]> => {
+  const contract = createBetMapperContract(web3);
+
+  return contract.methods.getBettorBets(accountAddress).call();
+};
+
+export const getJudgeBets = async (web3: Web3, accountAddress: string): Promise<string[]> => {
+  const contract = createBetMapperContract(web3);
+
+  return contract.methods.getJudgeBets(accountAddress).call();
 };
 
 export const createBet = async (web3: Web3, accountAddress: string, betParams: BetParams) => {
@@ -80,13 +117,11 @@ export const addJudge = async (
   const contract = createBetContract(web3, betContractAddress);
 
   if (judgeType === 'bettor-judge') {
-    console.log('add bettor judge');
-    return contract.methods.addBettorJudge().send({
+    return contract.methods.addBettorJudge(getExpirationTime()).send({
       from: accountAddress
     });
   } else {
-    console.log('add counter-bettor judge');
-    return contract.methods.addCounterBettorJudge().send({
+    return contract.methods.addCounterBettorJudge(getExpirationTime()).send({
       from: accountAddress
     });
   }
@@ -101,16 +136,36 @@ export const vote = async (
   const contract = createBetContract(web3, betContractAddress);
 
   if (voteType === 'for-bettor') {
-    console.log('vote for bettor');
-    return contract.methods.voteForBettor().send({
+    return contract.methods.voteForBettor(getExpirationTime()).send({
       from: accountAddress
     });
   } else {
-    console.log('vote for counter-bettor');
-    return contract.methods.voteForCounterBettor().send({
+    return contract.methods.voteForCounterBettor(getExpirationTime()).send({
       from: accountAddress
     });
   }
+};
+
+export const checkVote = async (
+  web3: Web3,
+  betContractAddress: string | any,
+  accountAddress: string | any
+) => {
+  const contract = createBetContract(web3, betContractAddress);
+  return contract.methods.didVote(accountAddress).call({
+    from: accountAddress
+  });
+};
+
+export const checkClaim = async (
+  web3: Web3,
+  betContractAddress: string | any,
+  accountAddress: string | any
+) => {
+  const contract = createBetContract(web3, betContractAddress);
+  return contract.methods.didClaim(accountAddress).call({
+    from: accountAddress
+  });
 };
 
 export const claimReward = async (

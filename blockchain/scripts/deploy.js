@@ -1,32 +1,80 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional 
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// When running the script with `hardhat run <script>` you'll find the Hardhat
-// Runtime Environment's members available in the global scope.
-const hre = require("hardhat");
-
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile 
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+	const [deployer] = await ethers.getSigners();
 
-  // We get the contract to deploy
-  const BetFactory = await hre.ethers.getContractFactory("BetFactory");
-  const betFactory = await BetFactory.deploy();
+	// ----------------------
+	// Load metadata
+	// ----------------------
+	const betFactoryJSON = require('../artifacts/contracts/BetFactory.sol/BetFactory.json');
+	const betFactoryABI = betFactoryJSON['abi'];
+	const betFactoryByteCode = betFactoryJSON['bytecode'];
 
-  await betFactory.deployed();
+	const betJSON = require('../artifacts/contracts/Bet.sol/Bet.json');
+	const betABI = betJSON['abi'];
+	const betByteCode = betJSON['bytecode'];
 
-  console.log("Bet factory deployed to:", betFactory.address);
+	const exchangeJSON = require('../artifacts/contracts/Exchange.sol/Exchange.json');
+	const exchangeABI = exchangeJSON['abi'];
+	const exchangeByteCode = exchangeJSON['bytecode'];
+
+	const mapperJSON = require('../artifacts/contracts/BetMapper.sol/BetMapper.json');
+	const mapperABI = mapperJSON['abi'];
+	const mapperByteCode = mapperJSON['bytecode'];
+
+	// ----------------------
+	// Deploy contracts
+	// ----------------------
+	console.log('Deploying contracts with the account:', deployer.address);
+
+	console.log('Account balance:', (await deployer.getBalance()).toString());
+
+	const betFactory = new ethers.ContractFactory(
+		betFactoryABI,
+		betFactoryByteCode,
+		deployer
+	);
+	const deployedFactoryContract = await betFactory.deploy();
+
+	console.log(`Deployed BetFactory at: ${deployedFactoryContract.address}`);
+
+	const bet = new ethers.ContractFactory(betABI, betByteCode, deployer);
+	const deployedBetContract = await bet.deploy();
+
+	console.log(`Deployed Bet at: ${deployedBetContract.address}`);
+
+	const exchange = new ethers.ContractFactory(
+		exchangeABI,
+		exchangeByteCode,
+		deployer
+	);
+	const deployedExchangeContract = await exchange.deploy();
+
+	console.log(`Deployed Exchange at: ${deployedExchangeContract.address}`);
+
+	const betMapper = new ethers.ContractFactory(
+		mapperABI,
+		mapperByteCode,
+		deployer
+	);
+	const deployedMapperContract = await betMapper.deploy();
+
+	console.log(`Deployed BetMapper at: ${deployedMapperContract.address}`);
+
+	// ----------------------
+	// Wire contracts up
+	// ----------------------
+	await deployedFactoryContract.setBetAddress(deployedBetContract.address);
+	await deployedFactoryContract.setExchangeAddress(
+		deployedExchangeContract.address
+	);
+	await deployedFactoryContract.setMapperAddress(
+		deployedMapperContract.address
+	);
+	await deployedMapperContract.setFactory(deployedFactoryContract.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main()
-  .then(() => process.exit(0))
-  .catch(error => {
-    console.error(error);
-    process.exit(1);
-  });
+	.then(() => process.exit(0))
+	.catch((error) => {
+		console.error(error);
+		process.exit(1);
+	});

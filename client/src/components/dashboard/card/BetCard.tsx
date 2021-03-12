@@ -1,18 +1,17 @@
 import classNames from 'classnames';
-import { FC, useContext, useState } from 'react';
+import { FC, useState } from 'react';
 
 import ChevronDownIcon from '../../../assets/icons/chevron-down.svg';
-import { useAuth } from '../../../hooks/useAuth';
-import { Web3Context } from '../../../pages/_app';
-import { claimReward, vote } from '../../../services/contract';
+import { useBet, useModal, useWeb3 } from '../../../hooks';
 import { Bet } from '../../../types';
 import { convertWeiToEth, formatDate, getStatus } from '../../../utils';
+import { VoteForm } from '../../forms/modal';
 import { Button, Loader, StatusBadge } from '../../global';
 
 interface BetCardProps {
   bet: Bet;
   number: number;
-  handleFetch: () => void;
+  handleFetch: any;
 }
 
 const map = {
@@ -24,48 +23,50 @@ const map = {
   6: 'Finished'
 };
 
+const checkIfDisabled = (betState: string) => {
+  if (+betState < 3 || +betState === 6) {
+    return true;
+  } else return false;
+};
+
+const ActionButton: FC<{ handleAction: any; bet: Bet }> = ({ handleAction, bet, ...rest }) => {
+  return (
+    <Button
+      className={classNames(
+        'btn-primary block text-sm font-bold mt-4 py-2 px-8 h-auto w-max sticky',
+        {
+          'disabled:opacity-50': checkIfDisabled(bet.betState)
+        }
+      )}
+      onClick={handleAction}
+      disabled={checkIfDisabled(bet.betState)}>
+      {rest.children}
+    </Button>
+  );
+};
+
 export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const web3 = useContext(Web3Context);
-  const { getAccount } = useAuth();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const handleAction = async () => {
-    setIsLoading(true);
-    if (+bet.betState === 5) {
-      try {
-        await claimReward(web3, bet.betAddress, getAccount().address);
-        handleFetch();
-        setIsLoading(false);
-        return;
-      } catch (e) {
-        console.log(e);
-        setIsLoading(false);
-      }
-    }
-
-    if (+bet.betState === 3 || +bet.betState === 4) {
-      try {
-        await vote(web3, 'for-bettor', bet.betAddress, getAccount().address);
-        handleFetch();
-        setIsLoading(false);
-        return;
-      } catch (e) {
-        console.log(e);
-        setIsLoading(false);
-      }
-    }
-  };
+  const { isLoading, handleClaim } = useBet(bet, handleFetch);
+  const { web3 } = useWeb3();
+  const { showModal } = useModal();
 
   const handleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
-  const checkIfDisabled = (betState: string) => {
-    if (+betState < 3 || +betState === 6) {
-      console.log('Here - true');
-      return true;
-    } else return false;
+  const handleOpenModal = () => {
+    showModal(<VoteForm bet={bet} handleFetch={handleFetch} />);
+  };
+
+  const handleAction = async () => {
+    if (+bet.betState === 3 || +bet.betState === 4) {
+      handleOpenModal();
+      return;
+    } else if (+bet.betState === 5) {
+      await handleClaim();
+      return;
+    }
   };
 
   return (
@@ -82,21 +83,33 @@ export const BetCard: FC<BetCardProps> = ({ bet, number, handleFetch }) => {
               </>
             )}
           </div>
-          <span className="font-bold mt-1">{convertWeiToEth(web3, bet.deposit)} ETH</span>
+          <span className="font-bold mt-1">{convertWeiToEth(web3, bet.deposit)} MATIC</span>
           {isLoading ? (
             <Loader classes="w-8 h-8 mt-4" />
           ) : (
-            <Button
-              className={classNames(
-                'btn-primary block text-sm font-bold mt-4 py-2 px-8 h-auto w-max sticky',
-                {
-                  'disabled:opacity-50': checkIfDisabled(bet.betState)
-                }
+            <>
+              {bet.isJudge && bet.didVote === false ? (
+                <ActionButton handleAction={handleAction} bet={bet}>
+                  {map[+bet.betState]}
+                </ActionButton>
+              ) : (
+                <>
+                  {+bet.betState === 5 &&
+                  !bet.didClaim &&
+                  ((bet.didFarmYield && bet.isJudge) || bet.isWinner) ? (
+                    <ActionButton bet={bet} handleAction={handleClaim}>
+                      Claim
+                    </ActionButton>
+                  ) : (
+                    <Button
+                      className="btn-primary text-white disabled:opacity-50 block text-sm font-bold mt-4 py-2 px-8 h-auto w-max sticky"
+                      disabled>
+                      {+bet.betState === 6 ? 'Finished' : 'In progress...'}
+                    </Button>
+                  )}
+                </>
               )}
-              onClick={handleAction}
-              disabled={checkIfDisabled(bet.betState)}>
-              {map[+bet.betState]}
-            </Button>
+            </>
           )}
         </div>
         <Button

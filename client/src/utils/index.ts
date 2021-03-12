@@ -6,6 +6,10 @@ export const convertWeiToEth = (web3: Web3, value: string): string => {
   return web3.utils.fromWei(value);
 };
 
+export const checkIfIsValidAddress = (web3: Web3, address: any): boolean => {
+  return web3.utils.isAddress(address);
+};
+
 // milliseconds since Jan 1, 1970, 00:00:00.000 GMT
 export const getDateInMs = (date: string): number => {
   if (!date) return 0;
@@ -15,7 +19,6 @@ export const getDateInMs = (date: string): number => {
 
 export const formatDate = (date: string): string => {
   const d = new Date(Number(date));
-  console.log(d);
   return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
 };
 

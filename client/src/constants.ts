@@ -13,6 +13,19 @@ const MY_UNIVERSE_IMG_SRC = '/assets/images/my_universe.svg';
 const GAME_DAY_IMG_SRC = '/assets/images/game_day.svg';
 const EMPTY_IMG_SRC = '/assets/images/empty.svg';
 
+// configuration used when adding network to metamask
+const MATIC_CHAIN_CONFIG = {
+  chainId: '0x89',
+  chainName: 'Matic Mainnet',
+  rpcUrls: ['https://rpc-mainnet.maticvigil.com'],
+  blockExplorerUrls: ['https://explorer.matic.network/'],
+  nativeCurrency: {
+    name: 'Matic',
+    symbol: 'MATIC',
+    decimals: 18
+  }
+};
+
 export {
   LOGO_IMG_SRC,
   MONEY_TRANSFER_IMG_SRC,
@@ -26,5 +39,6 @@ export {
   MAKE_IT_RAIN_IMG_SRC,
   MY_UNIVERSE_IMG_SRC,
   GAME_DAY_IMG_SRC,
-  EMPTY_IMG_SRC
+  EMPTY_IMG_SRC,
+  MATIC_CHAIN_CONFIG
 };

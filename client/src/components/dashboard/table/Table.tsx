@@ -6,7 +6,7 @@ import { Row } from './Row';
 
 interface TableProps {
   bets: Bet[];
-  handleFetch: () => void;
+  handleFetch: any;
 }
 
 export const Table: FC<TableProps> = ({ bets, handleFetch }) => {

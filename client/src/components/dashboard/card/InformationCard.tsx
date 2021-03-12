@@ -14,7 +14,7 @@ export const InformationCard: FC<InformationCardProps> = ({
   children
 }) => {
   return (
-    <div className="h-auto w-full md:w-max bg-real-dark rounded-lg lg:px-16 lg:py-12 flex flex-col mt-8 mb-16 p-8 shadow-lg">
+    <div className="h-auto w-full md:w-max bg-real-dark rounded-lg lg:px-12 lg:py-12 xl:max-w-2xl flex flex-col mt-8 mb-16 p-8 shadow-lg">
       <span
         className={`md:self-center mb-4 rounded-full max-w-min p-4 bg-opacity-10 ${iconBackground}`}>
         {children}

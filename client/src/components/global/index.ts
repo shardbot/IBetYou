@@ -7,3 +7,4 @@ export { Button } from './Button';
 export { StatusBadge } from './StatusBadge';
 export { FullScreenLoader } from './FullScreenLoader';
 export { Loader } from './Loader';
+export { Error } from './Error';

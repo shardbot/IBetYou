@@ -1,10 +1,9 @@
-import { FC, useContext, useState } from 'react';
+import { FC } from 'react';
 
-import { useAuth } from '../../../hooks/useAuth';
-import { Web3Context } from '../../../pages/_app';
-import { claimReward, vote } from '../../../services/contract';
+import { useBet, useModal, useWeb3 } from '../../../hooks';
 import { Bet } from '../../../types';
 import { convertWeiToEth, formatDate, getStatus } from '../../../utils';
+import { VoteForm } from '../../forms/modal';
 import { Button, Loader, StatusBadge } from '../../global';
 
 interface RowProps {
@@ -19,35 +18,32 @@ const map = {
   5: 'Claim'
 };
 
+const ActionButton: FC<{ handleAction: any }> = ({ handleAction, ...rest }) => {
+  return (
+    <Button
+      className="btn-primary block text-sm font-bold py-2 px-8 h-auto w-max sticky"
+      onClick={handleAction}>
+      {rest.children}
+    </Button>
+  );
+};
+
 export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
-  const web3 = useContext(Web3Context);
-  const { getAccount } = useAuth();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { web3 } = useWeb3();
+  const { handleClaim, isLoading } = useBet(bet, handleFetch);
+  const { showModal } = useModal();
+
+  const handleOpenModal = () => {
+    showModal(<VoteForm bet={bet} handleFetch={handleFetch} />);
+  };
 
   const handleAction = async () => {
-    setIsLoading(true);
-    if (+bet.betState === 5) {
-      try {
-        await claimReward(web3, bet.betAddress, getAccount().address);
-        handleFetch();
-        setIsLoading(false);
-        return;
-      } catch (e) {
-        console.log(e);
-        setIsLoading(false);
-      }
-    }
-
     if (+bet.betState === 3 || +bet.betState === 4) {
-      try {
-        await vote(web3, 'for-bettor', bet.betAddress, getAccount().address);
-        handleFetch();
-        setIsLoading(false);
-        return;
-      } catch (e) {
-        console.log(e);
-        setIsLoading(false);
-      }
+      handleOpenModal();
+      return;
+    } else if (+bet.betState === 5) {
+      await handleClaim();
+      return;
     }
   };
 
@@ -64,13 +60,23 @@ export const Row: FC<RowProps> = ({ bet, number, handleFetch }) => {
         {+bet.betState > 2 && +bet.betState < 6 ? (
           <>
             {isLoading ? (
-              <Loader classes="w-8 h-8" />
+              <Loader classes="w-8 h-8 ml-auto" />
             ) : (
-              <Button
-                className="btn-primary block text-sm font-bold py-2 px-8 h-auto w-max sticky"
-                onClick={handleAction}>
-                {map[+bet.betState]}
-              </Button>
+              <>
+                {bet.isJudge && bet.didVote === false ? (
+                  <ActionButton handleAction={handleAction}>{map[+bet.betState]}</ActionButton>
+                ) : (
+                  <>
+                    {+bet.betState === 5 &&
+                    !bet.didClaim &&
+                    ((bet.didFarmYield && bet.isJudge) || bet.isWinner) ? (
+                      <ActionButton handleAction={handleClaim}>Claim</ActionButton>
+                    ) : (
+                      <span>-</span>
+                    )}
+                  </>
+                )}
+              </>
             )}
           </>
         ) : (
