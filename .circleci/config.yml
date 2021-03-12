@@ -28,7 +28,7 @@ workflows:
   build_and_deploy:
     jobs:
       - build_push_docker:
-          context: shardlabs
+          context: ibetyou
           filters:
             branches:
               only:
